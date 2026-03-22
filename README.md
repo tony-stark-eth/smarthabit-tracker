@@ -137,4 +137,4 @@ Forked from [template-symfony-sveltekit](https://github.com/tony-stark-eth/templ
 
 ## License
 
-Private repository.
+[MIT](LICENSE) — Copyright (c) 2026 tony-stark-eth
