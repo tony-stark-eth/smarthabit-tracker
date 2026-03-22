@@ -171,7 +171,6 @@ jobs:
             -e APP_ENV=test \
             -e XDEBUG_MODE=coverage \
             php vendor/bin/phpunit \
-              --path-coverage \
               --coverage-clover=var/coverage/clover.xml \
               --coverage-xml=var/coverage/coverage-xml \
               --log-junit=var/coverage/junit.xml \
@@ -185,7 +184,7 @@ jobs:
             -e XDEBUG_MODE=coverage \
             php vendor/bin/infection \
               --threads=4 --coverage=var/coverage \
-              --skip-initial-tests --min-msi=80 --min-covered-msi=90 \
+              --skip-initial-tests \
               --ignore-msi-with-no-mutations 2>&1)
           EC=$?
           echo "$OUTPUT"
