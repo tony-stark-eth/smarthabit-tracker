@@ -58,8 +58,8 @@ services:
       target: frankenphp_prod
     env_file:
       - .env.local
-    # Reset dev bind mounts — prod uses image-baked code
-    volumes: !reset []
+    # Override dev bind mounts — prod uses image-baked code
+    volumes: !override []
     environment:
       - APP_ENV=prod
       - APP_DEBUG=0
