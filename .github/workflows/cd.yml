@@ -97,6 +97,9 @@ jobs:
             docker pull "ghcr.io/${GITHUB_REPOSITORY}/app:${DEPLOY_SHA}"
             docker tag "ghcr.io/${GITHUB_REPOSITORY}/app:${DEPLOY_SHA}" app-php:prod
 
+            # Export SHA for compose.prod.yaml DEPLOY_SHA env var
+            echo "DEPLOY_SHA=${DEPLOY_SHA}" >> .env
+
             # Restart — entrypoint handles DB wait + migrations automatically.
             # Docker health check (start_period: 60s) ensures the container is
             # serving before Compose considers it healthy.

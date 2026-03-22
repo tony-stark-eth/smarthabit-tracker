@@ -21,6 +21,7 @@ services:
       - DATABASE_URL=postgresql://app:${POSTGRES_PASSWORD:-!ChangeMe!}@pgbouncer:5432/app?serverVersion=17&sslmode=disable&charset=utf8
       - MERCURE_URL=https://php/.well-known/mercure
       - MERCURE_PUBLIC_URL=/.well-known/mercure
+      - DEPLOY_SHA=${DEPLOY_SHA:-dev}
     restart: unless-stopped
     # Override dev bind mounts, use only Caddy TLS/config volumes
     volumes: !override
