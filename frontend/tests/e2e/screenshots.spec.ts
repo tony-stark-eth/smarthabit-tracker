@@ -117,10 +117,7 @@ test.describe('Landing page', () => {
         await page.goto('/welcome');
         await expect(page.getByText('SmartHabit')).toBeVisible({ timeout: 10_000 });
         await page.waitForLoadState('networkidle');
-        await page.screenshot({
-            path: `${SCREENSHOT_DIR}/00-welcome.png`,
-            fullPage: true,
-        });
+        await shot(page, '00-welcome');
     });
 });
 
