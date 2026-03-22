@@ -477,7 +477,7 @@ Wave 2 (needs Wave 1):
 
 ## Phase 5 — Statistics & Analytics
 
-**Status**: IN PROGRESS
+**Status**: ✅ COMPLETE
 
 ### 5.1 — Wave 1: Backend stats (parallel)
 
@@ -503,7 +503,7 @@ Wave 1 (parallel):
 
 ## Phase 6 — Deployment & Ops
 
-**Status**: IN PROGRESS
+**Status**: ✅ COMPLETE
 **Note**: OpenTofu modules + compose.prod.yaml already exist from template. This phase adds ops tooling.
 
 ### 6.1 — Wave 1 (parallel)
@@ -525,7 +525,7 @@ Wave 1 (parallel):
 
 ## Phase 6.5 — E2E Tests (Playwright)
 
-**Status**: IN PROGRESS
+**Status**: ⚠️ PARTIAL (11/38 E2E pass, CI non-blocking)
 **Rationale**: Unit + integration tests verify backend logic. E2E tests verify the actual user experience end-to-end through the browser.
 
 - [ ] Register → Login → Dashboard loads with empty state
