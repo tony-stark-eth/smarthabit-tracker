@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHabit Tracker — User Flow Mockups</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #F5F0EB;
+    color: #2D2A26;
+    padding: 40px 20px;
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #8A8580;
+    font-size: 14px;
+    margin-bottom: 60px;
+  }
+
+  /* Flow sections */
+  .flow-section {
+    max-width: 1200px;
+    margin: 0 auto 80px;
+  }
+
+  .flow-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #B8A99A;
+    margin-bottom: 24px;
+    padding-left: 4px;
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 16px;
+  }
+
+  /* Arrow between screens */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    padding-top: 160px;
+    color: #B8A99A;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .arrow-label {
+    font-size: 10px;
+    text-align: center;
+    color: #B8A99A;
+    margin-top: 4px;
+    max-width: 70px;
+  }
+
+  .arrow-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 140px;
+    min-width: 70px;
+    flex-shrink: 0;
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 280px;
+    min-width: 280px;
+    background: #fff;
+    border-radius: 32px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.04);
+    overflow: hidden;
+    border: 1px solid #E8E3DE;
+  }
+
+  .phone-header {
+    background: #2D2A26;
+    color: #fff;
+    padding: 20px 20px 16px;
+  }
+
+  .phone-header .status-bar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 12px;
+  }
+
+  .phone-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .phone-header .sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 2px;
+  }
+
+  .phone-body {
+    padding: 16px;
+    min-height: 360px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .phone-nav {
+    display: flex;
+    justify-content: space-around;
+    padding: 12px 16px 20px;
+    border-top: 1px solid #E8E3DE;
+    font-size: 11px;
+    color: #B8A99A;
+  }
+
+  .phone-nav .active { color: #2D2A26; font-weight: 700; }
+
+  .screen-label {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2D2A26;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+
+  .screen-note {
+    text-align: center;
+    font-size: 11px;
+    color: #B8A99A;
+    max-width: 280px;
+  }
+
+  /* UI elements inside phones */
+  .input-field {
+    background: #F5F0EB;
+    border: 1px solid #E8E3DE;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #8A8580;
+  }
+
+  .btn {
+    background: #2D2A26;
+    color: #fff;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1.5px solid #2D2A26;
+    color: #2D2A26;
+    border-radius: 12px;
+    padding: 14px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .btn-small {
+    background: #2D2A26;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-block;
+  }
+
+  .divider {
+    text-align: center;
+    font-size: 12px;
+    color: #B8A99A;
+    padding: 4px 0;
+  }
+
+  /* Habit card */
+  .habit-card {
+    background: #F5F0EB;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .habit-card.done {
+    background: #E8F5E9;
+    border: 1.5px solid #A5D6A7;
+  }
+
+  .habit-card.pending {
+    border: 1.5px dashed #D4CCC4;
+  }
+
+  .habit-emoji {
+    font-size: 28px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .habit-info { flex: 1; }
+
+  .habit-name {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .habit-meta {
+    font-size: 11px;
+    color: #8A8580;
+  }
+
+  .habit-meta.done-text { color: #4CAF50; }
+
+  .habit-check {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .habit-check.checked {
+    background: #4CAF50;
+    color: #fff;
+  }
+
+  .habit-check.unchecked {
+    border: 2px solid #D4CCC4;
+    color: transparent;
+  }
+
+  /* History item */
+  .history-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #F0EBE6;
+  }
+
+  .history-dot {
+    width: 8px;
+    height: 8px;
+    background: #4CAF50;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .history-text { font-size: 13px; flex: 1; }
+  .history-time { font-size: 11px; color: #8A8580; }
+
+  /* Settings row */
+  .settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid #F0EBE6;
+    font-size: 14px;
+  }
+
+  .settings-value {
+    font-size: 13px;
+    color: #8A8580;
+  }
+
+  /* Notification mockup */
+  .notification-banner {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    margin: 8px;
+  }
+
+  .notif-icon {
+    width: 36px;
+    height: 36px;
+    background: #2D2A26;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .notif-app { font-size: 11px; color: #8A8580; margin-bottom: 2px; }
+  .notif-text { font-size: 13px; font-weight: 500; }
+
+  /* Toggle */
+  .toggle {
+    width: 40px;
+    height: 22px;
+    background: #4CAF50;
+    border-radius: 11px;
+    position: relative;
+  }
+
+  .toggle::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+  }
+
+  /* Time picker mockup */
+  .time-range {
+    background: #F5F0EB;
+    border-radius: 12px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .time-range .sep { color: #B8A99A; font-size: 14px; font-weight: 400; }
+
+  /* Branch indicator */
+  .branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 70px;
+    padding-top: 120px;
+  }
+
+  .branch-or {
+    background: #E8E3DE;
+    color: #8A8580;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+
+  .branch-arrows {
+    display: flex;
+    flex-direction: column;
+    gap: 100px;
+    align-items: center;
+  }
+
+  .branch-arrow { color: #B8A99A; font-size: 18px; }
+
+  /* Two column branch */
+  .branch-split {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+</style>
+</head>
+<body>
+
+<h1>SmartHabit Tracker</h1>
+<p class="subtitle">User Flow Mockups — Wireframes</p>
+
+<!-- ===== FLOW 1: ONBOARDING ===== -->
+<div class="flow-section">
+  <div class="flow-title">Flow 1 — Onboarding</div>
+  <div class="flow-row">
+
+    <!-- Welcome -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+          <h2>SmartHabit</h2>
+          <div class="sub">Gewohnheiten. Gemeinsam.</div>
+        </div>
+        <div class="phone-body" style="justify-content: center; align-items: center; text-align: center; gap: 24px; padding: 40px 24px;">
+          <div style="font-size: 48px;">🏠</div>
+          <div style="font-size: 14px; color: #8A8580; line-height: 1.5;">Tracke Alltagsaufgaben mit deinem Haushalt — wer hat den Hund rausgelassen?</div>
+          <div class="btn" style="width: 100%;">Registrieren</div>
+          <div class="btn-outline" style="width: 100%;">Einloggen</div>
+        </div>
+      </div>
+      <div class="screen-label">Welcome</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Registrieren</div>
+    </div>
+
+    <!-- Register -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+          <h2>Registrieren</h2>
+        </div>
+        <div class="phone-body" style="gap: 10px;">
+          <div class="input-field">Name</div>
+          <div class="input-field">E-Mail</div>
+          <div class="input-field">Passwort</div>
+          <div class="input-field" style="display: flex; justify-content: space-between;">
+            <span>Timezone</span>
+            <span style="color: #2D2A26; font-weight: 600;">Europe/Berlin ▾</span>
+          </div>
+          <div style="font-size: 11px; color: #8A8580; padding: 0 4px;">Wird automatisch erkannt. Du kannst sie jederzeit ändern.</div>
+          <div class="btn" style="margin-top: 8px;">Weiter</div>
+        </div>
+      </div>
+      <div class="screen-label">Registrierung</div>
+      <div class="screen-note">Timezone ist Pflichtfeld, Browser-Default vorgeschlagen</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+    </div>
+
+    <!-- Household choice -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>9:41</span><span>●●●</span></div>
+          <h2>Haushalt</h2>
+          <div class="sub">Wer wohnt zusammen?</div>
+        </div>
+        <div class="phone-body" style="justify-content: center; gap: 16px; padding: 32px 16px;">
+          <div style="text-align: center; font-size: 36px; margin-bottom: 8px;">👨‍👩‍👧‍👦</div>
+          <div class="btn">Neuen Haushalt erstellen</div>
+          <div class="divider">oder</div>
+          <div class="input-field" style="text-align: center; letter-spacing: 4px; font-weight: 700; font-size: 16px; color: #2D2A26;">A3X · K9M2</div>
+          <div class="btn-outline">Mit Code beitreten</div>
+        </div>
+      </div>
+      <div class="screen-label">Haushalt wählen</div>
+      <div class="screen-note">Neuer Haushalt oder bestehender via Invite Code</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Fertig!</div>
+    </div>
+
+    <!-- First habit -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>9:42</span><span>●●●</span></div>
+          <h2>Erster Habit</h2>
+          <div class="sub">Was tracken wir zuerst?</div>
+        </div>
+        <div class="phone-body" style="gap: 10px;">
+          <div style="display: flex; gap: 8px; flex-wrap: wrap; padding: 8px 0;">
+            <div style="padding: 8px 14px; background: #F5F0EB; border-radius: 20px; font-size: 14px; border: 1.5px solid #2D2A26;">🐕 Hund raus</div>
+            <div style="padding: 8px 14px; background: #F5F0EB; border-radius: 20px; font-size: 14px;">🍽️ Spülmaschine</div>
+            <div style="padding: 8px 14px; background: #F5F0EB; border-radius: 20px; font-size: 14px;">🗑️ Müll raus</div>
+            <div style="padding: 8px 14px; background: #F5F0EB; border-radius: 20px; font-size: 14px;">🌱 Pflanzen gießen</div>
+            <div style="padding: 8px 14px; background: #F5F0EB; border-radius: 20px; font-size: 14px;">💊 Medikamente</div>
+          </div>
+          <div class="divider">oder eigenen erstellen</div>
+          <div style="display: flex; gap: 8px;">
+            <div class="input-field" style="width: 56px; text-align: center; font-size: 20px;">🐕</div>
+            <div class="input-field" style="flex: 1;">Name eingeben...</div>
+          </div>
+          <div class="time-range" style="margin-top: 8px;">
+            07:00 <span class="sep">bis</span> 09:00
+          </div>
+          <div style="font-size: 11px; color: #8A8580; text-align: center;">Wann wirst du erinnert?</div>
+          <div class="btn" style="margin-top: 4px;">Habit anlegen →</div>
+        </div>
+      </div>
+      <div class="screen-label">Erster Habit</div>
+      <div class="screen-note">Vorschläge + eigenen erstellen, Zeitfenster direkt setzen</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FLOW 2: TÄGLICHE NUTZUNG ===== -->
+<div class="flow-section">
+  <div class="flow-title">Flow 2 — Tägliche Nutzung (Kern-Loop)</div>
+  <div class="flow-row">
+
+    <!-- Dashboard -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>7:32</span><span>●●●</span></div>
+          <h2>Guten Morgen 👋</h2>
+          <div class="sub">Freitag, 21. März — 2 von 4 erledigt</div>
+        </div>
+        <div class="phone-body">
+          <div class="habit-card done">
+            <div class="habit-emoji">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta done-text">✓ Heute 07:12 · Lisa</div>
+            </div>
+            <div class="habit-check checked">✓</div>
+          </div>
+          <div class="habit-card done">
+            <div class="habit-emoji">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta done-text">✓ Heute 07:25 · Du</div>
+            </div>
+            <div class="habit-check checked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">Offen · Fenster 18:00–20:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">Offen · Fenster 19:00–21:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span class="active">📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span>⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">Dashboard</div>
+      <div class="screen-note">Hauptansicht. Ein Tap auf ○ loggt sofort.</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Tap auf ○</div>
+    </div>
+
+    <!-- Tap confirmed -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>18:34</span><span>●●●</span></div>
+          <h2>Guten Abend 👋</h2>
+          <div class="sub">Freitag, 21. März — 3 von 4 erledigt</div>
+        </div>
+        <div class="phone-body">
+          <div class="habit-card done">
+            <div class="habit-emoji">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta done-text">✓ Heute 07:12 · Lisa</div>
+            </div>
+            <div class="habit-check checked">✓</div>
+          </div>
+          <div class="habit-card done">
+            <div class="habit-emoji">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta done-text">✓ Heute 07:25 · Du</div>
+            </div>
+            <div class="habit-check checked">✓</div>
+          </div>
+          <div class="habit-card" style="background: #E8F5E9; border: 1.5px solid #A5D6A7; position: relative;">
+            <div style="position: absolute; top: -8px; right: 12px; background: #4CAF50; color: #fff; font-size: 10px; padding: 2px 10px; border-radius: 8px; font-weight: 700;">GERADE GELOGGT ✓</div>
+            <div class="habit-emoji">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta done-text">✓ Gerade eben · Du</div>
+            </div>
+            <div class="habit-check checked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">Offen · Fenster 19:00–21:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span class="active">📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span>⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">Log bestätigt</div>
+      <div class="screen-note">Optimistisches Update, sofort sichtbar</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Tap auf Karte</div>
+    </div>
+
+    <!-- History -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>18:35</span><span>●●●</span></div>
+          <h2>🐕 Hund raus</h2>
+          <div class="sub">Verlauf · 21 Tage Streak 🔥</div>
+        </div>
+        <div class="phone-body" style="gap: 0;">
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Heute</div>
+          <div class="history-item">
+            <div class="history-dot"></div>
+            <div class="history-text"><strong>Lisa</strong> — Morgenrunde</div>
+            <div class="history-time">07:12</div>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 1px;">Gestern</div>
+          <div class="history-item">
+            <div class="history-dot"></div>
+            <div class="history-text"><strong>Tom</strong> — Abendrunde</div>
+            <div class="history-time">19:45</div>
+          </div>
+          <div class="history-item">
+            <div class="history-dot"></div>
+            <div class="history-text"><strong>Lisa</strong> — Morgenrunde</div>
+            <div class="history-time">07:08</div>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin: 14px 0 8px; text-transform: uppercase; letter-spacing: 1px;">Mittwoch</div>
+          <div class="history-item">
+            <div class="history-dot"></div>
+            <div class="history-text"><strong>Lisa</strong></div>
+            <div class="history-time">07:22</div>
+          </div>
+          <div class="history-item" style="border: none;">
+            <div class="history-dot"></div>
+            <div class="history-text"><strong>Tom</strong></div>
+            <div class="history-time">19:30</div>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span>📋 Heute</span>
+          <span class="active">📊 Verlauf</span>
+          <span>⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">Habit-Verlauf</div>
+      <div class="screen-note">Wer, was, wann — chronologisch</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FLOW 3: NOTIFICATION ===== -->
+<div class="flow-section">
+  <div class="flow-title">Flow 3 — Smart Notification</div>
+  <div class="flow-row">
+
+    <!-- Lock screen -->
+    <div>
+      <div class="phone">
+        <div class="phone-header" style="background: #1a1816;">
+          <div class="status-bar"><span>7:15</span><span>●●●</span></div>
+          <h2 style="font-size: 42px; text-align: center; margin: 40px 0 8px;">7:15</h2>
+          <div class="sub" style="text-align: center; margin-bottom: 24px;">Freitag, 21. März</div>
+        </div>
+        <div style="background: #1a1816; padding: 0 12px 12px;">
+          <div class="notification-banner">
+            <div class="notif-icon">🐕</div>
+            <div>
+              <div class="notif-app">SmartHabit · Gerade eben</div>
+              <div class="notif-text">Warst du heute schon mit dem Hund draußen?</div>
+            </div>
+          </div>
+        </div>
+        <div style="background: #1a1816; min-height: 200px;"></div>
+      </div>
+      <div class="screen-label">Push Notification</div>
+      <div class="screen-note">Nur im gelernten Zeitfenster, nur wenn nicht schon erledigt</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Tap auf Push</div>
+    </div>
+
+    <!-- App opens, auto-highlight -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>7:15</span><span>●●●</span></div>
+          <h2>Guten Morgen 👋</h2>
+          <div class="sub">Freitag, 21. März — 0 von 4 erledigt</div>
+        </div>
+        <div class="phone-body">
+          <div class="habit-card" style="border: 2px solid #FF9800; background: #FFF8E1; position: relative;">
+            <div style="position: absolute; top: -8px; left: 12px; background: #FF9800; color: #fff; font-size: 10px; padding: 2px 10px; border-radius: 8px; font-weight: 700;">AUS NOTIFICATION</div>
+            <div class="habit-emoji">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta">Offen · Tap zum Loggen</div>
+            </div>
+            <div class="habit-check unchecked" style="border-color: #FF9800;">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta">Offen · Fenster 07:00–08:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">Offen · Fenster 18:00–20:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">Offen · Fenster 19:00–21:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span class="active">📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span>⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">App öffnet</div>
+      <div class="screen-note">Relevanter Habit hervorgehoben, ein Tap loggt</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Ein Tap</div>
+    </div>
+
+    <!-- Done -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>7:16</span><span>●●●</span></div>
+          <h2>Guten Morgen 👋</h2>
+          <div class="sub">Freitag, 21. März — 1 von 4 erledigt</div>
+        </div>
+        <div class="phone-body">
+          <div class="habit-card done">
+            <div class="habit-emoji">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta done-text">✓ Gerade eben · Du</div>
+            </div>
+            <div class="habit-check checked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta">Offen · Fenster 07:00–08:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">Offen · Fenster 18:00–20:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+          <div class="habit-card pending">
+            <div class="habit-emoji">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">Offen · Fenster 19:00–21:00</div>
+            </div>
+            <div class="habit-check unchecked">✓</div>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span class="active">📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span>⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">Erledigt!</div>
+      <div class="screen-note">Push → App → Tap → fertig. 3 Sekunden.</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== FLOW 4: SETTINGS ===== -->
+<div class="flow-section">
+  <div class="flow-title">Flow 4 — Einstellungen & Haushalt</div>
+  <div class="flow-row">
+
+    <!-- Settings main -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>20:10</span><span>●●●</span></div>
+          <h2>Einstellungen</h2>
+        </div>
+        <div class="phone-body" style="gap: 0;">
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Profil</div>
+          <div class="settings-row">
+            <span>Name</span>
+            <span class="settings-value">Lisa</span>
+          </div>
+          <div class="settings-row">
+            <span>Timezone</span>
+            <span class="settings-value">Europe/Berlin</span>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 1px;">Haushalt</div>
+          <div class="settings-row">
+            <span>Name</span>
+            <span class="settings-value">Zuhause 🏠</span>
+          </div>
+          <div class="settings-row">
+            <span>Mitglieder</span>
+            <span class="settings-value">Lisa, Tom</span>
+          </div>
+          <div class="settings-row">
+            <span>Einladen</span>
+            <span style="font-size: 14px; font-weight: 700; letter-spacing: 2px; color: #2D2A26;">A3XK9M2</span>
+          </div>
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin: 16px 0 8px; text-transform: uppercase; letter-spacing: 1px;">Geräte</div>
+          <div class="settings-row">
+            <span>iPhone Lisa</span>
+            <span class="settings-value" style="color: #4CAF50;">Aktiv</span>
+          </div>
+          <div class="settings-row" style="border: none;">
+            <span>iPad Lisa</span>
+            <span class="settings-value">Zuletzt: vor 3d</span>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span>📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span class="active">⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">Einstellungen</div>
+      <div class="screen-note">Profil, Haushalt, Invite Code, Geräte</div>
+    </div>
+
+    <div class="arrow-container">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Habit editieren</div>
+    </div>
+
+    <!-- Habit edit -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>20:11</span><span>●●●</span></div>
+          <h2>🐕 Hund raus</h2>
+          <div class="sub">Habit bearbeiten</div>
+        </div>
+        <div class="phone-body" style="gap: 10px;">
+          <div style="display: flex; gap: 8px;">
+            <div class="input-field" style="width: 56px; text-align: center; font-size: 20px;">🐕</div>
+            <div class="input-field" style="flex: 1; color: #2D2A26; font-weight: 600;">Hund raus</div>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;">Zeitfenster</div>
+          <div class="time-range">
+            07:00 <span class="sep">bis</span> 09:00
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+            <div>
+              <div style="font-size: 13px; font-weight: 600;">Automatisch lernen</div>
+              <div style="font-size: 11px; color: #8A8580;">Passt sich deinem Rhythmus an</div>
+            </div>
+            <div class="toggle"></div>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;">Wiederholung</div>
+          <div style="display: flex; gap: 6px;">
+            <div style="width: 36px; height: 36px; background: #2D2A26; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">Mo</div>
+            <div style="width: 36px; height: 36px; background: #2D2A26; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">Di</div>
+            <div style="width: 36px; height: 36px; background: #2D2A26; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">Mi</div>
+            <div style="width: 36px; height: 36px; background: #2D2A26; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">Do</div>
+            <div style="width: 36px; height: 36px; background: #2D2A26; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">Fr</div>
+            <div style="width: 36px; height: 36px; background: #F5F0EB; color: #B8A99A; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">Sa</div>
+            <div style="width: 36px; height: 36px; background: #F5F0EB; color: #B8A99A; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700;">So</div>
+          </div>
+
+          <div style="font-size: 12px; font-weight: 700; color: #B8A99A; margin-top: 8px; text-transform: uppercase; letter-spacing: 1px;">Notification</div>
+          <div class="input-field" style="color: #2D2A26; font-size: 12px;">Warst du heute schon mit dem Hund draußen?</div>
+
+          <div class="btn" style="margin-top: 8px;">Speichern</div>
+        </div>
+      </div>
+      <div class="screen-label">Habit bearbeiten</div>
+      <div class="screen-note">Zeitfenster, Frequenz, Custom Notification Text</div>
+    </div>
+
+    <div class="arrow-container" style="padding-top: 180px;">
+      <div style="font-size: 22px; color: #B8A99A;">→</div>
+      <div class="arrow-label">Phase 4</div>
+    </div>
+
+    <!-- Learned window -->
+    <div>
+      <div class="phone">
+        <div class="phone-header">
+          <div class="status-bar"><span>20:12</span><span>●●●</span></div>
+          <h2>🐕 Hund raus</h2>
+          <div class="sub">Gelerntes Muster</div>
+        </div>
+        <div class="phone-body" style="gap: 12px;">
+          <div style="background: #E8F5E9; border-radius: 12px; padding: 14px;">
+            <div style="font-size: 12px; color: #4CAF50; font-weight: 700; margin-bottom: 6px;">AUTOMATISCH ERKANNT</div>
+            <div style="font-size: 14px; margin-bottom: 4px;">Dein übliches Zeitfenster:</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: 1px;">06:55 – 07:35</div>
+            <div style="font-size: 11px; color: #8A8580; margin-top: 6px;">Basierend auf 21 Logs · Wochentags</div>
+          </div>
+          <div style="background: #FFF8E1; border-radius: 12px; padding: 14px;">
+            <div style="font-size: 12px; color: #FF9800; font-weight: 700; margin-bottom: 6px;">WOCHENENDE</div>
+            <div style="font-size: 14px; margin-bottom: 4px;">Anderes Muster erkannt:</div>
+            <div style="font-size: 28px; font-weight: 700; letter-spacing: 1px;">08:30 – 09:45</div>
+            <div style="font-size: 11px; color: #8A8580; margin-top: 6px;">Basierend auf 6 Logs · Samstag & Sonntag</div>
+          </div>
+          <div style="display: flex; gap: 8px; margin-top: 4px;">
+            <div class="btn" style="flex: 1; font-size: 12px;">Übernehmen</div>
+            <div class="btn-outline" style="flex: 1; font-size: 12px;">Manuell bleiben</div>
+          </div>
+        </div>
+        <div class="phone-nav">
+          <span>📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span class="active">⚙️ Einst.</span>
+        </div>
+      </div>
+      <div class="screen-label">Gelerntes Zeitfenster</div>
+      <div class="screen-note">Phase 4: MAD-Algorithmus, Weekday/Weekend Split</div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SmartHabit — Design-Vorschläge</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,800;1,9..144,400&family=Outfit:wght@300;400;600;700&family=Sora:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&family=JetBrains+Mono:wght@400;600&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;0,7..72,700;1,7..72,400&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Outfit', sans-serif; background: #f0eee9; padding: 40px 20px; color: #222; }
+
+  h1 { text-align: center; font-family: 'Fraunces', serif; font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+  .page-sub { text-align: center; font-size: 14px; color: #999; margin-bottom: 60px; }
+
+  .designs { display: flex; flex-wrap: wrap; justify-content: center; gap: 48px; max-width: 1400px; margin: 0 auto; }
+
+  .design-col { display: flex; flex-direction: column; align-items: center; }
+
+  .design-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #bbb;
+    margin-bottom: 6px;
+  }
+  .design-name {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .design-desc {
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    max-width: 280px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* Phone shell */
+  .phone {
+    width: 300px;
+    border-radius: 36px;
+    overflow: hidden;
+    box-shadow: 0 12px 48px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.06);
+  }
+
+  /* ==========================================
+     DESIGN A — WARM EARTH
+     ========================================== */
+  .design-a .phone { background: #FAF6F1; border: 1px solid #E8E0D6; }
+
+  .design-a .header {
+    background: linear-gradient(135deg, #2D2A26 0%, #3D3832 100%);
+    color: #fff;
+    padding: 24px 22px 18px;
+  }
+  .design-a .header .time { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 14px; }
+  .design-a .header h2 { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; }
+  .design-a .header .sub { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+
+  .design-a .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .design-a .habit {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-radius: 16px;
+    transition: all 0.2s;
+  }
+  .design-a .habit.done { background: #E8F0E4; border: 1.5px solid #B8D4AD; }
+  .design-a .habit.open { background: #FAF6F1; border: 1.5px dashed #D6CFC5; }
+  .design-a .emoji-wrap {
+    width: 44px; height: 44px; border-radius: 12px; background: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .design-a .habit-info { flex: 1; }
+  .design-a .habit-name { font-weight: 600; font-size: 14px; color: #2D2A26; }
+  .design-a .habit-meta { font-size: 11px; color: #A09A92; margin-top: 2px; }
+  .design-a .habit-meta.ok { color: #5A9A4A; }
+  .design-a .check {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+  }
+  .design-a .check.on { background: #5A9A4A; color: #fff; }
+  .design-a .check.off { border: 2px solid #D6CFC5; }
+
+  .design-a .nav {
+    display: flex; justify-content: space-around;
+    padding: 14px 16px 22px; font-size: 11px; color: #B8B0A6;
+  }
+  .design-a .nav .active { color: #2D2A26; font-weight: 700; }
+
+  /* ==========================================
+     DESIGN B — MONO INK
+     ========================================== */
+  .design-b .phone { background: #0A0A0A; border: 1px solid #222; }
+
+  .design-b .header {
+    padding: 24px 22px 18px;
+    border-bottom: 1px solid #1A1A1A;
+  }
+  .design-b .header .time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #444; margin-bottom: 14px; }
+  .design-b .header h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #fff; font-style: italic; }
+  .design-b .header .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #555; margin-top: 6px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .design-b .body { padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+
+  .design-b .habit {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-radius: 12px;
+    border: 1px solid #1A1A1A;
+    transition: all 0.2s;
+  }
+  .design-b .habit.done { border-color: #2A3A28; background: rgba(90,200,70,0.04); }
+  .design-b .habit.open { border-color: #1A1A1A; }
+  .design-b .emoji-wrap {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: #141414; border: 1px solid #222;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .design-b .habit-info { flex: 1; }
+  .design-b .habit-name { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 13px; color: #E8E8E8; letter-spacing: 0.2px; }
+  .design-b .habit-meta { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #444; margin-top: 3px; }
+  .design-b .habit-meta.ok { color: #5ACA46; }
+  .design-b .check {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+  }
+  .design-b .check.on { background: #5ACA46; color: #000; font-weight: 700; }
+  .design-b .check.off { border: 1.5px solid #333; }
+
+  .design-b .nav {
+    display: flex; justify-content: space-around;
+    padding: 14px 16px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: #333; text-transform: uppercase; letter-spacing: 1px;
+  }
+  .design-b .nav .active { color: #fff; }
+
+  /* ==========================================
+     DESIGN C — SOFT CLOUD
+     ========================================== */
+  .design-c .phone { background: #FFFFFF; border: 1px solid #EDE8F5; }
+
+  .design-c .header {
+    background: linear-gradient(160deg, #F0EAFF 0%, #E6F0FF 50%, #FFF0F5 100%);
+    padding: 24px 22px 18px;
+  }
+  .design-c .header .time { font-size: 11px; color: #B8A8D0; margin-bottom: 14px; }
+  .design-c .header h2 { font-family: 'Literata', serif; font-size: 21px; font-weight: 700; color: #3D2E5C; }
+  .design-c .header .sub { font-size: 12px; color: #9B8AB8; margin-top: 3px; }
+
+  .design-c .body { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+
+  .design-c .habit {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; border-radius: 20px;
+    transition: all 0.2s;
+  }
+  .design-c .habit.done { background: linear-gradient(135deg, #E8FFE8 0%, #F0FFF4 100%); border: 1.5px solid #C8E8C0; }
+  .design-c .habit.open { background: #FAFAFF; border: 1.5px solid #EDE8F5; }
+  .design-c .emoji-wrap {
+    width: 46px; height: 46px; border-radius: 14px;
+    background: linear-gradient(135deg, #fff 0%, #F8F4FF 100%);
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    box-shadow: 0 2px 12px rgba(100,60,180,0.06);
+  }
+  .design-c .habit-info { flex: 1; }
+  .design-c .habit-name { font-family: 'Literata', serif; font-weight: 600; font-size: 14px; color: #3D2E5C; }
+  .design-c .habit-meta { font-size: 11px; color: #B8A8D0; margin-top: 2px; }
+  .design-c .habit-meta.ok { color: #6AAF5C; }
+  .design-c .check {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  .design-c .check.on { background: linear-gradient(135deg, #7BC96F, #5AAF4A); color: #fff; box-shadow: 0 2px 8px rgba(90,175,74,0.3); }
+  .design-c .check.off { border: 2px solid #DDD6EA; }
+
+  .design-c .nav {
+    display: flex; justify-content: space-around;
+    padding: 14px 16px 22px; font-size: 11px; color: #C4B8D8;
+  }
+  .design-c .nav .active { color: #3D2E5C; font-weight: 700; }
+
+  /* ==========================================
+     DESIGN D — NEO UTILITY
+     ========================================== */
+  .design-d .phone { background: #F4F5F7; border: 1px solid #DDE0E6; }
+
+  .design-d .header {
+    background: #fff;
+    padding: 24px 22px 16px;
+    border-bottom: 2px solid #E8EAEE;
+  }
+  .design-d .header .time { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #B0B4BC; margin-bottom: 14px; }
+  .design-d .header h2 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; color: #1A1D24; letter-spacing: -0.3px; }
+  .design-d .header .sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #888D98; margin-top: 4px; }
+  .design-d .header .progress-bar {
+    margin-top: 12px; height: 6px; background: #E8EAEE; border-radius: 3px; overflow: hidden;
+  }
+  .design-d .header .progress-fill { height: 100%; border-radius: 3px; background: #3366FF; width: 50%; }
+
+  .design-d .body { padding: 12px; display: flex; flex-direction: column; gap: 6px; }
+
+  .design-d .habit {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 10px;
+    background: #fff; border: 1px solid #E8EAEE;
+    transition: all 0.2s;
+  }
+  .design-d .habit.done { border-left: 3px solid #22C55E; }
+  .design-d .habit.open { border-left: 3px solid #E8EAEE; }
+  .design-d .emoji-wrap {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: #F4F5F7;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+  }
+  .design-d .habit-info { flex: 1; }
+  .design-d .habit-name { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 13px; color: #1A1D24; }
+  .design-d .habit-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #A0A4AE; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .design-d .habit-meta.ok { color: #22C55E; }
+  .design-d .check {
+    width: 26px; height: 26px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+  }
+  .design-d .check.on { background: #22C55E; color: #fff; font-weight: 700; }
+  .design-d .check.off { border: 2px solid #DDE0E6; }
+
+  .design-d .tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; padding: 2px 6px; border-radius: 4px;
+    margin-top: 4px; letter-spacing: 0.5px;
+  }
+  .design-d .tag.due { background: #FFF3E0; color: #E65100; }
+  .design-d .tag.window { background: #F0F4FF; color: #3366FF; }
+
+  .design-d .nav {
+    display: flex; justify-content: space-around;
+    padding: 12px 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: #B0B4BC; text-transform: uppercase; letter-spacing: 1.5px;
+    background: #fff; border-top: 1px solid #E8EAEE;
+  }
+  .design-d .nav .active { color: #3366FF; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>SmartHabit Tracker</h1>
+<p class="page-sub">Vier Design-Richtungen — gleicher Screen, verschiedene Persönlichkeit</p>
+
+<div class="designs">
+
+  <!-- ===== A: WARM EARTH ===== -->
+  <div class="design-col">
+    <div class="design-label">Vorschlag A</div>
+    <div class="design-name">Warm Earth</div>
+    <div class="design-desc">Gemütlich, organisch, einladend. Erdtöne + weiche Radien. Fühlt sich an wie Zuhause — passend für eine Haushalts-App.</div>
+    <div class="design-a">
+      <div class="phone">
+        <div class="header">
+          <div class="time">7:32</div>
+          <h2>Guten Morgen 👋</h2>
+          <div class="sub">Freitag, 21. März — 2 von 4 erledigt</div>
+        </div>
+        <div class="body">
+          <div class="habit done">
+            <div class="emoji-wrap">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta ok">✓ 07:12 · Lisa</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit done">
+            <div class="emoji-wrap">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta ok">✓ 07:25 · Du</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">18:00 – 20:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">19:00 – 21:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+        </div>
+        <div class="nav">
+          <span class="active">📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span>⚙️ Mehr</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== B: MONO INK ===== -->
+  <div class="design-col">
+    <div class="design-label">Vorschlag B</div>
+    <div class="design-name">Mono Ink</div>
+    <div class="design-desc">Dunkel, typografisch, reduziert. Kontrastreicher Dark Mode mit editoriellem Charakter. Für Leute die Aesthetik mögen.</div>
+    <div class="design-b">
+      <div class="phone">
+        <div class="header">
+          <div class="time">07:32 UTC+1</div>
+          <h2>Guten Morgen</h2>
+          <div class="sub">Fr 21. Mär — 2 / 4</div>
+        </div>
+        <div class="body">
+          <div class="habit done">
+            <div class="emoji-wrap">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta ok">✓ 07:12 — Lisa</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit done">
+            <div class="emoji-wrap">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta ok">✓ 07:25 — Du</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">Fenster 18:00–20:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">Fenster 19:00–21:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+        </div>
+        <div class="nav">
+          <span class="active">Heute</span>
+          <span>Verlauf</span>
+          <span>Config</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== C: SOFT CLOUD ===== -->
+  <div class="design-col">
+    <div class="design-label">Vorschlag C</div>
+    <div class="design-name">Soft Cloud</div>
+    <div class="design-desc">Sanft, luftig, pastellig. Zarte Gradienten und viel Weißraum. Freundlich und unaufdringlich — stressfrei zu benutzen.</div>
+    <div class="design-c">
+      <div class="phone">
+        <div class="header">
+          <div class="time">7:32</div>
+          <h2>Guten Morgen 👋</h2>
+          <div class="sub">Freitag, 21. März — 2 von 4 erledigt</div>
+        </div>
+        <div class="body">
+          <div class="habit done">
+            <div class="emoji-wrap">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta ok">✓ 07:12 · Lisa</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit done">
+            <div class="emoji-wrap">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta ok">✓ 07:25 · Du</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">18:00 – 20:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">19:00 – 21:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+        </div>
+        <div class="nav">
+          <span class="active">📋 Heute</span>
+          <span>📊 Verlauf</span>
+          <span>⚙️ Mehr</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== D: NEO UTILITY ===== -->
+  <div class="design-col">
+    <div class="design-label">Vorschlag D</div>
+    <div class="design-name">Neo Utility</div>
+    <div class="design-desc">Funktional, klar, datengetrieben. Progress-Bars, Tags, Monospace-Details. Für Leute die Daten und Kontrolle mögen.</div>
+    <div class="design-d">
+      <div class="phone">
+        <div class="header">
+          <div class="time">07:32 — FR 21.03</div>
+          <h2>Dashboard</h2>
+          <div class="sub">2 of 4 completed</div>
+          <div class="progress-bar"><div class="progress-fill"></div></div>
+        </div>
+        <div class="body">
+          <div class="habit done">
+            <div class="emoji-wrap">🐕</div>
+            <div class="habit-info">
+              <div class="habit-name">Hund raus</div>
+              <div class="habit-meta ok">Done 07:12 · Lisa</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit done">
+            <div class="emoji-wrap">💊</div>
+            <div class="habit-info">
+              <div class="habit-name">Medikamente</div>
+              <div class="habit-meta ok">Done 07:25 · Du</div>
+            </div>
+            <div class="check on">✓</div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🍽️</div>
+            <div class="habit-info">
+              <div class="habit-name">Spülmaschine</div>
+              <div class="habit-meta">Pending</div>
+              <div class="tag window">18:00–20:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+          <div class="habit open">
+            <div class="emoji-wrap">🗑️</div>
+            <div class="habit-info">
+              <div class="habit-name">Müll raus</div>
+              <div class="habit-meta">Pending</div>
+              <div class="tag due">19:00–21:00</div>
+            </div>
+            <div class="check off"></div>
+          </div>
+        </div>
+        <div class="nav">
+          <span class="active">Today</span>
+          <span>History</span>
+          <span>Stats</span>
+          <span>Config</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
