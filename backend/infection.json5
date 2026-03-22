@@ -20,7 +20,7 @@
         "customPath": "vendor/bin/phpunit"
     },
     "testFramework": "phpunit",
-    "testFrameworkOptions": "--testsuite=unit",
+    "testFrameworkOptions": "--testsuite=unit -d memory_limit=512M",
     "mutators": {
         "@default": true,
         "global-ignoreSourceCodeByRegex": [

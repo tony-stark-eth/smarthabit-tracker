@@ -171,9 +171,11 @@ jobs:
             -e APP_ENV=test \
             -e XDEBUG_MODE=coverage \
             php vendor/bin/phpunit \
+              --path-coverage \
               --coverage-clover=var/coverage/clover.xml \
               --coverage-xml=var/coverage/coverage-xml \
-              --log-junit=var/coverage/junit.xml
+              --log-junit=var/coverage/junit.xml \
+              -d memory_limit=512M
 
       - name: Infection (mutation testing)
         run: |
