@@ -46,5 +46,18 @@
   "history_load_more": "Mehr laden",
   "history_today": "Heute",
   "history_yesterday": "Gestern",
-  "offline_queued": "Offline gespeichert — wird synchronisiert, sobald eine Verbindung besteht"
+  "offline_queued": "Offline gespeichert — wird synchronisiert, sobald eine Verbindung besteht",
+  "stats_title": "Statistiken",
+  "stats_household": "Haushalts-Übersicht",
+  "stats_completion_rate": "Abschlussquote",
+  "stats_current_streak": "Aktuelle Serie",
+  "stats_longest_streak": "Längste Serie",
+  "stats_avg_time": "Durchschnittszeit",
+  "stats_trend_improving": "Verbessernd",
+  "stats_trend_declining": "Abnehmend",
+  "stats_trend_stable": "Stabil",
+  "stats_days": "Tage",
+  "stats_weekday_heatmap": "Aktivität nach Wochentag",
+  "stats_time_heatmap": "Aktivität nach Uhrzeit",
+  "stats_no_data": "Noch nicht genug Daten"
 }

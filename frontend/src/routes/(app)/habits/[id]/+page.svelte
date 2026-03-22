@@ -229,6 +229,19 @@
                 <p class="page-subtitle">{totalLogs} {totalLogs === 1 ? 'entry' : 'entries'}</p>
             {/if}
         </div>
+
+        <a
+            href={resolve(`/habits/${habitId}/stats`)}
+            class="stats-btn"
+            aria-label="View statistics for this habit"
+        >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+            </svg>
+            Stats
+        </a>
     </header>
 
     <!-- Loading state -->
@@ -343,6 +356,29 @@
     .back-btn:hover {
         background: var(--color-surface);
         color: var(--color-text-primary);
+    }
+
+    .stats-btn {
+        margin-left: auto;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.4375rem 0.75rem;
+        font-size: 0.8125rem;
+        font-weight: 600;
+        font-family: inherit;
+        color: var(--color-accent);
+        border: 1px solid var(--color-accent);
+        border-radius: var(--radius-md);
+        background: transparent;
+        text-decoration: none;
+        transition: background 0.15s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .stats-btn:hover {
+        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
     }
 
     .header-text {

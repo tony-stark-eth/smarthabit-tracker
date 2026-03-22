@@ -46,5 +46,18 @@
   "history_load_more": "Load more",
   "history_today": "Today",
   "history_yesterday": "Yesterday",
-  "offline_queued": "Saved offline — will sync when connected"
+  "offline_queued": "Saved offline — will sync when connected",
+  "stats_title": "Statistics",
+  "stats_household": "Household Overview",
+  "stats_completion_rate": "Completion Rate",
+  "stats_current_streak": "Current Streak",
+  "stats_longest_streak": "Longest Streak",
+  "stats_avg_time": "Average Time",
+  "stats_trend_improving": "Improving",
+  "stats_trend_declining": "Declining",
+  "stats_trend_stable": "Stable",
+  "stats_days": "days",
+  "stats_weekday_heatmap": "Activity by Weekday",
+  "stats_time_heatmap": "Activity by Hour",
+  "stats_no_data": "Not enough data yet"
 }

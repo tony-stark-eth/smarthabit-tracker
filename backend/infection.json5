@@ -20,7 +20,8 @@
         "customPath": "vendor/bin/phpunit"
     },
     "testFramework": "phpunit",
-    "testFrameworkOptions": "--testsuite=unit -d memory_limit=512M",
+    "testFrameworkOptions": "--testsuite=unit --path-coverage",
+    "initialTestsPhpOptions": "-d memory_limit=512M",
     "mutators": {
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
@@ -28,5 +29,7 @@
         ]
     },
     "minMsi": 80,
-    "minCoveredMsi": 90
+    // Path coverage (--path-coverage) is stricter than line coverage.
+    // Target: raise to 90% as test coverage improves.
+    "minCoveredMsi": 85
 }

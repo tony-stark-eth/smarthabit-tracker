@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Auth\Entity;
 
 use App\Household\Entity\Household;
+use App\Shared\Contract\HouseholdAwareUserInterface;
 use App\Shared\Enum\Locale;
 use App\Shared\Enum\Theme;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity]
 #[ORM\Table(name: '"user"')]
-final class User implements UserInterface, PasswordAuthenticatedUserInterface
+final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
