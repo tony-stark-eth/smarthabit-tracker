@@ -8,7 +8,7 @@
 Household habit tracking app with adaptive notifications. Track daily habits, get smart reminders based on your patterns, and share progress with your household.
 
 <p align="center">
-  <img src="docs/screenshots/01-login.png" width="180" alt="Login" />
+  <img src="docs/screenshots/00-welcome.png" width="180" alt="Welcome page" />
   <img src="docs/screenshots/04-dashboard-progress.png" width="180" alt="Dashboard — partial progress" />
   <img src="docs/screenshots/05-dashboard-alldone.png" width="180" alt="Dashboard — all done" />
   <img src="docs/screenshots/09-dashboard-dark.png" width="180" alt="Dashboard — dark mode" />

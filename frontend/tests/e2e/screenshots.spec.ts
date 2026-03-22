@@ -107,6 +107,24 @@ test.describe('Auth screens', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Welcome / Landing page
+// ---------------------------------------------------------------------------
+
+test.describe('Landing page', () => {
+    test.use({ viewport: MOBILE });
+
+    test('00 — Welcome page', async ({ page }) => {
+        await page.goto('/welcome');
+        await expect(page.getByText('SmartHabit')).toBeVisible({ timeout: 10_000 });
+        await page.waitForLoadState('networkidle');
+        await page.screenshot({
+            path: `${SCREENSHOT_DIR}/00-welcome.png`,
+            fullPage: true,
+        });
+    });
+});
+
+// ---------------------------------------------------------------------------
 // Dashboard states
 // ---------------------------------------------------------------------------
 
