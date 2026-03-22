@@ -10,7 +10,8 @@ use App\Notification\Entity\NotificationLog;
 use App\Notification\Enum\NotificationChannel;
 use App\Notification\Enum\NotificationStatus;
 use App\Notification\Message\NotifyHabitMessage;
-use App\Notification\Service\WebPushService;
+use App\Notification\Service\Transport\PushPayload;
+use App\Notification\Service\Transport\TransportRegistry;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -19,7 +20,7 @@ final readonly class NotifyHabitHandler
 {
     public function __construct(
         private EntityManagerInterface $em,
-        private WebPushService $webPushService,
+        private TransportRegistry $transportRegistry,
     ) {
     }
 
@@ -31,34 +32,38 @@ final readonly class NotifyHabitHandler
             return;
         }
 
+        $payload = new PushPayload(
+            title: 'SmartHabit',
+            body: $habit->getName(),
+            habitId: $habit->getId()->toRfc4122(),
+        );
+
         /** @var array<int, array{endpoint: string, keys: array{p256dh: string, auth: string}, device_name: string, last_seen: string, type: string}> $subscriptions */
         $subscriptions = $user->getPushSubscriptions() ?? [];
 
         foreach ($subscriptions as $index => $subscription) {
-            if ($subscription['type'] !== 'web_push') {
+            $transport = $this->transportRegistry->getTransport($subscription['type']);
+
+            if ($transport === null) {
                 continue;
             }
 
-            $payload = json_encode([
-                'title' => 'SmartHabit',
-                'body' => $habit->getName(),
-                'habitId' => $habit->getId()->toRfc4122(),
-            ], \JSON_THROW_ON_ERROR);
+            $result = $transport->send($subscription, $payload);
 
-            $result = $this->webPushService->send($subscription, $payload);
+            $channel = NotificationChannel::tryFrom($subscription['type']);
 
             $log = new NotificationLog(
                 user: $user,
-                channel: NotificationChannel::WEB_PUSH,
-                status: $result['success'] ? NotificationStatus::SENT : NotificationStatus::FAILED,
+                channel: $channel ?? NotificationChannel::WEB_PUSH,
+                status: $result->success ? NotificationStatus::SENT : NotificationStatus::FAILED,
                 sentAt: new \DateTimeImmutable(),
                 message: $habit->getName(),
                 habit: $habit,
+                errorReason: $result->success ? null : $result->reason,
             );
             $this->em->persist($log);
 
-            // HTTP 410 Gone → remove stale subscription
-            if ($result['statusCode'] === 410) {
+            if ($result->shouldRemoveSubscription) {
                 /** @var array<int, array{endpoint: string, keys: array<string, string>, device_name: string, last_seen: string, type: string}> $subs */
                 $subs = $user->getPushSubscriptions() ?? [];
                 unset($subs[$index]);

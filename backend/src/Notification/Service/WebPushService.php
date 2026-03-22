@@ -7,7 +7,7 @@ namespace App\Notification\Service;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
-final readonly class WebPushService
+final readonly class WebPushService implements WebPushServiceInterface
 {
     private WebPush $webPush;
 

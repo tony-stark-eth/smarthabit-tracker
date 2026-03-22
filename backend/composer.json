@@ -30,6 +30,7 @@
     "require-dev": {
         "captainhook/captainhook": "^5.0",
         "captainhook/plugin-composer": "^5.0",
+        "dg/bypass-finals": "*",
         "doctrine/doctrine-fixtures-bundle": "^4.0",
         "infection/infection": "^0.32",
         "phpat/phpat": "^0.12",

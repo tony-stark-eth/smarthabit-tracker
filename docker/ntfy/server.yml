@@ -1,0 +1,4 @@
+base-url: "http://ntfy:80"
+listen-http: ":80"
+auth-default-access: "deny-all"
+behind-proxy: true

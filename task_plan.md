@@ -540,12 +540,74 @@ Wave 1 (parallel):
 
 ## Phase 7 — Native App & Widgets
 
-- [ ] **Stufe 2**: Multi-transport push (Strategy Pattern) + Capacitor app
-- [ ] ntfy server, APNs integration
-- [ ] TestFlight / Play Console
-- [ ] **Stufe 3**: Native widgets via capacitor-widget-bridge
+**Status**: 🔄 IN PROGRESS (Stage 2)
+
+### 7.1 — Stage 2: Multi-Transport Push (Wave 1: parallel, no deps)
+
+**Agent A: Interface + WebPushTransport**
+- [ ] `PushTransportInterface` (supports + send)
+- [ ] `PushPayload` value object (title, body, habitId)
+- [ ] `PushResult` value object (success, statusCode, reason, shouldRemoveSubscription)
+- [ ] `WebPushTransport` wrapping existing WebPushService
+- [ ] Unit tests for PushPayload, PushResult, WebPushTransport
+
+**Agent B: NtfyTransport**
+- [ ] `NtfyTransport` — HTTP POST to ntfy server via HttpClientInterface
+- [ ] Unit test with mocked HttpClient
+
+**Agent C: ApnsTransport**
+- [ ] `ApnsTransport` — HTTP/2 POST to api.push.apple.com
+- [ ] `ApnsJwtGenerator` — ES256 JWT from .p8 key (openssl_sign, cached 50min)
+- [ ] Unit tests for ApnsTransport + ApnsJwtGenerator
+
+### 7.2 — Stage 2: Handler + Infrastructure (Wave 2: needs Wave 1)
+
+**Agent D: TransportRegistry + Handler refactoring**
+- [ ] `TransportRegistry` — iterable<PushTransportInterface>, getTransport(type)
+- [ ] Refactor `NotifyHabitHandler` to use TransportRegistry
+- [ ] Unit tests for TransportRegistry, NotifyHabitHandler
+
+**Agent E: PushSubscriptionController refactoring**
+- [ ] Type-aware validation (web_push/ntfy/apns different fields)
+- [ ] Update DELETE endpoint for type-specific identifiers
+- [ ] Integration tests for ntfy + APNs subscription CRUD
+
+**Agent F: ntfy Docker + Caddy + DI config**
+- [ ] ntfy service in compose.yaml + compose.prod.yaml
+- [ ] docker/ntfy/server.yml config
+- [ ] Caddyfile ntfy proxy route
+- [ ] Rename web_push.php → notification.php, register all transports
+- [ ] Update .env with NTFY_*, APNS_* vars
+
+### 7.3 — Stage 2: Verification (Wave 3: needs everything)
+- [ ] All existing tests pass (132 PHPUnit + 38 E2E)
+- [ ] ECS + PHPStan + Rector green
+- [ ] Infection on new Transport classes
+
+### 7.4 — Stage 3: Capacitor + Native Widgets (future)
+- [ ] Capacitor init, iOS/Android projects
+- [ ] Push abstraction (web/apns/ntfy per platform)
+- [ ] capacitor-widget-bridge + SharedStorage
 - [ ] iOS Widget Extension (SwiftUI)
 - [ ] Android AppWidgetProvider (Kotlin)
+- [ ] TestFlight / Play Console
+
+### 7 Parallelization Map
+
+```
+Wave 1 (parallel, no deps):
+  Agent A (sonnet): [Interface + WebPushTransport              ]
+  Agent B (sonnet): [NtfyTransport                             ]
+  Agent C (sonnet): [ApnsTransport + JWT generator              ]
+
+Wave 2 (needs Wave 1):
+  Agent D (sonnet): [TransportRegistry + Handler refactoring    ]
+  Agent E (sonnet): [PushSubscriptionController + validators    ]
+  Agent F (sonnet): [ntfy Docker + Caddyfile + DI config        ]
+
+Wave 3 (integration):
+  Main:             [Tests + CI green                           ]
+```
 
 ## Phase 8 — CI/CD & Automation
 

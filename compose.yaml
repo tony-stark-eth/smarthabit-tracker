@@ -87,6 +87,16 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  ntfy:
+    image: binwiederhier/ntfy:latest
+    command: serve
+    restart: unless-stopped
+    volumes:
+      - ntfy-cache:/var/cache/ntfy
+      - ./docker/ntfy/server.yml:/etc/ntfy/server.yml:ro
+    environment:
+      TZ: UTC
+
   bun:
     # Vite dev server — only started in dev via --profile dev.
     # In production the SvelteKit build output is served statically by Caddy.
@@ -102,3 +112,4 @@ services:
 
 volumes:
   db_data:
+  ntfy-cache:

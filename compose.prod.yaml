@@ -43,3 +43,15 @@ services:
       - APP_ENV=prod
       - APP_DEBUG=0
     restart: unless-stopped
+
+  ntfy:
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "3"

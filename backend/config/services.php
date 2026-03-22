@@ -17,5 +17,7 @@ return static function (ContainerConfigurator $container): void {
             '../src/Kernel.php',
             '../src/Notification/Service/WebPushService.php',
             '../src/Notification/Controller/PushSubscriptionController.php',
+            '../src/Notification/Service/Transport/',
+            '../src/Notification/Service/ApnsJwtGenerator.php',
         ]);
 };

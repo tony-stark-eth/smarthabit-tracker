@@ -22,7 +22,7 @@ final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUs
     private Uuid $id;
 
     /**
-     * @var array<int, array{endpoint: string, keys: array<string, string>, device_name: string, last_seen: string, type: string}>|null
+     * @var array<int, array<string, mixed>>|null
      */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $pushSubscriptions = null;
@@ -108,7 +108,7 @@ final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUs
     }
 
     /**
-     * @return array<mixed>|null
+     * @return array<int, array<string, mixed>>|null
      */
     public function getPushSubscriptions(): ?array
     {
@@ -188,7 +188,7 @@ final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUs
     }
 
     /**
-     * @param array<int, array{endpoint: string, keys: array<string, string>, device_name: string, last_seen: string, type: string}>|null $pushSubscriptions
+     * @param array<int, array<string, mixed>>|null $pushSubscriptions
      */
     public function setPushSubscriptions(?array $pushSubscriptions): void
     {
