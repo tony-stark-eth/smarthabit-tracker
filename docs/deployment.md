@@ -18,7 +18,7 @@ tofu plan
 tofu apply
 ```
 
-This creates: CX31 VPS (2 vCPU, 4 GB), 20 GB volume, private network, DNS records.
+This creates: CX23 VPS (2 vCPU, 4 GB), 20 GB volume, private network, firewall.
 
 ## 2. Connect to Server
 

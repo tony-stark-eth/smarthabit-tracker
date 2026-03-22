@@ -2,10 +2,6 @@ provider "hcloud" {
   token = var.hcloud_token
 }
 
-provider "cloudflare" {
-  api_token = var.cloudflare_api_token
-}
-
 module "network" {
   source = "./modules/network"
 
@@ -34,12 +30,24 @@ module "server" {
   volume_id    = module.volume.volume_id
 }
 
-module "dns" {
-  source = "./modules/dns"
+# ── Optional: Cloudflare DNS ────────────────────────────────────────────────
+# Uncomment when using Cloudflare for DNS management.
+# module "dns" {
+#   source = "./modules/dns"
+#
+#   domain      = var.domain
+#   zone_id     = var.cloudflare_zone_id
+#   server_ipv4 = module.server.ipv4_address
+#   server_ipv6 = module.server.ipv6_address
+#   subdomains  = var.subdomains
+# }
 
-  domain      = var.domain
-  zone_id     = var.cloudflare_zone_id
-  server_ipv4 = module.server.ipv4_address
-  server_ipv6 = module.server.ipv6_address
-  subdomains  = var.subdomains
+output "server_ipv4" {
+  description = "Point your domain A record to this IP"
+  value       = module.server.ipv4_address
+}
+
+output "server_ipv6" {
+  description = "Point your domain AAAA record to this IP"
+  value       = module.server.ipv6_address
 }

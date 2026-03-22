@@ -14,7 +14,7 @@ variable "hcloud_token" {
 variable "server_type" {
   description = "Hetzner Server-Typ (z.B. cx31, cx41, cx51)"
   type        = string
-  default     = "cx31"
+  default     = "cpx21"
 }
 
 variable "location" {
@@ -34,25 +34,26 @@ variable "volume_size_gb" {
   default     = 20
 }
 
-# ── Cloudflare DNS ────────────────────
-variable "cloudflare_api_token" {
-  description = "Cloudflare API Token (Zone:DNS:Edit)"
-  type        = string
-  sensitive   = true
-}
-
-variable "cloudflare_zone_id" {
-  description = "Cloudflare Zone ID für die Domain"
-  type        = string
-}
-
-variable "domain" {
-  description = "Root-Domain (z.B. example.com)"
-  type        = string
-}
-
-variable "subdomains" {
-  description = "Subdomains die auf den Server zeigen (z.B. ['app', 'api', 'errors', 'ntfy'])"
-  type        = list(string)
-  default     = ["app"]
-}
+# ── Cloudflare DNS (optional) ────────────────────
+# Uncomment when using Cloudflare for DNS management.
+# variable "cloudflare_api_token" {
+#   description = "Cloudflare API Token (Zone:DNS:Edit)"
+#   type        = string
+#   sensitive   = true
+# }
+#
+# variable "cloudflare_zone_id" {
+#   description = "Cloudflare Zone ID für die Domain"
+#   type        = string
+# }
+#
+# variable "domain" {
+#   description = "Root-Domain (z.B. example.com)"
+#   type        = string
+# }
+#
+# variable "subdomains" {
+#   description = "Subdomains die auf den Server zeigen (z.B. ['app', 'api', 'errors', 'ntfy'])"
+#   type        = list(string)
+#   default     = ["app"]
+# }

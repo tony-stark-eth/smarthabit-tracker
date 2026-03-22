@@ -64,27 +64,37 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
-
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          DEPLOY_SHA: ${{ github.sha }}
         with:
           host: ${{ secrets.DEPLOY_HOST }}
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: GITHUB_TOKEN,GITHUB_ACTOR,GITHUB_REPOSITORY,DEPLOY_SHA
           script: |
+            set -e
             cd /opt/smarthabit
 
-            # Pull new image
-            docker pull ghcr.io/${{ github.repository }}/app:${{ github.sha }}
-            docker tag ghcr.io/${{ github.repository }}/app:${{ github.sha }} app-php:prod
+            # Pull latest compose files and config
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Login to GHCR and pull new image
+            echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+            docker pull "ghcr.io/${GITHUB_REPOSITORY}/app:${DEPLOY_SHA}"
+            docker tag "ghcr.io/${GITHUB_REPOSITORY}/app:${DEPLOY_SHA}" app-php:prod
 
             # Restart — entrypoint handles DB wait + migrations automatically.
             # Docker health check (start_period: 60s) ensures the container is
             # serving before Compose considers it healthy.
             docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait --wait-timeout 120
 
-            echo "Deployment complete: ${{ github.sha }}"
+            echo "Deployment complete: ${DEPLOY_SHA}"
 
       - name: Notify on failure
         if: failure()
