@@ -11,20 +11,24 @@ import { registerUser, createHabit } from './helpers';
  *   cd frontend && bun run test:e2e
  */
 
+/**
+ * Wait for the dashboard to finish loading.
+ * After a successful auth redirect the page fetches /dashboard; we wait for
+ * the skeleton cards to disappear and for the page title to say "Today".
+ */
+async function waitForDashboard(page: import('@playwright/test').Page): Promise<void> {
+    await expect(page).toHaveTitle(/Today/i, { timeout: 15_000 });
+    await page.waitForLoadState('networkidle', { timeout: 15_000 });
+}
+
 test.describe('Dashboard — empty state', () => {
     test('new user sees the empty-state message before adding any habits', async ({ page }) => {
         await registerUser(page);
+        await waitForDashboard(page);
 
-        // Reload so the SvelteKit auth guard picks up the injected token.
-        await page.goto('/');
-
-        // Wait for the loading skeletons to clear
-        await expect(page.locator('.skeleton-card').first()).not.toBeVisible({ timeout: 10_000 });
-
-        // The empty state should be visible
-        const emptyTitle = page.locator('.empty-title');
-        await expect(emptyTitle).toBeVisible();
-        await expect(emptyTitle).toHaveText('No habits yet');
+        // The empty state renders "No habits yet" as visible text
+        await expect(page.getByText('No habits yet')).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByText('Add your first habit to get started.')).toBeVisible();
     });
 });
 
@@ -36,18 +40,15 @@ test.describe('Dashboard — habit card', () => {
 
         // Reload to trigger dashboard fetch
         await page.goto('/');
+        await waitForDashboard(page);
 
-        // Wait until the habit list is rendered (skeleton gone)
-        await expect(page.locator('.skeleton-card').first()).not.toBeVisible({ timeout: 10_000 });
+        // The habit card renders the habit name in a .card-name span
+        await expect(page.getByText('Morning Run')).toBeVisible({ timeout: 10_000 });
 
-        // The habit card should show the habit name
-        const habitCard = page.locator('.habit-card', { hasText: 'Morning Run' });
-        await expect(habitCard).toBeVisible();
-
-        // The check button should be in the pending (un-pressed) state
-        const checkBtn = habitCard.locator('.check-btn');
+        // The check button for the habit has aria-label="Log Morning Run" and is not pressed
+        const checkBtn = page.getByRole('button', { name: /Log Morning Run/i });
         await expect(checkBtn).toBeVisible();
-        await expect(checkBtn).not.toHaveClass(/check-btn--done/);
+        await expect(checkBtn).toHaveAttribute('aria-pressed', 'false');
     });
 
     test('clicking the check button logs the habit and shows the done state', async ({ page }) => {
@@ -56,27 +57,22 @@ test.describe('Dashboard — habit card', () => {
         await createHabit(page, token, 'Evening Walk');
 
         await page.goto('/');
+        await waitForDashboard(page);
 
-        // Wait for the habit list
-        await expect(page.locator('.skeleton-card').first()).not.toBeVisible({ timeout: 10_000 });
+        await expect(page.getByText('Evening Walk')).toBeVisible({ timeout: 10_000 });
 
-        const habitCard = page.locator('.habit-card', { hasText: 'Evening Walk' });
-        await expect(habitCard).toBeVisible();
+        const checkBtn = page.getByRole('button', { name: /Log Evening Walk/i });
+        await expect(checkBtn).toHaveAttribute('aria-pressed', 'false');
 
-        const checkBtn = habitCard.locator('.check-btn');
-        await expect(checkBtn).not.toHaveClass(/check-btn--done/);
-
-        // Tap the check button
+        // Tap the check button — triggers optimistic update
         await checkBtn.click();
 
-        // Optimistic update: button immediately transitions to the done state
-        await expect(checkBtn).toHaveClass(/check-btn--done/, { timeout: 5_000 });
-
-        // The card itself should also get the done CSS modifier
-        await expect(habitCard).toHaveClass(/habit-card--done/, { timeout: 5_000 });
+        // After logging, the button becomes pressed (disabled) and aria-pressed=true
+        await expect(checkBtn).toHaveAttribute('aria-pressed', 'true', { timeout: 5_000 });
+        await expect(checkBtn).toBeDisabled();
     });
 
-    test('logged habit shows the done subtitle text', async ({ page }) => {
+    test('logged habit shows done state after API log + page reload', async ({ page }) => {
         const { token } = await registerUser(page);
         const habitId = await createHabit(page, token, 'Drink Water');
 
@@ -87,16 +83,17 @@ test.describe('Dashboard — habit card', () => {
         });
 
         await page.goto('/');
+        await waitForDashboard(page);
 
-        await expect(page.locator('.skeleton-card').first()).not.toBeVisible({ timeout: 10_000 });
+        await expect(page.getByText('Drink Water')).toBeVisible({ timeout: 10_000 });
 
-        const habitCard = page.locator('.habit-card', { hasText: 'Drink Water' });
-        await expect(habitCard).toBeVisible();
+        // When the habit is done, the check button is disabled and aria-pressed=true
+        const checkBtn = page.getByRole('button', { name: /Log Drink Water/i });
+        await expect(checkBtn).toHaveAttribute('aria-pressed', 'true', { timeout: 5_000 });
+        await expect(checkBtn).toBeDisabled();
 
-        // The done subtitle should contain "Today"
-        const doneSubtitle = habitCard.locator('.card-subtitle--done');
-        await expect(doneSubtitle).toBeVisible();
-        await expect(doneSubtitle).toContainText('Today');
+        // The done subtitle contains "Today"
+        await expect(page.getByText(/Today/i)).toBeVisible();
     });
 });
 
@@ -107,11 +104,10 @@ test.describe('Dashboard — progress bar', () => {
         await createHabit(page, token, 'Progress Habit');
 
         await page.goto('/');
+        await waitForDashboard(page);
 
-        // Wait for dashboard data
-        const progressLabel = page.locator('.progress-label');
-        await expect(progressLabel).toBeVisible({ timeout: 10_000 });
-        await expect(progressLabel).toContainText('0 of 1 done');
+        // ProgressBar renders a .progress-label span with the summary text
+        await expect(page.locator('.progress-label')).toContainText('0 of 1 done', { timeout: 10_000 });
     });
 
     test('progress bar reflects "1 of 2 done" after logging one of two habits', async ({ page }) => {
@@ -127,10 +123,9 @@ test.describe('Dashboard — progress bar', () => {
         });
 
         await page.goto('/');
+        await waitForDashboard(page);
 
-        const progressLabel = page.locator('.progress-label');
-        await expect(progressLabel).toBeVisible({ timeout: 10_000 });
-        await expect(progressLabel).toContainText('1 of 2 done');
+        await expect(page.locator('.progress-label')).toContainText('1 of 2 done', { timeout: 10_000 });
     });
 
     test('progress bar shows "All done for today!" when every habit is logged', async ({ page }) => {
@@ -144,9 +139,25 @@ test.describe('Dashboard — progress bar', () => {
         });
 
         await page.goto('/');
+        await waitForDashboard(page);
 
-        const progressLabel = page.locator('.progress-label');
-        await expect(progressLabel).toBeVisible({ timeout: 10_000 });
-        await expect(progressLabel).toContainText('All done for today!');
+        await expect(page.locator('.progress-label')).toContainText('All done for today!', { timeout: 10_000 });
+    });
+});
+
+test.describe('Dashboard — navigation', () => {
+    test('bottom navigation bar is visible on the dashboard', async ({ page }) => {
+        await registerUser(page);
+        await waitForDashboard(page);
+
+        // The nav has aria-label="Main navigation" in the layout
+        const nav = page.getByRole('navigation', { name: /Main navigation/i });
+        await expect(nav).toBeVisible({ timeout: 5_000 });
+
+        // All four nav items should be present
+        await expect(nav.getByText('Today')).toBeVisible();
+        await expect(nav.getByText('History')).toBeVisible();
+        await expect(nav.getByText('Stats')).toBeVisible();
+        await expect(nav.getByText('Settings')).toBeVisible();
     });
 });

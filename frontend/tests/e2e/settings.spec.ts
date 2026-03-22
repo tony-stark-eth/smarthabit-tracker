@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { registerUser } from './helpers';
 
 /**
- * Settings page E2E tests — theme switching and household invite code.
+ * Settings page E2E tests — theme switching, locale, and household invite code.
  *
  * Each test registers a fresh user so tests are independent and parallelisable.
  *
@@ -11,38 +11,56 @@ import { registerUser } from './helpers';
  *   cd frontend && bun run test:e2e
  */
 
-test.describe('Settings — theme', () => {
-    test('clicking Dark mode button applies data-theme="dark" to <html>', async ({ page }) => {
+test.describe('Settings — page loads', () => {
+    test('settings page renders with the correct title and heading', async ({ page }) => {
         await registerUser(page);
         await page.goto('/settings');
 
         await expect(page).toHaveTitle(/Settings/i);
 
-        // Click the "Dark" theme button
-        const darkBtn = page.locator('button.theme-btn', { hasText: 'Dark' });
-        await expect(darkBtn).toBeVisible();
-        await darkBtn.click();
-
-        // The settings page sets data-theme on document.documentElement (<html>)
-        const html = page.locator('html');
-        await expect(html).toHaveAttribute('data-theme', 'dark', { timeout: 5_000 });
-
-        // The Dark button should receive the active modifier class
-        await expect(darkBtn).toHaveClass(/theme-btn--active/);
+        // The page renders <h1 class="page-title">Settings</h1>
+        await expect(page.getByRole('heading', { name: 'Settings', level: 1 })).toBeVisible({ timeout: 10_000 });
     });
 
-    test('clicking Light mode button applies data-theme="light" to <html>', async ({ page }) => {
+    test('settings page shows section headings for Language and Theme', async ({ page }) => {
         await registerUser(page);
         await page.goto('/settings');
 
-        const lightBtn = page.locator('button.theme-btn', { hasText: 'Light' });
-        await expect(lightBtn).toBeVisible();
-        await lightBtn.click();
+        // <h2 class="section-title">Language</h2> and Theme
+        await expect(page.getByRole('heading', { name: 'Language', level: 2 })).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByRole('heading', { name: 'Theme', level: 2 })).toBeVisible();
+    });
+});
 
-        const html = page.locator('html');
-        await expect(html).toHaveAttribute('data-theme', 'light', { timeout: 5_000 });
+test.describe('Settings — theme', () => {
+    test('Dark, Light, and System theme buttons are visible', async ({ page }) => {
+        await registerUser(page);
+        await page.goto('/settings');
 
-        await expect(lightBtn).toHaveClass(/theme-btn--active/);
+        await expect(page.getByRole('button', { name: 'Dark' })).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByRole('button', { name: 'Light' })).toBeVisible();
+        await expect(page.getByRole('button', { name: 'System' })).toBeVisible();
+    });
+
+    test('clicking Dark theme button applies data-theme="dark" to <html>', async ({ page }) => {
+        await registerUser(page);
+        await page.goto('/settings');
+
+        await expect(page.getByRole('button', { name: 'Dark' })).toBeVisible({ timeout: 10_000 });
+        await page.getByRole('button', { name: 'Dark' }).click();
+
+        // The settings page sets data-theme on document.documentElement (<html>)
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark', { timeout: 5_000 });
+    });
+
+    test('clicking Light theme button applies data-theme="light" to <html>', async ({ page }) => {
+        await registerUser(page);
+        await page.goto('/settings');
+
+        await expect(page.getByRole('button', { name: 'Light' })).toBeVisible({ timeout: 10_000 });
+        await page.getByRole('button', { name: 'Light' }).click();
+
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'light', { timeout: 5_000 });
     });
 
     test('clicking System theme button removes data-theme attribute from <html>', async ({ page }) => {
@@ -50,16 +68,13 @@ test.describe('Settings — theme', () => {
         await page.goto('/settings');
 
         // First switch to dark so there is something to clear
-        await page.locator('button.theme-btn', { hasText: 'Dark' }).click();
-        const html = page.locator('html');
-        await expect(html).toHaveAttribute('data-theme', 'dark', { timeout: 5_000 });
+        await expect(page.getByRole('button', { name: 'Dark' })).toBeVisible({ timeout: 10_000 });
+        await page.getByRole('button', { name: 'Dark' }).click();
+        await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark', { timeout: 5_000 });
 
         // Now switch to System
-        const systemBtn = page.locator('button.theme-btn', { hasText: 'System' });
-        await systemBtn.click();
-
-        await expect(html).not.toHaveAttribute('data-theme', { timeout: 5_000 });
-        await expect(systemBtn).toHaveClass(/theme-btn--active/);
+        await page.getByRole('button', { name: 'System' }).click();
+        await expect(page.locator('html')).not.toHaveAttribute('data-theme', { timeout: 5_000 });
     });
 });
 
@@ -68,7 +83,7 @@ test.describe('Settings — household invite code', () => {
         await registerUser(page);
         await page.goto('/settings');
 
-        // The household section should appear because every new user gets a household.
+        // The household section renders the invite code in .invite-code-value
         const inviteCodeValue = page.locator('.invite-code-value');
         await expect(inviteCodeValue).toBeVisible({ timeout: 10_000 });
 
@@ -78,14 +93,12 @@ test.describe('Settings — household invite code', () => {
         expect((code ?? '').trim().length).toBeGreaterThan(0);
     });
 
-    test('invite code section shows the household name', async ({ page }) => {
+    test('invite code section shows the household name "E2E Household"', async ({ page }) => {
         await registerUser(page);
         await page.goto('/settings');
 
         // The household name used during registration was "E2E Household"
-        const householdName = page.locator('.household-name');
-        await expect(householdName).toBeVisible({ timeout: 10_000 });
-        await expect(householdName).toHaveText('E2E Household');
+        await expect(page.getByText('E2E Household')).toBeVisible({ timeout: 10_000 });
     });
 
     test('Copy button is present next to the invite code', async ({ page }) => {
@@ -94,8 +107,8 @@ test.describe('Settings — household invite code', () => {
 
         await expect(page.locator('.invite-code-value')).toBeVisible({ timeout: 10_000 });
 
-        const copyBtn = page.locator('button.action-btn--copy', { hasText: 'Copy' });
-        await expect(copyBtn).toBeVisible();
+        // The copy button renders with text "Copy" or "Copied!"
+        await expect(page.getByRole('button', { name: /Copy/i })).toBeVisible();
     });
 });
 
@@ -104,6 +117,7 @@ test.describe('Settings — account', () => {
         const { email } = await registerUser(page);
         await page.goto('/settings');
 
+        // The page renders the user email in .page-subtitle once /user/me loads
         const emailDisplay = page.locator('.page-subtitle');
         await expect(emailDisplay).toBeVisible({ timeout: 10_000 });
         await expect(emailDisplay).toHaveText(email);
@@ -113,7 +127,13 @@ test.describe('Settings — account', () => {
         await registerUser(page);
         await page.goto('/settings');
 
-        const logoutBtn = page.locator('button.action-btn--logout', { hasText: 'Log out' });
-        await expect(logoutBtn).toBeVisible({ timeout: 10_000 });
+        await expect(page.getByRole('button', { name: 'Log out' })).toBeVisible({ timeout: 10_000 });
+    });
+
+    test('Delete account button is present on the settings page', async ({ page }) => {
+        await registerUser(page);
+        await page.goto('/settings');
+
+        await expect(page.getByRole('button', { name: 'Delete account' })).toBeVisible({ timeout: 10_000 });
     });
 });

@@ -1,4 +1,5 @@
 import { type Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 // ---------------------------------------------------------------------------
 // Response shapes
@@ -51,11 +52,23 @@ export async function registerUser(page: Page): Promise<{ email: string; token: 
         { t: token, rt: refreshToken },
     );
 
-    // Reload so the SvelteKit module-level auth store re-initializes with the
-    // injected tokens. Without a reload, the auth store's $state was already
-    // evaluated as unauthenticated and won't pick up the new localStorage values.
+    // Navigate to / so the SvelteKit module-level auth store re-initializes
+    // with the injected tokens.
     await page.goto('/');
-    await page.waitForURL('/', { timeout: 10_000 });
+
+    // Wait for either the app dashboard or a redirect back to /login.
+    // If the token injection succeeded, we stay on /. If not, we land on /login.
+    await page.waitForLoadState('networkidle', { timeout: 15_000 });
+
+    const currentUrl = page.url();
+    if (currentUrl.includes('/login')) {
+        // Token injection failed — auth store didn't pick up the tokens.
+        // This can happen in some browser contexts; throw a clear error.
+        throw new Error(`registerUser: token injection failed — redirected to /login instead of /. URL: ${currentUrl}`);
+    }
+
+    // Confirm we are on the dashboard
+    await expect(page).toHaveURL('/', { timeout: 5_000 });
 
     return { email, token, refreshToken };
 }

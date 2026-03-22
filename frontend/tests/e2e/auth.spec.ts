@@ -20,7 +20,7 @@ test.describe('Registration flow', () => {
         // Ensure the page loaded
         await expect(page).toHaveTitle(/Sign up/i);
 
-        // Fill in all required fields
+        // Fill in all required fields using IDs (match what the component renders)
         await page.fill('#email', email);
         await page.fill('#display_name', 'E2E Register Test');
         await page.fill('#password', 'password123');
@@ -30,8 +30,8 @@ test.describe('Registration flow', () => {
         // Household mode defaults to "create" — fill household name.
         await page.fill('#household_name', 'E2E Test Household');
 
-        // Accept privacy policy
-        await page.check('.consent-checkbox');
+        // Accept privacy policy — the checkbox has class consent-checkbox
+        await page.locator('.consent-checkbox').check();
 
         // Submit
         await page.click('button[type="submit"]');
@@ -50,12 +50,10 @@ test.describe('Registration flow', () => {
         // Submit without filling anything
         await page.click('button[type="submit"]');
 
-        // Client-side validation should surface errors without a network round-trip
-        const emailError = page.locator('.field-error', { hasText: 'Email is required' });
-        await expect(emailError).toBeVisible();
-
-        const passwordError = page.locator('.field-error', { hasText: 'Password is required' });
-        await expect(passwordError).toBeVisible();
+        // Client-side validation should surface errors without a network round-trip.
+        // The component renders <p class="field-error"> elements with the error text.
+        await expect(page.getByText('Email is required.')).toBeVisible();
+        await expect(page.getByText('Password is required.')).toBeVisible();
 
         // Stay on the register page
         await expect(page).toHaveURL('/register');
@@ -69,14 +67,19 @@ test.describe('Registration flow', () => {
         await page.fill('#password', 'password123');
         await page.fill('#confirm_password', 'different456');
         await page.fill('#household_name', 'Home');
-        await page.check('.consent-checkbox');
+        await page.locator('.consent-checkbox').check();
 
         await page.click('button[type="submit"]');
 
-        const mismatchError = page.locator('.field-error', { hasText: 'Passwords do not match' });
-        await expect(mismatchError).toBeVisible();
+        await expect(page.getByText('Passwords do not match.')).toBeVisible();
 
         await expect(page).toHaveURL('/register');
+    });
+
+    test('register page has a link to the login page', async ({ page }) => {
+        await page.goto('/register');
+
+        await expect(page.getByRole('link', { name: /Log in/i })).toBeVisible();
     });
 });
 
@@ -124,6 +127,12 @@ test.describe('Login flow', () => {
 
         // Must stay on the login page
         await expect(page).toHaveURL('/login');
+    });
+
+    test('login page has a link to the registration page', async ({ page }) => {
+        await page.goto('/login');
+
+        await expect(page.getByRole('link', { name: /Sign up/i })).toBeVisible();
     });
 
     test('unauthenticated user visiting / is redirected to /login', async ({ page }) => {
