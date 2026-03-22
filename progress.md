@@ -95,3 +95,49 @@
 
 ### Next steps
 - Phase 1a: fork template into this directory, scaffold domain, build auth
+
+---
+
+## Session 5 — 2026-03-22
+
+### What happened
+- Phase 1a complete: 4 waves, entities, JWT auth, GDPR, Voter (29 tests)
+- Phase 1b complete: Habit CRUD, Dashboard, One-Tap Logging, SvelteKit auth + design system (49 tests)
+- Phase 2 complete: PWA, Mercure real-time, History view, Offline queue, Household UI (49 tests)
+- Phase 3 complete: Web Push (minishlink/web-push), VAPID, Cron check-habits, Messenger handler, Cleanup command (58 tests)
+- Phase 4 complete: TimeWindowLearner (MAD algorithm, 100% MSI), learn-timewindows command, Auto badge UI (117 tests)
+- Phase 5 in progress: Stats service + endpoints + frontend charts (agents running)
+- Fixed: Xdebug path coverage for both Infection and CI PHPUnit
+- Fixed: Frontend ESLint errors (resolve() for navigation, .svelte.ts parsing)
+- Fixed: JWT keypair generation in CI
+- Fixed: Mercure algorithm config (HS256 → hmac.sha256)
+
+### Key discoveries
+- **Infection + path coverage**: works via `--path-coverage` in testFrameworkOptions + `-d memory_limit=512M` in initialTestsPhpOptions. Covered MSI drops from 100% (line) to 87% (path) — reveals real gaps
+- **Svelte 5 runes in .ts files**: must use `.svelte.ts` extension, not `.ts`
+- **ESLint + SvelteKit**: `svelte/no-navigation-without-resolve` requires `resolve()` from `$app/paths` for all goto/href
+- **Doctrine readonly $id + PHP 8.4**: ReadonlyAccessor uses !== on Uuid objects causing LogicException on hydration. Fix: remove readonly from $id
+
+### Status
+- [x] Phase 0 + 0.10 complete (template repo)
+- [x] Phase 1a complete (domain, auth, GDPR, voter)
+- [x] Phase 1b complete (CRUD, dashboard, SvelteKit)
+- [x] Phase 2 complete (PWA, Mercure, history, offline)
+- [x] Phase 3 complete (Web Push, cron, messenger)
+- [x] Phase 4 complete (MAD algorithm, learned windows)
+- [ ] Phase 5 in progress (stats service, charts, heatmaps)
+
+### Repos
+- Template: https://github.com/tony-stark-eth/template-symfony-sveltekit (v1.0.0)
+- SmartHabit: https://github.com/tony-stark-eth/smarthabit-tracker
+
+### Current test count: 117 tests, 315 assertions
+### CI: 4 parallel backend jobs (ECS, PHPStan, Rector, Tests+Infection) + Frontend CI
+
+### User preferences (apply in future sessions)
+- Use Sonnet (model: "sonnet") for sub-agents doing concrete work
+- Use Opus for planning/orchestration only
+- Keep plan + progress files updated for session recovery
+- All configs in PHP, not YAML
+- Docker is the only host dependency — all commands run inside containers
+- Verify CI is green after each phase

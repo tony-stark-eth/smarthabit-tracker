@@ -183,7 +183,7 @@ Agent 1-5:                     [0.9 Integration Test + Finalize]
 
 ## Phase 1a — Domain Scaffolding & Auth
 
-**Status**: COMPLETE
+**Status**: ✅ COMPLETE
 **Repo**: https://github.com/tony-stark-eth/smarthabit-tracker
 
 ### 1a.1 — Wave 1: Scaffold (parallel, no dependencies)
@@ -281,9 +281,9 @@ Wave 4 (integration, needs everything):
   Main:    [Integration tests + CI green        ]
 ```
 
-## Phase 1b — Core Features & Frontend
+## Phase 1b — Core Features & Frontend ✅ COMPLETE
 
-**Status**: IN PROGRESS
+**Status**: ✅ COMPLETE
 **Depends on**: Phase 1a (entities, auth, JWT)
 
 ### 1b.1 — Wave 1: Backend CRUD + Frontend scaffold (parallel)
@@ -359,7 +359,7 @@ Wave 3 (integration, needs everything):
 
 ## Phase 2 — Usable MVP
 
-**Status**: IN PROGRESS
+**Status**: ✅ COMPLETE
 **Already done in Phase 1b**: Dashboard UI, tap logging, dark mode CSS tokens, settings page (theme/locale), HouseholdVoter, join endpoint
 
 ### 2.1 — Wave 1: PWA + History + Household UI (parallel)
@@ -407,7 +407,7 @@ Wave 2 (integration):
 
 ## Phase 3 — Notifications (Web Push only)
 
-**Status**: IN PROGRESS
+**Status**: ✅ COMPLETE
 **Scope**: Web Push via minishlink/web-push. No ntfy/APNs (Phase 7).
 
 ### 3.1 — Wave 1: Backend infrastructure (parallel)
@@ -457,7 +457,7 @@ Wave 2 (needs Wave 1):
 
 ## Phase 4 — Intelligence
 
-**Status**: IN PROGRESS
+**Status**: ✅ COMPLETE
 
 ### 4.1 — Wave 1: Algorithm + Command (parallel with frontend)
 
@@ -477,14 +477,29 @@ Wave 2 (needs Wave 1):
 
 ## Phase 5 — Statistics & Analytics
 
-- [ ] Basic stats: Streak, Completion Rate, avg time (live SQL)
-- [ ] Stats endpoint per habit
-- [ ] Trend calculation (current vs previous 30d)
-- [ ] Per-user distribution
-- [ ] Household dashboard
-- [ ] Nightly `app:compute-stats` for materialized views
-- [ ] Heatmaps (weekday + time grid, SVG)
-- [ ] Charts (layerchart or pancake)
+**Status**: IN PROGRESS
+
+### 5.1 — Wave 1: Backend stats (parallel)
+
+**Agent A (sonnet): Stats service + endpoints**
+- [ ] `StatsService`: streak (consecutive days, tz-aware), completion rate (completed/expected days), avg completion time (median minutes)
+- [ ] `GET /api/v1/habits/{id}/stats` — per-habit: streak (current/longest), completion_rate (30d), avg_time, trend (current vs previous 30d)
+- [ ] `GET /api/v1/stats/household` — household overview: total habits, overall completion rate, heatmap data (weekday + time grids)
+- [ ] Unit tests for StatsService (streak edge cases, rate calculation, timezone handling)
+
+**Agent B (sonnet): Compute-stats command + frontend**
+- [ ] `app:compute-stats` nightly command: pre-compute heatmaps + trends into HabitStats JSON column or cache
+- [ ] Stats page: `(app)/stats/+page.svelte` — household overview with SVG heatmaps
+- [ ] Habit stats: `(app)/habits/[id]/stats/+page.svelte` — streak, rate, trend chart
+- [ ] Install layerchart or use simple SVG for charts
+
+### 5 Parallelization Map
+
+```
+Wave 1 (parallel):
+  Agent A (sonnet): [Stats service + endpoints + unit tests ]
+  Agent B (sonnet): [Compute command + frontend charts      ]
+```
 
 ## Phase 6 — Deployment & Ops
 
