@@ -136,11 +136,11 @@ test.describe('Login flow', () => {
         await expect(page.getByRole('link', { name: /Sign up/i })).toBeVisible();
     });
 
-    test('unauthenticated user visiting / is redirected to /login', async ({ page }) => {
+    test('unauthenticated user visiting / is redirected to /welcome', async ({ page }) => {
         // Do not set any tokens — navigate directly to the app root.
         await page.goto('/');
 
-        // The root layout guard redirects to /login when no token is present.
-        await expect(page).toHaveURL('/login', { timeout: 10_000 });
+        // The root layout guard redirects to /welcome when no token is present.
+        await expect(page).toHaveURL('/welcome', { timeout: 10_000 });
     });
 });

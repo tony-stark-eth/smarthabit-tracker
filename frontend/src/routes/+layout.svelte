@@ -9,14 +9,12 @@
 
     const { children } = $props();
 
-    function isAppRoute(pathname: string): boolean {
-        // The (app) layout group pages: root /, /settings, /history, /stats
-        // Exclude (auth) routes explicitly
-        if (pathname.startsWith('/login') || pathname.startsWith('/register')) {
-            return false;
-        }
-        // Root / and all non-auth routes are app routes
-        return true;
+    function isPublicRoute(pathname: string): boolean {
+        return (
+            pathname.startsWith('/login') ||
+            pathname.startsWith('/register') ||
+            pathname.startsWith('/welcome')
+        );
     }
 
     $effect(() => {
@@ -25,8 +23,8 @@
 
         const pathname = $page.url.pathname;
 
-        if (isAppRoute(pathname) && !isAuthenticated()) {
-            goto(resolve('/login'), { replaceState: true });
+        if (!isPublicRoute(pathname) && !isAuthenticated()) {
+            goto(resolve('/welcome'), { replaceState: true });
         }
     });
 

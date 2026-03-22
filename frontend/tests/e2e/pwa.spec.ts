@@ -69,11 +69,11 @@ test.describe('API health', () => {
 });
 
 test.describe('Frontend shell', () => {
-    test('unauthenticated visit to / redirects to /login', async ({ page }) => {
+    test('unauthenticated visit to / redirects to /welcome', async ({ page }) => {
         // Navigate with a fresh context — no localStorage tokens.
         await page.goto('/');
 
-        await expect(page).toHaveURL('/login', { timeout: 10_000 });
+        await expect(page).toHaveURL('/welcome', { timeout: 10_000 });
     });
 
     test('/login page renders with the correct title', async ({ page }) => {
