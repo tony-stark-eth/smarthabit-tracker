@@ -24,7 +24,7 @@ Template: https://github.com/tony-stark-eth/template-symfony-sveltekit
 - **Infection mutation testing** with Xdebug path coverage (MSI 61%, threshold 50%)
 - **4 parallel CI jobs**: ECS, PHPStan, Rector, Tests+Infection
 - **E2E CI job** (blocking, 1 worker + 2 retries)
-- Phases 0–6.5 complete, Phase 7 Stage 2 complete, Stages 3–4 + Phase 8 remaining
+- Phases 0–8 complete (Stage 4 native widgets deferred)
 
 ## Guidelines
 

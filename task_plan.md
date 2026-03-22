@@ -540,81 +540,50 @@ Wave 1 (parallel):
 
 ## Phase 7 — Native App & Widgets
 
-**Status**: 🔄 IN PROGRESS (Stage 2)
+**Status**: ✅ Stages 2+3 COMPLETE, Stage 4 deferred
 
-### 7.1 — Stage 2: Multi-Transport Push (Wave 1: parallel, no deps)
+### 7.1 — Stage 2: Multi-Transport Push ✅ COMPLETE
 
-**Agent A: Interface + WebPushTransport**
-- [ ] `PushTransportInterface` (supports + send)
-- [ ] `PushPayload` value object (title, body, habitId)
-- [ ] `PushResult` value object (success, statusCode, reason, shouldRemoveSubscription)
-- [ ] `WebPushTransport` wrapping existing WebPushService
-- [ ] Unit tests for PushPayload, PushResult, WebPushTransport
+- [x] `PushTransportInterface` + `PushPayload` + `PushResult` value objects
+- [x] `WebPushTransport` wrapping existing WebPushService
+- [x] `NtfyTransport` — HTTP POST to ntfy server via HttpClientInterface
+- [x] `ApnsTransport` — HTTP/2 POST to api.push.apple.com
+- [x] `ApnsJwtGenerator` — ES256 JWT from .p8 key (openssl_sign, cached 50min)
+- [x] `TransportRegistry` — iterable<PushTransportInterface>, getTransport(type)
+- [x] Refactored `NotifyHabitHandler` to use TransportRegistry
+- [x] Type-aware `PushSubscriptionController` (web_push/ntfy/apns validation)
+- [x] ntfy Docker service + Caddy proxy + DI config
+- [x] 62 new tests (194 total, 554 assertions)
+- [x] PHPStan 0 errors, ECS clean, 38 E2E still pass
 
-**Agent B: NtfyTransport**
-- [ ] `NtfyTransport` — HTTP POST to ntfy server via HttpClientInterface
-- [ ] Unit test with mocked HttpClient
+### 7.2 — Stage 3: Capacitor Integration ✅ COMPLETE
 
-**Agent C: ApnsTransport**
-- [ ] `ApnsTransport` — HTTP/2 POST to api.push.apple.com
-- [ ] `ApnsJwtGenerator` — ES256 JWT from .p8 key (openssl_sign, cached 50min)
-- [ ] Unit tests for ApnsTransport + ApnsJwtGenerator
+- [x] Capacitor 8 packages installed (@capacitor/core, cli, app, haptics, status-bar, push-notifications)
+- [x] `capacitor.config.ts` — appId, webDir, APNs presentation options
+- [x] `src/lib/platform.ts` — getPlatform() / isNative() detection
+- [x] Push abstraction refactored: `push.ts` dispatches to `push-web.ts` or `push-native.ts`
+- [x] APNs registration for iOS via @capacitor/push-notifications
+- [x] ntfy topic registration + SSE subscription for Android
+- [x] Package.json scripts: cap:sync, cap:ios, cap:android, cap:build
+- [x] `docs/capacitor.md` — setup guide, dev workflow, per-platform push
+- [x] .gitignore: frontend/ios/, frontend/android/
+- [x] `bun run check` + `bun run build` pass
 
-### 7.2 — Stage 2: Handler + Infrastructure (Wave 2: needs Wave 1)
+### 7.3 — Stage 4: Native Widgets (deferred)
 
-**Agent D: TransportRegistry + Handler refactoring**
-- [ ] `TransportRegistry` — iterable<PushTransportInterface>, getTransport(type)
-- [ ] Refactor `NotifyHabitHandler` to use TransportRegistry
-- [ ] Unit tests for TransportRegistry, NotifyHabitHandler
-
-**Agent E: PushSubscriptionController refactoring**
-- [ ] Type-aware validation (web_push/ntfy/apns different fields)
-- [ ] Update DELETE endpoint for type-specific identifiers
-- [ ] Integration tests for ntfy + APNs subscription CRUD
-
-**Agent F: ntfy Docker + Caddy + DI config**
-- [ ] ntfy service in compose.yaml + compose.prod.yaml
-- [ ] docker/ntfy/server.yml config
-- [ ] Caddyfile ntfy proxy route
-- [ ] Rename web_push.php → notification.php, register all transports
-- [ ] Update .env with NTFY_*, APNS_* vars
-
-### 7.3 — Stage 2: Verification (Wave 3: needs everything)
-- [ ] All existing tests pass (132 PHPUnit + 38 E2E)
-- [ ] ECS + PHPStan + Rector green
-- [ ] Infection on new Transport classes
-
-### 7.4 — Stage 3: Capacitor + Native Widgets (future)
-- [ ] Capacitor init, iOS/Android projects
-- [ ] Push abstraction (web/apns/ntfy per platform)
 - [ ] capacitor-widget-bridge + SharedStorage
 - [ ] iOS Widget Extension (SwiftUI)
 - [ ] Android AppWidgetProvider (Kotlin)
 - [ ] TestFlight / Play Console
 
-### 7 Parallelization Map
+## Phase 8 — CI/CD & Automation ✅ COMPLETE
 
-```
-Wave 1 (parallel, no deps):
-  Agent A (sonnet): [Interface + WebPushTransport              ]
-  Agent B (sonnet): [NtfyTransport                             ]
-  Agent C (sonnet): [ApnsTransport + JWT generator              ]
-
-Wave 2 (needs Wave 1):
-  Agent D (sonnet): [TransportRegistry + Handler refactoring    ]
-  Agent E (sonnet): [PushSubscriptionController + validators    ]
-  Agent F (sonnet): [ntfy Docker + Caddyfile + DI config        ]
-
-Wave 3 (integration):
-  Main:             [Tests + CI green                           ]
-```
-
-## Phase 8 — CI/CD & Automation
-
-- [ ] GitHub Actions CD: push → build → GHCR → SSH deploy
-- [ ] Migrations as separate CD step
-- [ ] Rollback strategy
-- [ ] Automated Lighthouse + a11y in CI
+- [x] `.github/workflows/cd.yml` — push to main → CI gate → build prod image → GHCR → SSH deploy
+- [x] Migrations as pre-cutover step in deploy job
+- [x] `scripts/rollback.sh` — pull previous tag, restart, health check
+- [x] `.github/workflows/ci-lighthouse.yml` — Lighthouse audit (perf/a11y/best-practices/seo)
+- [x] `frontend/lighthouserc.json` — assertions (a11y ≥ 0.9 error, perf ≥ 0.9 warn)
+- [x] `docs/deployment.md` — updated with CD flow, secrets, rollback procedures
 
 ---
 

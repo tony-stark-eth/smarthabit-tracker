@@ -1,50 +1,82 @@
-import { client } from '$lib/api/client';
+/**
+ * Platform-aware push notification dispatcher.
+ *
+ * Delegates to the appropriate implementation based on the runtime platform:
+ *   web     → Web Push (VAPID) via push-web.ts
+ *   ios     → APNs via Capacitor (push-native.ts)
+ *   android → ntfy via Capacitor (push-native.ts)
+ *
+ * Public API: registerPush(userId?) and unregisterPush()
+ */
 
-export async function registerPushSubscription(): Promise<boolean> {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        return false;
+import { getPlatform } from '$lib/platform';
+import {
+    registerWebPushSubscription,
+    unregisterWebPushSubscription,
+} from '$lib/api/push-web';
+import {
+    registerApnsPush,
+    unregisterApnsPush,
+    registerNtfyPush,
+    unregisterNtfyPush,
+} from '$lib/api/push-native';
+
+/**
+ * Register for push notifications on the current platform.
+ *
+ * @param userId - Required for Android (ntfy topic derivation). Ignored on web/iOS.
+ * @returns true if registration succeeded, false otherwise.
+ */
+export async function registerPush(userId?: string): Promise<boolean> {
+    const platform = getPlatform();
+
+    switch (platform) {
+        case 'ios':
+            return registerApnsPush();
+
+        case 'android':
+            if (userId === undefined) {
+                console.warn('[push] registerPush: userId is required on Android');
+                return false;
+            }
+            return registerNtfyPush(userId);
+
+        default:
+            return registerWebPushSubscription();
     }
-
-    const permission = await Notification.requestPermission();
-    if (permission !== 'granted') return false;
-
-    // Get VAPID public key from backend
-    const { publicKey } = await client.get<{ publicKey: string }>('/vapid-key');
-
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-    });
-
-    const json = subscription.toJSON();
-
-    await client.post('/user/push-subscription', {
-        type: 'web_push',
-        endpoint: json.endpoint,
-        keys: json.keys,
-        device_name: navigator.userAgent.slice(0, 50),
-    });
-
-    return true;
 }
 
-export async function unregisterPushSubscription(): Promise<void> {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
-    if (subscription) {
-        await client.delete('/user/push-subscription', { endpoint: subscription.endpoint });
-        await subscription.unsubscribe();
+/**
+ * Unregister push notifications on the current platform.
+ *
+ * @param userId - Required for Android to derive the ntfy topic. Ignored on web/iOS.
+ */
+export async function unregisterPush(userId?: string): Promise<void> {
+    const platform = getPlatform();
+
+    switch (platform) {
+        case 'ios':
+            return unregisterApnsPush();
+
+        case 'android':
+            if (userId === undefined) {
+                console.warn('[push] unregisterPush: userId is required on Android');
+                return;
+            }
+            return unregisterNtfyPush(userId);
+
+        default:
+            return unregisterWebPushSubscription();
     }
 }
 
-function urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-    const rawData = atob(base64);
-    const output = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; i++) {
-        output[i] = rawData.charCodeAt(i);
-    }
-    return output;
-}
+// ---------------------------------------------------------------------------
+// Legacy named exports — kept for backwards compatibility with existing callers
+// that import { registerPushSubscription } or { unregisterPushSubscription }.
+// ---------------------------------------------------------------------------
+
+/** @deprecated Use registerPush() instead. */
+export const registerPushSubscription = (): Promise<boolean> => registerPush();
+
+/** @deprecated Use unregisterPush() instead. */
+export const unregisterPushSubscription = (): Promise<void> => unregisterPush();

@@ -32,6 +32,10 @@ infrastructure/crash.log
 .DS_Store
 Thumbs.db
 
+# ── Capacitor native projects ────────
+frontend/ios/
+frontend/android/
+
 # ── OS ──────────────────────────────
 .DS_Store
 Thumbs.db

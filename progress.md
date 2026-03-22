@@ -204,18 +204,36 @@
 - PHPStan `offsetAccess.notFound` on `array<string, mixed>` — fix with `assert(isset(...))` guards, not `@phpstan-ignore`
 - Stats page has frontend bug: API returns `overall_completion_rate_30d` but frontend expects `overall_completion_rate` — separate fix needed
 
+### Phase 7 Stage 3 — Capacitor Integration
+- Installed Capacitor 8 (core, cli, app, haptics, status-bar, push-notifications)
+- Created capacitor.config.ts, platform detection, push abstraction
+- Push dispatcher: web → push-web.ts, ios → push-native.ts (APNs), android → push-native.ts (ntfy)
+- Backward compatible: existing `registerPushSubscription` still works on web
+- `bun run check` + `bun run build` pass
+- docs/capacitor.md with setup guide
+
+### Phase 8 — CI/CD Automation
+- `.github/workflows/cd.yml`: CI gate → build prod image → GHCR → SSH deploy with health check
+- Migrations run pre-cutover (before service restart)
+- `scripts/rollback.sh`: pull previous image tag, restart, verify health
+- `.github/workflows/ci-lighthouse.yml`: Lighthouse audit on frontend changes
+- `frontend/lighthouserc.json`: a11y ≥ 0.9 (error), perf/best-practices ≥ 0.9 (warn)
+- `docs/deployment.md`: updated with CD flow, required secrets, rollback procedures
+
 ### Status
-- [x] Phase 7 Stage 2 complete
-- [ ] Phase 7 Stages 3-4 remaining (Capacitor, widgets)
+- [x] Phase 7 Stage 2 complete (multi-transport push)
+- [x] Phase 7 Stage 3 complete (Capacitor integration)
+- [x] Phase 8 complete (CI/CD automation)
+- [ ] Phase 7 Stage 4 deferred (native widgets)
 - [ ] Stats frontend format mismatch (separate bug)
 
 ### Current test count: 194 backend tests, 554 assertions + 38 E2E tests
-### CI: 4 parallel backend jobs + Frontend CI + E2E
+### CI: 4 parallel backend jobs + Frontend CI + E2E + Lighthouse + CD
 
 ### Next steps
-- Phase 7 Stage 3: Capacitor init + native push abstraction
-- Phase 8: CI/CD Automation
+- Phase 7 Stage 4 (native widgets) — deferred until Xcode/Android Studio available
 - Fix stats frontend response format mismatch
+- Infection MSI: write more unit tests to raise path coverage MSI toward 80%
 
 ### User preferences (apply in future sessions)
 - Use Sonnet (model: "sonnet") for sub-agents doing concrete work
