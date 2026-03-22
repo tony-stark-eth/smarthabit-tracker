@@ -19,7 +19,7 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
-    private readonly Uuid $id;
+    private Uuid $id;
 
     /**
      * @var array<int, array{endpoint: string, keys: array<string, string>, device_name: string, last_seen: string, type: string}>|null
@@ -67,7 +67,7 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): \Symfony\Component\Uid\UuidV7
+    public function getId(): Uuid
     {
         return $this->id;
     }

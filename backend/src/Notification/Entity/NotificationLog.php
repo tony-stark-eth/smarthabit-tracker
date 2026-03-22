@@ -18,7 +18,7 @@ final class NotificationLog
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
-    private readonly Uuid $id;
+    private Uuid $id;
 
     public function __construct(
         #[ORM\ManyToOne(targetEntity: User::class)]
@@ -39,7 +39,7 @@ final class NotificationLog
         $this->id = Uuid::v7();
     }
 
-    public function getId(): \Symfony\Component\Uid\UuidV7
+    public function getId(): Uuid
     {
         return $this->id;
     }

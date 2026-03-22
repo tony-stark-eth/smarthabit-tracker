@@ -14,7 +14,7 @@ final class Household
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
-    private readonly Uuid $id;
+    private Uuid $id;
 
     #[ORM\Column(type: Types::STRING, length: 8, unique: true)]
     private readonly string $inviteCode;
@@ -35,7 +35,7 @@ final class Household
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): \Symfony\Component\Uid\UuidV7
+    public function getId(): Uuid
     {
         return $this->id;
     }

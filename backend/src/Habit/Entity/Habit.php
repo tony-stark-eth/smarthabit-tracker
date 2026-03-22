@@ -17,7 +17,7 @@ final class Habit
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
-    private readonly Uuid $id;
+    private Uuid $id;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $deletedAt = null;
@@ -60,7 +60,7 @@ final class Habit
         $this->updatedAt = new \DateTimeImmutable();
     }
 
-    public function getId(): \Symfony\Component\Uid\UuidV7
+    public function getId(): Uuid
     {
         return $this->id;
     }
