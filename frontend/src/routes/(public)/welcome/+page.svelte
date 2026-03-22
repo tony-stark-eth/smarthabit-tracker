@@ -68,7 +68,7 @@
     <section class="features">
         <h2 class="section-heading">Everything you need</h2>
         <div class="feature-grid">
-            {#each features as feature}
+            {#each features as feature (feature.title)}
                 <div class="feature-card">
                     <span class="feature-icon">{feature.icon}</span>
                     <h3 class="feature-title">{feature.title}</h3>
