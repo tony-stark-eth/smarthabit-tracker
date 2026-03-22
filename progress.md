@@ -178,9 +178,44 @@
 - [x] continue-on-error removed from CI
 - [x] Template repo updated
 
+---
+
+## Session 6 continued — Phase 7 Stage 2
+
+### What happened
+- Phase 7 Stage 2 complete: multi-transport push via Strategy Pattern
+- 3 wave parallel execution: Interface+Transports → Registry+Handler+Infrastructure → Verification
+- 62 new tests (194 total, 554 assertions)
+- ntfy Docker service added, Caddy proxy configured
+- PHPStan 0 errors, ECS clean, all 38 E2E tests still pass
+
+### New architecture
+- `PushTransportInterface` with `supports()` + `send()` methods
+- `WebPushTransport` wraps existing WebPushService
+- `NtfyTransport` — HTTP POST to self-hosted ntfy server
+- `ApnsTransport` — HTTP/2 POST to api.push.apple.com with ES256 JWT
+- `TransportRegistry` — tagged service iterator, resolves type→transport
+- `NotifyHabitHandler` — now dispatches to any transport via registry
+- `PushSubscriptionController` — validates web_push/ntfy/apns fields differently
+
+### Discovered during build
+- `ApnsJwtGenerator`: ES256 openssl_sign produces DER format, APNs expects raw R||S — needs DER→raw conversion
+- `WebPushService` needed an interface extraction for testability (final readonly class)
+- PHPStan `offsetAccess.notFound` on `array<string, mixed>` — fix with `assert(isset(...))` guards, not `@phpstan-ignore`
+- Stats page has frontend bug: API returns `overall_completion_rate_30d` but frontend expects `overall_completion_rate` — separate fix needed
+
+### Status
+- [x] Phase 7 Stage 2 complete
+- [ ] Phase 7 Stages 3-4 remaining (Capacitor, widgets)
+- [ ] Stats frontend format mismatch (separate bug)
+
+### Current test count: 194 backend tests, 554 assertions + 38 E2E tests
+### CI: 4 parallel backend jobs + Frontend CI + E2E
+
 ### Next steps
-- Push both repos, verify CI green
-- Resume Phase 7 planning
+- Phase 7 Stage 3: Capacitor init + native push abstraction
+- Phase 8: CI/CD Automation
+- Fix stats frontend response format mismatch
 
 ### User preferences (apply in future sessions)
 - Use Sonnet (model: "sonnet") for sub-agents doing concrete work
