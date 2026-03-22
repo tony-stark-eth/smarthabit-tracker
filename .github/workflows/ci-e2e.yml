@@ -94,11 +94,22 @@ jobs:
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
       - name: Wait for PHP health
         run: |
+          # Wait for PHP to serve requests inside the container
           for i in $(seq 1 60); do
             docker compose exec -T php curl -sf http://localhost/api/v1/health > /dev/null 2>&1 && break
             sleep 2
           done
-          docker compose exec -T php curl -sf http://localhost/api/v1/health || (echo "PHP not healthy after 120s" && docker compose logs php --tail=30 && exit 1)
+          docker compose exec -T php curl -sf http://localhost/api/v1/health || (echo "PHP not healthy (internal)" && docker compose logs php --tail=30 && exit 1)
+
+          # Verify port mapping: API must be reachable from the host
+          echo "Checking host → container port mapping..."
+          curl -sfk https://localhost/api/v1/health && echo "HTTPS OK" || echo "HTTPS FAILED"
+          curl -sf http://localhost:80/api/v1/health && echo "HTTP OK" || echo "HTTP FAILED"
+          docker compose port php 443 || echo "Port 443 not mapped"
+          docker compose port php 80 || echo "Port 80 not mapped"
+
+          # Verify register route exists
+          docker compose exec -T php php bin/console debug:router --no-ansi | grep register
       - name: Wait for Vite
         run: |
           for i in $(seq 1 30); do
