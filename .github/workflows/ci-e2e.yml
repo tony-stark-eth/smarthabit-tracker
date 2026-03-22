@@ -87,6 +87,12 @@ jobs:
       - name: Start Vite dev server
         working-directory: frontend
         run: bun run dev &
+        env:
+          # Vite runs on the host, not inside Docker. Override proxy target
+          # from http://php:8080 (Docker internal) to https://localhost (mapped port).
+          VITE_API_PROXY_TARGET: https://localhost
+          # Caddy uses self-signed certs in dev — accept them for the proxy
+          NODE_TLS_REJECT_UNAUTHORIZED: "0"
       - name: Wait for Vite
         run: |
           for i in $(seq 1 30); do
