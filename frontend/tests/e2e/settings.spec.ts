@@ -45,20 +45,23 @@ test.describe('Settings — theme', () => {
     test('clicking Dark theme button applies data-theme="dark" to <html>', async ({ page }) => {
         await registerUser(page);
         await page.goto('/settings');
+        await page.waitForLoadState('networkidle');
 
-        await expect(page.getByRole('button', { name: 'Dark' })).toBeVisible({ timeout: 10_000 });
-        await page.getByRole('button', { name: 'Dark' }).click();
+        const darkBtn = page.getByRole('button', { name: 'Dark' });
+        await expect(darkBtn).toBeVisible({ timeout: 10_000 });
+        await darkBtn.click();
 
-        // The settings page sets data-theme on document.documentElement (<html>)
         await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark', { timeout: 5_000 });
     });
 
     test('clicking Light theme button applies data-theme="light" to <html>', async ({ page }) => {
         await registerUser(page);
         await page.goto('/settings');
+        await page.waitForLoadState('networkidle');
 
-        await expect(page.getByRole('button', { name: 'Light' })).toBeVisible({ timeout: 10_000 });
-        await page.getByRole('button', { name: 'Light' }).click();
+        const lightBtn = page.getByRole('button', { name: 'Light' });
+        await expect(lightBtn).toBeVisible({ timeout: 10_000 });
+        await lightBtn.click();
 
         await expect(page.locator('html')).toHaveAttribute('data-theme', 'light', { timeout: 5_000 });
     });
@@ -66,10 +69,12 @@ test.describe('Settings — theme', () => {
     test('clicking System theme button removes data-theme attribute from <html>', async ({ page }) => {
         await registerUser(page);
         await page.goto('/settings');
+        await page.waitForLoadState('networkidle');
 
         // First switch to dark so there is something to clear
-        await expect(page.getByRole('button', { name: 'Dark' })).toBeVisible({ timeout: 10_000 });
-        await page.getByRole('button', { name: 'Dark' }).click();
+        const darkBtn = page.getByRole('button', { name: 'Dark' });
+        await expect(darkBtn).toBeVisible({ timeout: 10_000 });
+        await darkBtn.click();
         await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark', { timeout: 5_000 });
 
         // Now switch to System
