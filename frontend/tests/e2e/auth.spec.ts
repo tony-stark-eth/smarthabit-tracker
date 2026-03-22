@@ -46,8 +46,9 @@ test.describe('Registration flow', () => {
 
     test('register form shows field-level errors when submitted empty', async ({ page }) => {
         await page.goto('/register');
+        await page.waitForLoadState('networkidle');
 
-        // Submit without filling anything
+        // Submit without filling anything — wait for Svelte hydration first
         await page.click('button[type="submit"]');
 
         // Client-side validation should surface errors without a network round-trip.
