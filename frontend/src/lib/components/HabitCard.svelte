@@ -13,6 +13,7 @@
         icon: string | null;
         timeWindowStart: string | null;
         timeWindowEnd: string | null;
+        timeWindowMode: string;
         isDoneToday: boolean;
         lastLog: LastLog | null;
         onLog: () => void;
@@ -24,6 +25,7 @@
         icon,
         timeWindowStart,
         timeWindowEnd,
+        timeWindowMode,
         isDoneToday,
         lastLog,
         onLog,
@@ -113,6 +115,9 @@
                         <span class="overdue-label">Overdue</span>
                     {/if}
                 </span>
+                {#if timeWindowMode === 'auto'}
+                    <span class="auto-badge" aria-label="Learned time window">Auto</span>
+                {/if}
             {/if}
 
             {#if isDoneToday && lastLog !== null}
@@ -248,6 +253,21 @@
     .time-tag--overdue {
         background: color-mix(in srgb, var(--color-warning) 15%, transparent);
         color: var(--color-warning);
+    }
+
+    .auto-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.125rem 0.375rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-sans);
+        font-size: 0.625rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+        color: var(--color-accent);
+        border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
     }
 
     .overdue-label {

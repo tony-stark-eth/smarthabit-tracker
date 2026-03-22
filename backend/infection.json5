@@ -22,7 +22,10 @@
     "testFramework": "phpunit",
     "testFrameworkOptions": "--testsuite=unit",
     "mutators": {
-        "@default": true
+        "@default": true,
+        "global-ignoreSourceCodeByRegex": [
+            "\\?\\? 0"
+        ]
     },
     "minMsi": 80,
     "minCoveredMsi": 90

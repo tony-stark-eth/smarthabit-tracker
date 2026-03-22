@@ -457,11 +457,23 @@ Wave 2 (needs Wave 1):
 
 ## Phase 4 — Intelligence
 
-- [ ] Nightly time window analysis command
-- [ ] MAD-based algorithm (timezone-aware)
-- [ ] Weekday/Weekend detection
-- [ ] UI: learned vs. manual window display
-- [ ] Extensive unit tests for TimeWindowLearner
+**Status**: IN PROGRESS
+
+### 4.1 — Wave 1: Algorithm + Command (parallel with frontend)
+
+**Agent A (sonnet): TimeWindowLearner service + unit tests**
+- [ ] `TimeWindowLearner` service: MAD algorithm (21-day window, median ± 1.5×MAD, min 30min)
+- [ ] Weekday/weekend split (>= 7 data points per group)
+- [ ] Timezone-aware: UTC logs → user local minutes since midnight
+- [ ] Skip habits with < 7 total logs, skip manual-mode habits
+- [ ] Extensive unit tests: outlier robustness, min width, DST, split logic, edge cases
+- [ ] Infection MSI >= 90% on TimeWindowLearner
+
+**Agent B (sonnet): Console command + frontend display**
+- [ ] `app:learn-timewindows` command: iterate active habits, call TimeWindowLearner, persist results
+- [ ] Frontend: show "Learned" badge when time_window_mode = auto on habit cards
+- [ ] Frontend: habit edit — toggle auto/manual, lock time inputs when auto
+- [ ] Integration test: command updates habit time windows from log data
 
 ## Phase 5 — Statistics & Analytics
 

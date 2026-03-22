@@ -25,6 +25,7 @@
         frequency: string;
         time_window_start: string | null;
         time_window_end: string | null;
+        time_window_mode: string;
         is_done_today: boolean;
         last_log: LastLog | null;
     }
@@ -233,6 +234,7 @@
                             icon={habit.icon}
                             timeWindowStart={habit.time_window_start}
                             timeWindowEnd={habit.time_window_end}
+                            timeWindowMode={habit.time_window_mode}
                             isDoneToday={habit.is_done_today}
                             lastLog={habit.last_log}
                             onLog={() => logHabit(habit.id)}

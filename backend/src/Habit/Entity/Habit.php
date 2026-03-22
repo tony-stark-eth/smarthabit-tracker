@@ -177,6 +177,24 @@ final class Habit
         $this->updatedAt = new \DateTimeImmutable();
     }
 
+    public function setTimeWindowStart(?\DateTimeImmutable $start): void
+    {
+        $this->timeWindowStart = $start;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function setTimeWindowEnd(?\DateTimeImmutable $end): void
+    {
+        $this->timeWindowEnd = $end;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function setTimeWindowMode(TimeWindowMode $mode): void
+    {
+        $this->timeWindowMode = $mode;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     public function softDelete(): void
     {
         $this->deletedAt = new \DateTimeImmutable();

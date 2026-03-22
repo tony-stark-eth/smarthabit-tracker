@@ -142,6 +142,7 @@ final class DashboardController extends AbstractController
                 'frequency' => $habit->getFrequency()->value,
                 'time_window_start' => $habit->getTimeWindowStart()?->format('H:i'),
                 'time_window_end' => $habit->getTimeWindowEnd()?->format('H:i'),
+                'time_window_mode' => $habit->getTimeWindowMode()->value,
                 'is_done_today' => $isDoneToday,
                 'last_log' => $this->serializeLog($lastLog),
             ];
