@@ -8,8 +8,11 @@
  *
  * Usage in Tailwind utilities: bg-[var(--color-surface)]
  * Usage in plain CSS:          background: var(--color-surface);
+ *
+ * Neo Utility Design System — Sora + JetBrains Mono
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
 /* -------------------------------------------------------------------------

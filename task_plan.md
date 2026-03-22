@@ -283,14 +283,79 @@ Wave 4 (integration, needs everything):
 
 ## Phase 1b — Core Features & Frontend
 
-- [ ] Habit CRUD + Soft-Delete + Unit Tests + first Infection round
-- [ ] One-Tap Logging
-- [ ] Dashboard Endpoint + Health-Check endpoints
-- [ ] SvelteKit base: Auth flow, Timezone setting, Language switcher
-- [ ] Accessibility: ARIA, Keyboard-Nav, contrast
-- [ ] Integration tests for CRUD + Dashboard + DSGVO
+**Status**: IN PROGRESS
+**Depends on**: Phase 1a (entities, auth, JWT)
 
-**Parallelization**: Backend CRUD and Frontend base can run in parallel.
+### 1b.1 — Wave 1: Backend CRUD + Frontend scaffold (parallel)
+
+**Agent A (sonnet): Habit CRUD + Repository**
+- [ ] `HabitRepository` with `findActiveByHousehold()` (filters `deleted_at IS NULL`)
+- [ ] `TimeWindow` value object (`final readonly class`, `contains()` method)
+- [ ] `HabitLogSource` enum (manual, notification) + add `source` column to HabitLog + migration
+- [ ] `POST /api/v1/habits` — create habit (validate name, frequency, time window)
+- [ ] `GET /api/v1/habits` — list active habits for household (sorted by sort_order)
+- [ ] `PUT /api/v1/habits/{id}` — update habit (voter check: HOUSEHOLD_EDIT)
+- [ ] `DELETE /api/v1/habits/{id}` — soft-delete (set deleted_at)
+- [ ] `PATCH /api/v1/habits/reorder` — update sort_order for multiple habits
+- [ ] Unit tests for TimeWindow value object
+
+**Agent B (sonnet): Dashboard + One-Tap Logging**
+- [ ] `POST /api/v1/habits/{id}/log` — one-tap log (source: manual/notification)
+- [ ] `DELETE /api/v1/habits/{id}/log/{logId}` — undo log
+- [ ] `GET /api/v1/habits/{id}/history` — paginated log history
+- [ ] `GET /api/v1/dashboard` — all habits + today's completion status per habit
+- [ ] Update HealthController: add DB + Messenger status checks
+
+**Agent C (sonnet): SvelteKit base + auth flow**
+- [ ] Route structure: `(auth)/login`, `(auth)/register`, `(app)/+page` (dashboard), `(app)/settings`
+- [ ] API client (`$lib/api/client.ts`): fetch wrapper with JWT, auto-refresh, error handling
+- [ ] Auth store (`$lib/stores/auth.ts`): Svelte 5 runes, token persistence, user state
+- [ ] `+layout.svelte`: auth guard, redirect to login if no token
+- [ ] Login page: email + password form, error display
+- [ ] Register page: email, password, display_name, timezone (auto-detected), locale, household_name/invite_code, consent checkbox
+
+### 1b.2 — Wave 2: Frontend UI + Design system (needs Wave 1 API)
+
+**Agent D (sonnet): Dashboard UI + Design tokens**
+- [ ] CSS custom properties: light/dark mode tokens (Sora + JetBrains Mono fonts)
+- [ ] Dark mode toggle (reads user.theme, stores in $state, applies via body class)
+- [ ] Dashboard page: habit cards with completion status, progress bar header
+- [ ] Habit card component: emoji + name + time window tag + check button
+- [ ] One-tap animation: scale-pulse + color transition to `--success`
+- [ ] Optimistic UI: update card immediately, revert on error
+- [ ] Settings page: language switcher, theme toggle, export data, delete account
+
+### 1b.3 — Wave 3: Tests + CI green
+
+- [ ] Integration tests: Habit CRUD (create, read, update, soft-delete, reorder)
+- [ ] Integration tests: one-tap log + undo + history
+- [ ] Integration tests: dashboard returns correct daily status
+- [ ] Integration tests: Household isolation on habits (User A can't edit Household B's habits)
+- [ ] Infection: first mutation testing round on Habit domain (TimeWindow, Repository)
+- [ ] Frontend: `bun run check` + `bun run build` + E2E smoke test
+- [ ] CI green on all 4 backend jobs + frontend CI
+
+### 1b Parallelization Map
+
+```
+Time →
+──────────────────────────────────────────────────────────
+
+Wave 1 (parallel, no deps):
+  Agent A (sonnet): [Habit CRUD + Repository + TimeWindow ]
+  Agent B (sonnet): [Dashboard + Logging endpoints        ]
+  Agent C (sonnet): [SvelteKit routes + auth + API client ]
+
+Wave 2 (needs Wave 1 API):
+  Agent D (sonnet): [Dashboard UI + Design tokens + a11y  ]
+
+Wave 3 (integration, needs everything):
+  Agent E (sonnet): [Integration tests + Infection + CI   ]
+```
+
+**Entity gaps to address in Wave 1:**
+- HabitLog needs `source` column (HabitLogSource enum) → migration
+- Habit entity already has the fields we need (icon serves as emoji)
 
 ## Phase 2 — Usable MVP
 

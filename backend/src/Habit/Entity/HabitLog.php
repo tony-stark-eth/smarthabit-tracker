@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Habit\Entity;
 
 use App\Auth\Entity\User;
+use App\Habit\Enum\HabitLogSource;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Uuid;
@@ -29,6 +30,8 @@ final class HabitLog
         private readonly User $user,
         #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE)]
         private readonly \DateTimeImmutable $loggedAt,
+        #[ORM\Column(enumType: HabitLogSource::class)]
+        private HabitLogSource $source = HabitLogSource::MANUAL,
         #[ORM\Column(type: Types::TEXT, nullable: true)]
         private ?string $note = null,
     ) {
@@ -54,6 +57,11 @@ final class HabitLog
     public function getLoggedAt(): \DateTimeImmutable
     {
         return $this->loggedAt;
+    }
+
+    public function getSource(): HabitLogSource
+    {
+        return $this->source;
     }
 
     public function getNote(): ?string
