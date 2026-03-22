@@ -40,5 +40,11 @@
   "dashboard_done_by": "Today {time} by {name}",
   "dashboard_overdue": "Overdue",
   "habit_log_success": "Logged!",
-  "habit_undo": "Undo"
+  "habit_undo": "Undo",
+  "history_title": "History",
+  "history_no_logs": "No logs yet",
+  "history_load_more": "Load more",
+  "history_today": "Today",
+  "history_yesterday": "Yesterday",
+  "offline_queued": "Saved offline — will sync when connected"
 }

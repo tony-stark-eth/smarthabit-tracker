@@ -1,0 +1,36 @@
+{
+    "name": "SmartHabit Tracker",
+    "short_name": "SmartHabit",
+    "description": "Household habit tracking with adaptive notifications",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#F4F5F7",
+    "theme_color": "#6366f1",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Quick Log",
+            "short_name": "Log",
+            "url": "/?action=quick-log",
+            "description": "Log your top habit with one tap"
+        }
+    ]
+}

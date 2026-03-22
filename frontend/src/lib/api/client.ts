@@ -4,9 +4,15 @@
  * Base URL: /api/v1 (relative — works via Vite proxy in dev and same-origin in prod).
  * Authentication: JWT access token sent as Authorization: Bearer header.
  * Token refresh: on 401, attempts a token refresh then retries the original request once.
+ * Offline support: POST requests to /habits/{id}/log are queued when the network is unavailable.
  */
 
+import { addToQueue } from '$lib/api/offline';
+
 const BASE_URL = '/api/v1';
+
+/** Pattern for habit log endpoints that should be queued when offline. */
+const OFFLINE_QUEUE_PATTERN = /^\/habits\/[^/]+\/log$/;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -142,7 +148,18 @@ async function request<T>(
         fetchInit.body = JSON.stringify(body);
     }
 
-    const response = await fetch(url, fetchInit);
+    let response: Response;
+    try {
+        response = await fetch(url, fetchInit);
+    } catch (networkError) {
+        // Network failure (offline). Queue eligible POST requests for later replay.
+        if (method === 'POST' && OFFLINE_QUEUE_PATTERN.test(path)) {
+            addToQueue(url, method, body);
+            // Return undefined as T — callers treat this like a 204 success.
+            return undefined as T;
+        }
+        throw networkError;
+    }
 
     // On 401, attempt a token refresh and retry the request once.
     if (response.status === 401 && retry) {

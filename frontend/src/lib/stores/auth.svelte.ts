@@ -64,7 +64,8 @@ export async function register(data: RegisterData): Promise<void> {
 
 export async function fetchUser(): Promise<void> {
     try {
-        user = await client.get<User>('/user/me');
+        const response = await client.get<{ user: User }>('/user/me');
+        user = response.user;
     } catch {
         user = null;
         authenticated = false;

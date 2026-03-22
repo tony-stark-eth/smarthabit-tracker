@@ -15,6 +15,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
@@ -23,6 +25,7 @@ final class LogController extends AbstractController
     public function __construct(
         private readonly Security $security,
         private readonly EntityManagerInterface $entityManager,
+        private readonly HubInterface $hub,
     ) {
     }
 
@@ -53,6 +56,16 @@ final class LogController extends AbstractController
 
         $this->entityManager->persist($log);
         $this->entityManager->flush();
+
+        $this->publishDashboardUpdate($habit, [
+            'type' => 'habit_logged',
+            'habit_id' => $habit->getId()->toRfc4122(),
+            'log' => [
+                'id' => $log->getId()->toRfc4122(),
+                'logged_at' => $log->getLoggedAt()->format(\DateTimeInterface::ATOM),
+                'user_display_name' => $user->getDisplayName(),
+            ],
+        ]);
 
         return new JsonResponse([
             'id' => $log->getId()->toRfc4122(),
@@ -87,8 +100,18 @@ final class LogController extends AbstractController
             ], Response::HTTP_FORBIDDEN);
         }
 
+        $habit = $log->getHabit();
+        $logId = $log->getId()->toRfc4122();
+        $habitId = $habit->getId()->toRfc4122();
+
         $this->entityManager->remove($log);
         $this->entityManager->flush();
+
+        $this->publishDashboardUpdate($habit, [
+            'type' => 'habit_unlogged',
+            'habit_id' => $habitId,
+            'log_id' => $logId,
+        ]);
 
         return new JsonResponse([
             'message' => 'Log deleted.',
@@ -158,6 +181,26 @@ final class LogController extends AbstractController
             'limit' => $limit,
             'total' => $total,
         ]);
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     */
+    private function publishDashboardUpdate(Habit $habit, array $payload): void
+    {
+        try {
+            $topic = sprintf(
+                'household/%s/dashboard',
+                $habit->getHousehold()->getId()->toRfc4122(),
+            );
+            $update = new Update(
+                $topic,
+                json_encode($payload, JSON_THROW_ON_ERROR),
+            );
+            $this->hub->publish($update);
+        } catch (\Throwable) {
+            // Mercure is an enhancement — do not fail the core request.
+        }
     }
 
     private function buildLog(Habit $habit, User $user, Request $request): HabitLog

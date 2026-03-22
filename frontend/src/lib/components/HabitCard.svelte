@@ -1,4 +1,7 @@
 <script lang="ts">
+    import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
+
     interface LastLog {
         logged_at: string;
         user_display_name: string;
@@ -27,6 +30,26 @@
     }: Props = $props();
 
     let justLogged = $state(false);
+
+    // ---------------------------------------------------------------------------
+    // Long-press to navigate to history
+    // ---------------------------------------------------------------------------
+
+    let pressTimer: ReturnType<typeof setTimeout> | null = null;
+
+    function onTouchStart(): void {
+        pressTimer = setTimeout(() => {
+            pressTimer = null;
+            goto(resolve(`/habits/${id}`));
+        }, 500);
+    }
+
+    function onTouchEnd(): void {
+        if (pressTimer !== null) {
+            clearTimeout(pressTimer);
+            pressTimer = null;
+        }
+    }
 
     function formatTime(isoString: string): string {
         const d = new Date(isoString);
@@ -62,6 +85,10 @@
     class:habit-card--done={isDoneToday}
     class:just-logged={justLogged}
     data-id={id}
+    role="article"
+    ontouchstart={onTouchStart}
+    ontouchend={onTouchEnd}
+    ontouchcancel={onTouchEnd}
 >
     <div class="card-icon" aria-hidden="true">
         {#if icon}

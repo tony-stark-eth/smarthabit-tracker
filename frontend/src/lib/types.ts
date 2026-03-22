@@ -2,6 +2,12 @@
  * Shared TypeScript types for the SmartHabit frontend.
  */
 
+export interface Household {
+    id: string;
+    name: string;
+    invite_code: string;
+}
+
 export interface User {
     id: string;
     email: string;
@@ -9,6 +15,7 @@ export interface User {
     timezone: string;
     locale: string;
     theme: string;
+    household: Household;
 }
 
 export interface RegisterData {

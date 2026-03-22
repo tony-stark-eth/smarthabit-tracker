@@ -1,6 +1,7 @@
 <script lang="ts">
     import { client } from '$lib/api/client';
     import { getUser, logout, fetchUser } from '$lib/stores/auth.svelte';
+    import type { Household } from '$lib/types';
 
     type Theme = 'auto' | 'light' | 'dark';
 
@@ -93,6 +94,46 @@
     }
 
     // ---------------------------------------------------------------------------
+    // Household
+    // ---------------------------------------------------------------------------
+
+    let inviteCodeCopied = $state(false);
+    let joinCode = $state('');
+    let joining = $state(false);
+    let joinError = $state<string | null>(null);
+    let joinSuccess = $state(false);
+
+    async function copyInviteCode(): Promise<void> {
+        const code = user?.household?.invite_code;
+        if (!code) return;
+        try {
+            await navigator.clipboard.writeText(code);
+            inviteCodeCopied = true;
+            setTimeout(() => (inviteCodeCopied = false), 2000);
+        } catch {
+            // Clipboard not available — no-op
+        }
+    }
+
+    async function joinHousehold(): Promise<void> {
+        if (joinCode.trim() === '') return;
+        joining = true;
+        joinError = null;
+        joinSuccess = false;
+        try {
+            await client.post<{ household: Household }>('/household/join', { invite_code: joinCode.trim() });
+            await fetchUser();
+            joinCode = '';
+            joinSuccess = true;
+            setTimeout(() => (joinSuccess = false), 3000);
+        } catch (e) {
+            joinError = e instanceof Error ? e.message : 'Failed to join household.';
+        } finally {
+            joining = false;
+        }
+    }
+
+    // ---------------------------------------------------------------------------
     // Delete account
     // ---------------------------------------------------------------------------
     let showDeleteConfirm = $state(false);
@@ -172,6 +213,58 @@
                 Dark
             </button>
         </div>
+    </section>
+
+    <!-- Household -->
+    {#if user?.household}
+        <section class="settings-section">
+            <h2 class="section-title">Household</h2>
+            <p class="household-name">{user.household.name}</p>
+            <div class="invite-code-row">
+                <div class="invite-code-display">
+                    <span class="invite-code-label">Invite code</span>
+                    <code class="invite-code-value">{user.household.invite_code}</code>
+                </div>
+                <button
+                    class="action-btn action-btn--copy"
+                    onclick={copyInviteCode}
+                    aria-label="Copy invite code"
+                >
+                    {inviteCodeCopied ? 'Copied!' : 'Copy'}
+                </button>
+            </div>
+            <p class="invite-hint">Share this code so others can join your household.</p>
+        </section>
+    {/if}
+
+    <!-- Join Household -->
+    <section class="settings-section">
+        <h2 class="section-title">Join another household</h2>
+        <p class="join-hint">Enter an invite code to switch to a different household.</p>
+        <div class="join-row">
+            <input
+                type="text"
+                bind:value={joinCode}
+                class="field-input"
+                placeholder="8-character code"
+                disabled={joining}
+                maxlength={8}
+                aria-label="Invite code"
+            />
+            <button
+                class="action-btn action-btn--join"
+                onclick={joinHousehold}
+                disabled={joining || joinCode.trim() === ''}
+            >
+                {joining ? 'Joining…' : 'Join'}
+            </button>
+        </div>
+        {#if joinError !== null}
+            <p class="join-error" role="alert">{joinError}</p>
+        {/if}
+        {#if joinSuccess}
+            <p class="join-success" role="status">Joined household successfully!</p>
+        {/if}
     </section>
 
     <!-- Data -->
@@ -414,5 +507,98 @@
 
     .delete-actions .action-btn {
         flex: 1;
+    }
+
+    /* Household section */
+    .household-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        margin: 0;
+    }
+
+    .invite-code-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .invite-code-display {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .invite-code-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-text-muted);
+    }
+
+    .invite-code-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--color-accent);
+        letter-spacing: 0.12em;
+        background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+        border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+        border-radius: var(--radius-md);
+        padding: 0.375rem 0.625rem;
+    }
+
+    .action-btn--copy {
+        min-width: 5rem;
+        text-align: center;
+        color: var(--color-accent);
+        border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    }
+
+    .action-btn--copy:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+    }
+
+    .invite-hint {
+        font-size: 0.8125rem;
+        color: var(--color-text-muted);
+        margin: 0;
+    }
+
+    /* Join household */
+    .join-hint {
+        font-size: 0.875rem;
+        color: var(--color-text-secondary);
+        margin: 0;
+    }
+
+    .join-row {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .action-btn--join {
+        min-width: 5rem;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .join-error {
+        font-size: 0.875rem;
+        color: var(--color-error);
+        margin: 0;
+    }
+
+    .join-success {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--color-success);
+        margin: 0;
     }
 </style>

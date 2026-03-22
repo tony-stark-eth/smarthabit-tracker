@@ -42,6 +42,7 @@ final class DashboardController extends AbstractController
         $completionRate = $total > 0 ? round($doneCount / $total, 4) : 0.0;
 
         return new JsonResponse([
+            'household_id' => $user->getHousehold()->getId()->toRfc4122(),
             'habits' => $habitData,
             'summary' => [
                 'total' => $total,

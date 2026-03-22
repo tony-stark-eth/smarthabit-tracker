@@ -194,10 +194,12 @@ final class UserController extends AbstractController
     }
 
     /**
-     * @return array{id: string, email: string, display_name: string, timezone: string, locale: string, theme: string}
+     * @return array{id: string, email: string, display_name: string, timezone: string, locale: string, theme: string, household: array{id: string, name: string, invite_code: string}}
      */
     private function serializeUser(User $user): array
     {
+        $household = $user->getHousehold();
+
         return [
             'id' => $user->getId()->toRfc4122(),
             'email' => $user->getEmail(),
@@ -205,6 +207,11 @@ final class UserController extends AbstractController
             'timezone' => $user->getTimezone(),
             'locale' => $user->getLocale()->value,
             'theme' => $user->getTheme()->value,
+            'household' => [
+                'id' => $household->getId()->toRfc4122(),
+                'name' => $household->getName(),
+                'invite_code' => $household->getInviteCode(),
+            ],
         ];
     }
 }

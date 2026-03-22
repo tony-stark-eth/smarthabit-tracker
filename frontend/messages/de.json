@@ -40,5 +40,11 @@
   "dashboard_done_by": "Heute {time} von {name}",
   "dashboard_overdue": "Überfällig",
   "habit_log_success": "Eingetragen!",
-  "habit_undo": "Rückgängig"
+  "habit_undo": "Rückgängig",
+  "history_title": "Verlauf",
+  "history_no_logs": "Noch keine Einträge",
+  "history_load_more": "Mehr laden",
+  "history_today": "Heute",
+  "history_yesterday": "Gestern",
+  "offline_queued": "Offline gespeichert — wird synchronisiert, sobald eine Verbindung besteht"
 }

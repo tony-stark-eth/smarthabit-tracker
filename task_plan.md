@@ -359,14 +359,51 @@ Wave 3 (integration, needs everything):
 
 ## Phase 2 — Usable MVP
 
-- [ ] PWA: Manifest, Service Worker, Install prompt
-- [ ] PWA Shortcuts (Quick-Log top habits)
-- [ ] Dashboard UI with tap logging
-- [ ] Mercure real-time (live updates when household member logs)
-- [ ] History View
-- [ ] Household System (Invite Code, Join)
-- [ ] Offline Queue for logs
-- [ ] Dark Mode toggle
+**Status**: IN PROGRESS
+**Already done in Phase 1b**: Dashboard UI, tap logging, dark mode CSS tokens, settings page (theme/locale), HouseholdVoter, join endpoint
+
+### 2.1 — Wave 1: PWA + History + Household UI (parallel)
+
+**Agent A (sonnet): PWA setup**
+- [ ] `frontend/static/manifest.json` — name, icons, theme_color, display: standalone, shortcuts (top 3 habits placeholder)
+- [ ] Install `@vite-pwa/sveltekit`, configure in `vite.config.ts`
+- [ ] `frontend/src/service-worker.ts` — Workbox asset caching, offline detection
+- [ ] Install prompt handling (beforeinstallprompt event)
+
+**Agent B (sonnet): History view + Offline queue**
+- [ ] `frontend/src/routes/(app)/habits/[id]/+page.svelte` — paginated log history (calls GET /api/v1/habits/{id}/history)
+- [ ] Long-press on habit card → navigate to history (touch event handler)
+- [ ] Offline queue in `src/lib/api/offline.ts`: store failed POSTs in IndexedDB/localStorage, flush on `online` event
+- [ ] Update API client to use offline queue for POST /habits/{id}/log
+
+**Agent C (sonnet): Household UI + Mercure**
+- [ ] Settings page: display household invite code, copy-to-clipboard button
+- [ ] Settings page: "Join household" input (calls POST /api/v1/household/join)
+- [ ] Mercure SSE subscription: subscribe to household topic on dashboard load
+- [ ] Backend: publish Mercure update when HabitLog is created/deleted
+- [ ] Frontend: update dashboard state from Mercure events (no page refresh)
+
+### 2.2 — Wave 2: Integration + CI
+
+- [ ] E2E test: PWA manifest is served correctly
+- [ ] Integration test: Mercure publishes on habit log
+- [ ] Verify: all backend + frontend CI green
+- [ ] Verify: `bun run check` + `bun run build` + ESLint pass
+
+### 2 Parallelization Map
+
+```
+Time →
+──────────────────────────────────────────────────────
+
+Wave 1 (parallel):
+  Agent A (sonnet): [PWA manifest + service worker  ]
+  Agent B (sonnet): [History view + offline queue    ]
+  Agent C (sonnet): [Household UI + Mercure SSE      ]
+
+Wave 2 (integration):
+  Main:             [Tests + CI green                ]
+```
 
 ## Phase 3 — Notifications (Web Push only)
 

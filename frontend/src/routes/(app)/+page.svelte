@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { onMount, onDestroy } from 'svelte';
     import { client } from '$lib/api/client';
     import { getUser } from '$lib/stores/auth.svelte';
     import HabitCard from '$lib/components/HabitCard.svelte';
@@ -34,6 +35,7 @@
     }
 
     interface DashboardResponse {
+        household_id: string;
         habits: DashboardHabit[];
         summary: DashboardSummary;
     }
@@ -107,6 +109,51 @@
     $effect(() => {
         load();
     });
+
+    // ---------------------------------------------------------------------------
+    // Mercure SSE — real-time dashboard updates from other household members
+    // ---------------------------------------------------------------------------
+
+    let eventSource: EventSource | null = null;
+
+    onMount(() => {
+        // Subscribe once data is available (household_id comes from dashboard response)
+        $effect(() => {
+            if (data?.household_id) {
+                subscribeToMercure(data.household_id);
+            }
+        });
+    });
+
+    onDestroy(() => {
+        eventSource?.close();
+        eventSource = null;
+    });
+
+    function subscribeToMercure(householdId: string): void {
+        // Close existing connection before opening a new one
+        eventSource?.close();
+
+        const mercureUrl = new URL('/.well-known/mercure', window.location.origin);
+        mercureUrl.searchParams.append('topic', `household/${householdId}/dashboard`);
+
+        eventSource = new EventSource(mercureUrl.toString());
+
+        eventSource.onmessage = (event: MessageEvent) => {
+            try {
+                const update = JSON.parse(event.data as string) as { type: string };
+                if (update.type === 'habit_logged' || update.type === 'habit_unlogged') {
+                    load();
+                }
+            } catch {
+                // Ignore malformed messages
+            }
+        };
+
+        eventSource.onerror = () => {
+            // SSE auto-reconnects — no action needed
+        };
+    }
 </script>
 
 <svelte:head>

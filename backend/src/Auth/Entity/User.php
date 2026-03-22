@@ -145,6 +145,12 @@ final class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->updatedAt;
     }
 
+    public function setHousehold(Household $household): void
+    {
+        $this->household = $household;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
     public function setEmail(string $email): void
     {
         $this->email = $email;

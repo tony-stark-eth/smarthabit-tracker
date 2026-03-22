@@ -4,6 +4,8 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { isAuthenticated, isLoading } from '$lib/stores/auth.svelte';
+    import { flushQueue } from '$lib/api/offline';
+    import { onMount } from 'svelte';
 
     const { children } = $props();
 
@@ -26,6 +28,23 @@
         if (isAppRoute(pathname) && !isAuthenticated()) {
             goto(resolve('/login'), { replaceState: true });
         }
+    });
+
+    onMount(() => {
+        const handleOnline = (): void => {
+            flushQueue(fetch);
+        };
+
+        window.addEventListener('online', handleOnline);
+
+        // Flush any queued requests if we are already online at startup.
+        if (navigator.onLine) {
+            flushQueue(fetch);
+        }
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+        };
     });
 </script>
 
