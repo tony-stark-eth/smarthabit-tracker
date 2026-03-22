@@ -95,10 +95,10 @@ jobs:
       - name: Wait for PHP health
         run: |
           for i in $(seq 1 60); do
-            curl -sfk https://localhost/api/v1/health > /dev/null 2>&1 && break
+            docker compose exec -T php curl -sf http://localhost/api/v1/health > /dev/null 2>&1 && break
             sleep 2
           done
-          curl -sfk https://localhost/api/v1/health || (echo "PHP not healthy after 120s" && exit 1)
+          docker compose exec -T php curl -sf http://localhost/api/v1/health || (echo "PHP not healthy after 120s" && docker compose logs php --tail=30 && exit 1)
       - name: Wait for Vite
         run: |
           for i in $(seq 1 30); do
