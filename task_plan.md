@@ -181,24 +181,105 @@ Agent 1-5:                     [0.9 Integration Test + Finalize]
 
 ---
 
-## Phase 1a — Projekt-Setup & Auth (after Phase 0)
+## Phase 1a — Domain Scaffolding & Auth
 
-- [ ] Fork template → private `smarthabit-tracker` repo
-- [ ] Domain folders: `src/Habit/`, `src/Notification/`, `src/Auth/`, `src/Household/`, `src/Stats/`, `src/Shared/`
-- [ ] phpat `DomainIsolationTest` with SmartHabit-specific rules
-- [ ] Doctrine Entities + Migrations (User, Household, Habit, HabitLog, NotificationLog)
-- [ ] i18n: paraglide-sveltekit (de/en) + Symfony Translator
-- [ ] Auth: Register + Login + JWT (Access 15min + Refresh 30d)
-- [ ] Rate Limiting on auth endpoints
-- [ ] Email Verification + Password Reset (Symfony Mailer + Brevo)
-- [ ] DSGVO: Consent bei Registration, Export + Lösch-Endpoints
-- [ ] Household Isolation Voter (unit-tested)
-- [ ] Integration tests for all auth flows
+**Status**: IN PROGRESS
+**Repo**: https://github.com/tony-stark-eth/smarthabit-tracker
 
-**Parallelization within 1a:**
-- Entities/Migrations + i18n setup can run parallel
-- Auth controller work is sequential (needs entities)
-- Voter tests can be written parallel to controller implementation
+### 1a.1 — Wave 1: Scaffold (parallel, no dependencies)
+
+**Agent A: Domain structure + Architecture tests**
+- [ ] Create domain folders: `src/Habit/`, `src/Notification/`, `src/Auth/`, `src/Household/`, `src/Stats/`
+- [ ] Move `Shared/Controller/HealthController.php` to `src/Shared/Controller/`
+- [ ] Create enums: `Locale` (de/en), `Theme` (auto/light/dark), `HabitFrequency` (daily/weekly/custom)
+- [ ] phpat `DomainIsolationTest`: Auth→Shared OK, Auth→Habit FORBIDDEN, Habit→Auth FORBIDDEN, etc.
+- [ ] phpat `NamingConventionTest`: extend with SmartHabit-specific suffixes (Voter, Handler)
+- [ ] Verify: `make phpstan` passes with new rules
+
+**Agent B: Entities + Migrations**
+- [ ] `Household` entity (UUID, name, invite_code 8-char, timestamps)
+- [ ] `User` entity (UUID, household FK, email, password, display_name, timezone IANA, locale, theme, push_subscriptions JSON, consent_at, consent_version, email_verified_at, soft-delete, timestamps)
+- [ ] `Habit` entity (UUID, household FK, name, description, frequency, icon, color, sort_order, time_window_start/end TIME, time_window_mode, soft-delete, timestamps)
+- [ ] `HabitLog` entity (UUID, habit FK, user FK, logged_at, note, timestamps)
+- [ ] `NotificationLog` entity (UUID, user FK, habit FK nullable, channel, status, sent_at, message)
+- [ ] Generate migration, verify against real PostgreSQL
+- [ ] Verify: `make test` passes (existing HealthController test still works)
+
+**Agent C: i18n setup**
+- [ ] Backend: Symfony Translator config (`translations/messages.de.yaml`, `messages.en.yaml`)
+- [ ] Backend: Add translation keys for auth responses (register_success, login_failed, email_taken, etc.)
+- [ ] Frontend: Install `paraglide-sveltekit` + configure (de/en)
+- [ ] Frontend: Create message files (`messages/de.json`, `messages/en.json`) with auth UI strings
+- [ ] Frontend: Language switcher component (stores preference in localStorage + user.locale API)
+
+### 1a.2 — Wave 2: Auth system (sequential, needs entities)
+
+- [ ] JWT config: `lexik/jwt-authentication-bundle` (Access 15min, Refresh 30d, ES256 keys)
+- [ ] Generate JWT keypair: `php bin/console lexik:jwt:generate-keypair`
+- [ ] Security config (`security.php`): firewalls (login, api), user provider, password hasher
+- [ ] `POST /api/v1/register` — create Household + User, validate timezone/locale, hash password, store consent, return JWT pair
+- [ ] `POST /api/v1/login` — verify credentials, return JWT pair
+- [ ] `POST /api/v1/token/refresh` — validate refresh token, issue new pair
+- [ ] `POST /api/v1/household/join` — validate invite_code, add user to existing household
+- [ ] `GET /api/v1/user/me` — return user profile
+- [ ] `PUT /api/v1/user/me` — update display_name, timezone, locale, theme
+- [ ] Rate limiting: login 5/min, register 3/15min, password-forgot 3/15min, api-general 60/min
+
+### 1a.3 — Wave 3: GDPR + Email + Voter (parallel after Wave 2)
+
+**Agent D: GDPR endpoints**
+- [ ] `GET /api/v1/user/export` — full JSON export (Art. 20 DSGVO)
+- [ ] `DELETE /api/v1/user/me` — cascade delete (User → Logs, Notifications, PushSubscriptions; if last user in Household → delete Household + Habits)
+- [ ] `GET /api/v1/privacy` — return privacy policy version + text
+- [ ] Consent validation at registration (consent_at + consent_version required)
+
+**Agent E: Email stubs + Password reset**
+- [ ] Mailer config: `null://null` transport (Brevo added later)
+- [ ] `POST /api/v1/password/forgot` — generate reset token, send email (stubbed)
+- [ ] `POST /api/v1/password/reset` — validate token (1h TTL, single-use), set new password
+- [ ] `PUT /api/v1/user/password` — change password (authenticated, requires current password)
+- [ ] Email verification stub: token generation + `GET /api/v1/verify-email?token=...`
+
+**Agent F: Household Isolation Voter**
+- [ ] `HouseholdVoter` — checks `$subject->getHousehold() === $user->getHousehold()` for all domain entities
+- [ ] Register voter in security config
+- [ ] Unit tests: same household → GRANTED, different household → DENIED, no household → DENIED
+- [ ] Wire voter to all Habit/HabitLog controllers (annotation or manual check)
+
+### 1a.4 — Wave 4: Integration tests + CI green
+
+- [ ] Integration test: register → verify → login → access protected endpoint
+- [ ] Integration test: rate limiting (6th login attempt → 429)
+- [ ] Integration test: GDPR export returns correct data
+- [ ] Integration test: GDPR delete cascades correctly
+- [ ] Integration test: Household isolation (User A cannot see Household B's habits)
+- [ ] Integration test: password reset flow (forgot → token → reset → login with new password)
+- [ ] Integration test: join household via invite code
+- [ ] Verify: `make quality` passes (ECS + PHPStan + Rector + PHPUnit + Infection)
+- [ ] CI green on GitHub Actions
+
+### 1a Parallelization Map
+
+```
+Time →
+──────────────────────────────────────────────────────────
+
+Wave 1 (parallel, no deps):
+  Agent A: [Domain folders + phpat rules        ]
+  Agent B: [Entities + Migrations               ]
+  Agent C: [i18n setup (backend + frontend)     ]
+
+Wave 2 (sequential, needs entities from Wave 1):
+  Main:    [JWT + Auth controllers + Rate Limit ]
+
+Wave 3 (parallel, needs auth from Wave 2):
+  Agent D: [GDPR endpoints                     ]
+  Agent E: [Email stubs + Password reset        ]
+  Agent F: [Household Voter + unit tests        ]
+
+Wave 4 (integration, needs everything):
+  Main:    [Integration tests + CI green        ]
+```
 
 ## Phase 1b — Core Features & Frontend
 

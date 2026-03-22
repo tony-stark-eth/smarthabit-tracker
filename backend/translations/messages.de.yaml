@@ -1,0 +1,40 @@
+auth:
+  register:
+    success: "Registrierung erfolgreich"
+    email_taken: "Diese E-Mail-Adresse ist bereits registriert"
+    invalid_timezone: "Ungültige Zeitzone"
+    consent_required: "Sie müssen die Datenschutzerklärung akzeptieren"
+  login:
+    success: "Anmeldung erfolgreich"
+    invalid_credentials: "Ungültige E-Mail-Adresse oder Passwort"
+    account_not_verified: "Bitte bestätigen Sie zuerst Ihre E-Mail-Adresse"
+  token:
+    refresh_success: "Token erneuert"
+    refresh_invalid: "Ungültiger oder abgelaufener Refresh-Token"
+  password:
+    forgot_success: "Falls diese E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet"
+    reset_success: "Passwort erfolgreich zurückgesetzt"
+    reset_invalid_token: "Ungültiger oder abgelaufener Token"
+    change_success: "Passwort geändert"
+    change_wrong_current: "Aktuelles Passwort ist falsch"
+  email_verification:
+    success: "E-Mail erfolgreich bestätigt"
+    invalid_token: "Ungültiger oder abgelaufener Bestätigungstoken"
+    already_verified: "E-Mail ist bereits bestätigt"
+household:
+  join:
+    success: "Haushalt erfolgreich beigetreten"
+    invalid_code: "Ungültiger Einladungscode"
+  isolation:
+    access_denied: "Sie haben keinen Zugriff auf diese Ressource"
+gdpr:
+  export:
+    success: "Ihr Datenexport ist bereit"
+  delete:
+    success: "Ihr Konto wurde gelöscht"
+    confirm_required: "Bitte bestätigen Sie die Kontolöschung"
+validation:
+  field_required: "Dieses Feld ist erforderlich"
+  email_invalid: "Bitte geben Sie eine gültige E-Mail-Adresse ein"
+  password_too_short: "Das Passwort muss mindestens 8 Zeichen lang sein"
+  display_name_too_long: "Der Anzeigename darf maximal 100 Zeichen lang sein"

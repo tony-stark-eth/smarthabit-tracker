@@ -8,6 +8,9 @@ return static function (ContainerConfigurator $container): void {
     $container->extension('doctrine', [
         'dbal' => [
             'url' => '%env(resolve:DATABASE_URL)%',
+            'types' => [
+                'uuid' => 'Symfony\Bridge\Doctrine\Types\UuidType',
+            ],
         ],
         'orm' => [
             'enable_native_lazy_objects' => true,

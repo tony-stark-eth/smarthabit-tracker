@@ -1,0 +1,40 @@
+auth:
+  register:
+    success: "Registration successful"
+    email_taken: "This email is already registered"
+    invalid_timezone: "Invalid timezone"
+    consent_required: "You must accept the privacy policy"
+  login:
+    success: "Login successful"
+    invalid_credentials: "Invalid email or password"
+    account_not_verified: "Please verify your email first"
+  token:
+    refresh_success: "Token refreshed"
+    refresh_invalid: "Invalid or expired refresh token"
+  password:
+    forgot_success: "If this email exists, a reset link has been sent"
+    reset_success: "Password reset successful"
+    reset_invalid_token: "Invalid or expired reset token"
+    change_success: "Password changed"
+    change_wrong_current: "Current password is incorrect"
+  email_verification:
+    success: "Email verified successfully"
+    invalid_token: "Invalid or expired verification token"
+    already_verified: "Email is already verified"
+household:
+  join:
+    success: "Joined household successfully"
+    invalid_code: "Invalid invite code"
+  isolation:
+    access_denied: "You do not have access to this resource"
+gdpr:
+  export:
+    success: "Your data export is ready"
+  delete:
+    success: "Your account has been deleted"
+    confirm_required: "Please confirm account deletion"
+validation:
+  field_required: "This field is required"
+  email_invalid: "Please enter a valid email address"
+  password_too_short: "Password must be at least 8 characters"
+  display_name_too_long: "Display name must be 100 characters or less"
