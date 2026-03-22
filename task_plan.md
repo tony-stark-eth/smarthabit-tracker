@@ -183,7 +183,7 @@ Agent 1-5:                     [0.9 Integration Test + Finalize]
 
 ## Phase 1a — Domain Scaffolding & Auth
 
-**Status**: IN PROGRESS
+**Status**: COMPLETE
 **Repo**: https://github.com/tony-stark-eth/smarthabit-tracker
 
 ### 1a.1 — Wave 1: Scaffold (parallel, no dependencies)
