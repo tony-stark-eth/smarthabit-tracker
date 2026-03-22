@@ -183,8 +183,7 @@ jobs:
             -e APP_ENV=test \
             -e XDEBUG_MODE=coverage \
             php vendor/bin/infection \
-              --threads=4 --coverage=var/coverage \
-              --skip-initial-tests \
+              --threads=4 \
               --ignore-msi-with-no-mutations 2>&1)
           EC=$?
           echo "$OUTPUT"
