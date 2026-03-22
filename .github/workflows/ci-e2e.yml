@@ -1,0 +1,110 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'docker/**'
+      - 'compose*.yaml'
+      - '.github/workflows/ci-e2e.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
+      - 'docker/**'
+      - 'compose*.yaml'
+      - '.github/workflows/ci-e2e.yml'
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ${{ vars.RUNNER_LABEL || 'ubuntu-latest' }}
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ── Build PHP image ──────────────────────────────────────────
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/frankenphp/Dockerfile
+          target: frankenphp_dev
+          load: true
+          tags: app-php:dev
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ── Install backend deps ─────────────────────────────────────
+      - uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: composer-${{ hashFiles('backend/composer.lock') }}
+          restore-keys: composer-
+      - name: Composer install
+        run: |
+          docker compose run --rm --no-deps --entrypoint composer \
+            -e COMPOSER_CACHE_DIR=/tmp/composer-cache \
+            -v "$HOME/.composer/cache:/tmp/composer-cache" \
+            php install --no-interaction --prefer-dist --no-scripts
+
+      # ── Generate JWT keys ────────────────────────────────────────
+      - name: Generate JWT keypair
+        run: docker compose run --rm --no-deps --entrypoint "" php php bin/console lexik:jwt:generate-keypair --skip-if-exists
+
+      # ── Start full stack ─────────────────────────────────────────
+      - name: Start services
+        run: docker compose up -d --no-build database pgbouncer php
+      - name: Wait for PostgreSQL
+        run: |
+          for i in $(seq 1 30); do
+            docker compose exec -T database pg_isready -U app && break
+            sleep 2
+          done
+      - name: Run migrations
+        run: |
+          docker compose exec -T \
+            -e APP_ENV=test \
+            -e DATABASE_URL="postgresql://app:!ChangeMe!@database:5432/app?serverVersion=17&sslmode=disable" \
+            php php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+
+      # ── Install frontend + Playwright ────────────────────────────
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install frontend deps
+        working-directory: frontend
+        run: bun install --frozen-lockfile
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: bunx playwright install --with-deps chromium
+
+      # ── Start Vite dev server ────────────────────────────────────
+      - name: Start Vite dev server
+        working-directory: frontend
+        run: bun run dev &
+      - name: Wait for Vite
+        run: |
+          for i in $(seq 1 30); do
+            curl -s http://localhost:5173 > /dev/null && break
+            sleep 2
+          done
+
+      # ── Run E2E tests ────────────────────────────────────────────
+      - name: Playwright E2E tests
+        working-directory: frontend
+        run: bun run test:e2e
+        env:
+          BASE_URL: http://localhost:5173
+
+      # ── Upload traces on failure ─────────────────────────────────
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: frontend/test-results/
+          retention-days: 7
