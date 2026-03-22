@@ -176,7 +176,7 @@ final class PushSubscriptionController extends AbstractController
         $subscriptions = $user->getPushSubscriptions() ?? [];
 
         $found = false;
-        $now = (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM);
+        $now = new \DateTimeImmutable()->format(\DateTimeInterface::ATOM);
 
         foreach ($subscriptions as $index => $sub) {
             if ($sub['endpoint'] === $endpoint) {

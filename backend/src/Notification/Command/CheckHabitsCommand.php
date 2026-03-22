@@ -74,7 +74,7 @@ final class CheckHabitsCommand extends Command
 
     private function shouldNotify(Habit $habit, User $user): bool
     {
-        if ($user->getDeletedAt() !== null) {
+        if ($user->getDeletedAt() instanceof \DateTimeImmutable) {
             return false;
         }
 

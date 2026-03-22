@@ -2,6 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { client } from '$lib/api/client';
     import { getUser } from '$lib/stores/auth.svelte';
+    import { registerPushSubscription } from '$lib/api/push';
     import HabitCard from '$lib/components/HabitCard.svelte';
     import ProgressBar from '$lib/components/ProgressBar.svelte';
 
@@ -123,6 +124,13 @@
                 subscribeToMercure(data.household_id);
             }
         });
+
+        // Only ask once, after first successful dashboard load
+        if (Notification.permission === 'default') {
+            registerPushSubscription().catch(() => {
+                // Ignore errors — permission denied or push not supported
+            });
+        }
     });
 
     onDestroy(() => {

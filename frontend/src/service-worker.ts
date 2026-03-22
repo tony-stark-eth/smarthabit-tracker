@@ -44,3 +44,42 @@ self.addEventListener('fetch', (event: FetchEvent) => {
         })
     );
 });
+
+// Web Push notification handler
+self.addEventListener('push', (event: PushEvent) => {
+    if (!event.data) return;
+
+    const data = event.data.json() as { title: string; body: string; habitId: string };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, {
+            body: data.body,
+            icon: '/icons/icon-192.png',
+            data: { habitId: data.habitId, url: `/?log=${data.habitId}` },
+            actions: [
+                { action: 'log', title: 'Done ✓' },
+                { action: 'dismiss', title: 'Later' },
+            ],
+        })
+    );
+});
+
+// Notification click — open app, optionally auto-log
+self.addEventListener('notificationclick', (event: NotificationEvent) => {
+    event.notification.close();
+
+    const { url } = event.notification.data as { habitId: string; url: string };
+
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window' }).then((clients) => {
+            // Focus existing window if open
+            for (const client of clients) {
+                if (client.url.includes('/') && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            // Otherwise open new window
+            return self.clients.openWindow(url);
+        })
+    );
+});
