@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { register } from '$lib/stores/auth.svelte';
 
     // ---------------------------------------------------------------------------
@@ -62,7 +63,7 @@
                     : { invite_code: inviteCode }),
                 consent,
             });
-            await goto('/');
+            await goto(resolve('/'));
         } catch (err) {
             errorMessage = err instanceof Error ? err.message : 'Something went wrong';
         } finally {
@@ -265,7 +266,7 @@
         <footer class="auth-footer">
             <p>
                 Already have an account?
-                <a href="/login" class="auth-link">Log in</a>
+                <a href={resolve('/login')} class="auth-link">Log in</a>
             </p>
         </footer>
     </div>

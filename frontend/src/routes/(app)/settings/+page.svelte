@@ -54,7 +54,7 @@
             await fetchUser();
             localeSaved = true;
             setTimeout(() => (localeSaved = false), 2000);
-        } catch (err) {
+        } catch {
             // Surface error if needed
         } finally {
             savingLocale = false;

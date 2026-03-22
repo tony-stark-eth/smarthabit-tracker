@@ -1,7 +1,13 @@
 <script lang="ts">
     import { page } from '$app/stores';
+    import { resolve } from '$app/paths';
 
     const { children } = $props();
+
+    const hrefToday = resolve('/');
+    const hrefHistory = resolve('/history');
+    const hrefStats = resolve('/stats');
+    const hrefSettings = resolve('/settings');
 
     interface NavItem {
         href: string;
@@ -11,16 +17,16 @@
     }
 
     const navItems: NavItem[] = [
-        { href: '/', label: 'Today', icon: 'today', ariaLabel: 'Today' },
-        { href: '/history', label: 'History', icon: 'history', ariaLabel: 'History' },
-        { href: '/stats', label: 'Stats', icon: 'stats', ariaLabel: 'Stats' },
-        { href: '/settings', label: 'Settings', icon: 'settings', ariaLabel: 'Settings' },
+        { href: hrefToday, label: 'Today', icon: 'today', ariaLabel: 'Today' },
+        { href: hrefHistory, label: 'History', icon: 'history', ariaLabel: 'History' },
+        { href: hrefStats, label: 'Stats', icon: 'stats', ariaLabel: 'Stats' },
+        { href: hrefSettings, label: 'Settings', icon: 'settings', ariaLabel: 'Settings' },
     ];
 
-    function isActive(href: string): boolean {
+    function isActive(path: string): boolean {
         const pathname = $page.url.pathname;
-        if (href === '/') return pathname === '/';
-        return pathname.startsWith(href);
+        if (path === hrefToday) return pathname === hrefToday;
+        return pathname.startsWith(path);
     }
 </script>
 

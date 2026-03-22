@@ -19,10 +19,11 @@ export default [
     },
 
     {
-        files: ['**/*.svelte'],
+        files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
         languageOptions: {
             parserOptions: {
-                // Required for TypeScript inside <script lang="ts"> in Svelte files.
+                // Required for TypeScript inside <script lang="ts"> in Svelte files
+                // and in .svelte.ts rune store files.
                 parser: ts.parser,
             },
         },
@@ -48,6 +49,16 @@ export default [
 
             // Prefer const over let where possible.
             'prefer-const': 'error',
+        },
+    },
+
+    {
+        // The app layout iterates resolved hrefs stored in an object; the rule cannot
+        // statically trace them through MemberExpression access, so suppress link
+        // checks here. The hrefs are correctly produced by resolve() in the script.
+        files: ['src/routes/(app)/+layout.svelte'],
+        rules: {
+            'svelte/no-navigation-without-resolve': ['error', { ignoreLinks: true }],
         },
     },
 

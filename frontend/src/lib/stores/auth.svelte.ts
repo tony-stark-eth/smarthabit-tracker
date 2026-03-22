@@ -4,30 +4,7 @@
  */
 
 import { client, clearTokens } from '$lib/api/client';
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-export interface User {
-    id: string;
-    email: string;
-    display_name: string;
-    timezone: string;
-    locale: string;
-    theme: string;
-}
-
-export interface RegisterData {
-    email: string;
-    password: string;
-    display_name: string;
-    timezone: string;
-    locale: string;
-    household_name?: string;
-    invite_code?: string;
-    consent: boolean;
-}
+import type { User, RegisterData } from '$lib/types';
 
 // ---------------------------------------------------------------------------
 // State (module-level $state — works in .svelte.ts)

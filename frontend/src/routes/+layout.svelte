@@ -2,13 +2,10 @@
     import '../app.css';
     import { page } from '$app/stores';
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { isAuthenticated, isLoading } from '$lib/stores/auth.svelte';
 
     const { children } = $props();
-
-    // Protected route prefix — all routes under (app) group require auth.
-    // In adapter-static SPA mode, route segments are detected from $page.url.pathname.
-    const APP_ROUTES = ['/settings', '/history', '/stats'];
 
     function isAppRoute(pathname: string): boolean {
         // The (app) layout group pages: root /, /settings, /history, /stats
@@ -27,7 +24,7 @@
         const pathname = $page.url.pathname;
 
         if (isAppRoute(pathname) && !isAuthenticated()) {
-            goto('/login', { replaceState: true });
+            goto(resolve('/login'), { replaceState: true });
         }
     });
 </script>

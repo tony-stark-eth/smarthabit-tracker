@@ -32,5 +32,13 @@
   "common_save": "Save",
   "common_cancel": "Cancel",
   "common_loading": "Loading...",
-  "common_error": "Something went wrong"
+  "common_error": "Something went wrong",
+  "dashboard_greeting": "Good morning",
+  "dashboard_progress": "{done} of {total} done",
+  "dashboard_all_done": "All done for today!",
+  "dashboard_not_yet": "Not yet completed",
+  "dashboard_done_by": "Today {time} by {name}",
+  "dashboard_overdue": "Overdue",
+  "habit_log_success": "Logged!",
+  "habit_undo": "Undo"
 }

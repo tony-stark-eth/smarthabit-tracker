@@ -32,5 +32,13 @@
   "common_save": "Speichern",
   "common_cancel": "Abbrechen",
   "common_loading": "Laden...",
-  "common_error": "Etwas ist schiefgelaufen"
+  "common_error": "Etwas ist schiefgelaufen",
+  "dashboard_greeting": "Guten Morgen",
+  "dashboard_progress": "{done} von {total} erledigt",
+  "dashboard_all_done": "Heute alles erledigt!",
+  "dashboard_not_yet": "Noch nicht erledigt",
+  "dashboard_done_by": "Heute {time} von {name}",
+  "dashboard_overdue": "Überfällig",
+  "habit_log_success": "Eingetragen!",
+  "habit_undo": "Rückgängig"
 }

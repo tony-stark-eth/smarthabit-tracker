@@ -1,5 +1,6 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import { resolve } from '$app/paths';
     import { login } from '$lib/stores/auth.svelte';
 
     // ---------------------------------------------------------------------------
@@ -17,7 +18,7 @@
 
         try {
             await login(email, password);
-            await goto('/');
+            await goto(resolve('/'));
         } catch (err) {
             errorMessage = err instanceof Error ? err.message : 'Something went wrong';
         } finally {
@@ -78,7 +79,7 @@
         <footer class="auth-footer">
             <p>
                 Don't have an account?
-                <a href="/register" class="auth-link">Sign up</a>
+                <a href={resolve('/register')} class="auth-link">Sign up</a>
             </p>
         </footer>
     </div>
