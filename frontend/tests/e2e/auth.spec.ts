@@ -37,12 +37,8 @@ test.describe('Registration flow', () => {
         await page.click('button[type="submit"]');
 
         // After successful registration the app redirects to /
+        await page.waitForURL('/', { timeout: 15_000 });
         await expect(page).toHaveURL('/');
-
-        // The dashboard renders a greeting or an empty-state paragraph.
-        // Either confirms the authenticated shell is shown.
-        const body = page.locator('body');
-        await expect(body).not.toBeEmpty();
 
         // The page title should be "Today — SmartHabit"
         await expect(page).toHaveTitle(/Today/i);
@@ -110,6 +106,7 @@ test.describe('Login flow', () => {
         await page.click('button[type="submit"]');
 
         // Successful login redirects to /
+        await page.waitForURL('/', { timeout: 15_000 });
         await expect(page).toHaveURL('/');
         await expect(page).toHaveTitle(/Today/i);
     });

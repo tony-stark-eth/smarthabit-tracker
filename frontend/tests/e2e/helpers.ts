@@ -42,7 +42,7 @@ export async function registerUser(page: Page): Promise<{ email: string; token: 
 
     // Navigate to the app once so that localStorage is available on the right
     // origin, then inject both tokens so the auth store considers us logged in.
-    await page.goto('/');
+    await page.goto('/login');
     await page.evaluate(
         ({ t, rt }: { t: string; rt: string }) => {
             localStorage.setItem('access_token', t);
@@ -50,6 +50,12 @@ export async function registerUser(page: Page): Promise<{ email: string; token: 
         },
         { t: token, rt: refreshToken },
     );
+
+    // Reload so the SvelteKit module-level auth store re-initializes with the
+    // injected tokens. Without a reload, the auth store's $state was already
+    // evaluated as unauthenticated and won't pick up the new localStorage values.
+    await page.goto('/');
+    await page.waitForURL('/', { timeout: 10_000 });
 
     return { email, token, refreshToken };
 }
