@@ -92,8 +92,8 @@ test.describe('Dashboard — habit card', () => {
         await expect(checkBtn).toHaveAttribute('aria-pressed', 'true', { timeout: 5_000 });
         await expect(checkBtn).toBeDisabled();
 
-        // The done subtitle contains "Today"
-        await expect(page.getByText(/Today/i)).toBeVisible();
+        // The done subtitle shows when the habit was logged (contains "Today HH:MM")
+        await expect(page.getByText(/Today \d{1,2}:\d{2}/i)).toBeVisible();
     });
 });
 

@@ -7,7 +7,7 @@ import { expect } from '@playwright/test';
 
 interface RegisterResponse {
     token: string;
-    refresh_token: string;
+    refresh_token?: string;
 }
 
 interface HabitResponse {
@@ -37,9 +37,15 @@ export async function registerUser(page: Page): Promise<{ email: string; token: 
         },
     });
 
+    if (!response.ok()) {
+        throw new Error(
+            `registerUser: API returned ${response.status()} — ${await response.text()}`,
+        );
+    }
+
     const data = (await response.json()) as RegisterResponse;
     const token = data.token;
-    const refreshToken = data.refresh_token;
+    const refreshToken = data.refresh_token ?? '';
 
     // Navigate to the app once so that localStorage is available on the right
     // origin, then inject both tokens so the auth store considers us logged in.
@@ -53,22 +59,11 @@ export async function registerUser(page: Page): Promise<{ email: string; token: 
     );
 
     // Navigate to / so the SvelteKit module-level auth store re-initializes
-    // with the injected tokens.
+    // with the injected tokens. The auth store calls fetchUser() which must
+    // complete before the auth guard $effect fires. Wait for the dashboard
+    // title to confirm the auth flow completed successfully.
     await page.goto('/');
-
-    // Wait for either the app dashboard or a redirect back to /login.
-    // If the token injection succeeded, we stay on /. If not, we land on /login.
-    await page.waitForLoadState('networkidle', { timeout: 15_000 });
-
-    const currentUrl = page.url();
-    if (currentUrl.includes('/login')) {
-        // Token injection failed — auth store didn't pick up the tokens.
-        // This can happen in some browser contexts; throw a clear error.
-        throw new Error(`registerUser: token injection failed — redirected to /login instead of /. URL: ${currentUrl}`);
-    }
-
-    // Confirm we are on the dashboard
-    await expect(page).toHaveURL('/', { timeout: 5_000 });
+    await expect(page).toHaveTitle(/Today/i, { timeout: 15_000 });
 
     return { email, token, refreshToken };
 }

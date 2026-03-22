@@ -42,23 +42,25 @@ export function isAuthenticated(): boolean {
 // Actions
 // ---------------------------------------------------------------------------
 
-async function afterAuth(token: string, refreshToken: string): Promise<void> {
+async function afterAuth(token: string, refreshToken?: string): Promise<void> {
     localStorage.setItem('access_token', token);
-    localStorage.setItem('refresh_token', refreshToken);
+    if (refreshToken) {
+        localStorage.setItem('refresh_token', refreshToken);
+    }
     authenticated = true;
     await fetchUser();
 }
 
 export async function login(email: string, password: string): Promise<void> {
-    const response = await client.post<{ token: string; refresh_token: string }>('/login', {
-        username: email,
+    const response = await client.post<{ token: string; refresh_token?: string }>('/login', {
+        email,
         password,
     });
     await afterAuth(response.token, response.refresh_token);
 }
 
 export async function register(data: RegisterData): Promise<void> {
-    const response = await client.post<{ token: string; refresh_token: string }>('/register', data);
+    const response = await client.post<{ token: string; refresh_token?: string }>('/register', data);
     await afterAuth(response.token, response.refresh_token);
 }
 

@@ -10,7 +10,11 @@
     // ---------------------------------------------------------------------------
     // Theme
     // ---------------------------------------------------------------------------
-    let theme = $state<Theme>((localStorage.getItem('theme') as Theme | null) ?? 'auto');
+    let theme = $state<Theme>(
+        typeof localStorage !== 'undefined'
+            ? ((localStorage.getItem('theme') as Theme | null) ?? 'auto')
+            : 'auto',
+    );
     let savingTheme = $state(false);
 
     async function setTheme(newTheme: Theme): Promise<void> {
