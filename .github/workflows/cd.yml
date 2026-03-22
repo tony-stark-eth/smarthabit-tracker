@@ -9,6 +9,11 @@ concurrency:
   group: deploy
   cancel-in-progress: false
 
+permissions:
+  checks: read
+  contents: read
+  packages: write
+
 jobs:
   # ── Gate: wait for all CI checks to pass ─────────────────────────────────
   ci-check:
@@ -28,9 +33,6 @@ jobs:
     name: Build & Push Image
     needs: ci-check
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v4
 

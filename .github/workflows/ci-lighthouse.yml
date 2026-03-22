@@ -32,3 +32,4 @@ jobs:
         with:
           uploadArtifacts: true
           configPath: frontend/lighthouserc.json
+          workingDir: frontend
