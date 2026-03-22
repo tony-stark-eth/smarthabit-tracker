@@ -198,7 +198,7 @@ final class NotifyHabitHandlerTest extends TestCase
         $persistedLog = null;
         $em = self::createStub(EntityManagerInterface::class);
         $em->method('find')->willReturnCallback(
-            static fn(string $class): mixed => match ($class) {
+            static fn (string $class): mixed => match ($class) {
                 User::class => $user,
                 Habit::class => $habit,
                 default => null,
@@ -269,7 +269,7 @@ final class NotifyHabitHandlerTest extends TestCase
         $persistCount = 0;
         $em = $this->createMock(EntityManagerInterface::class);
         $em->method('find')->willReturnCallback(
-            static fn(string $class): mixed => match ($class) {
+            static fn (string $class): mixed => match ($class) {
                 User::class => $user,
                 Habit::class => $habit,
                 default => null,
@@ -492,7 +492,7 @@ final class NotifyHabitHandlerTest extends TestCase
 
         $em = $this->createMock(EntityManagerInterface::class);
         $em->method('find')->willReturnCallback(
-            static fn(string $class): mixed => match ($class) {
+            static fn (string $class): mixed => match ($class) {
                 User::class => $user,
                 Habit::class => $habit,
                 default => null,

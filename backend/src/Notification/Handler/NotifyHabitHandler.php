@@ -44,7 +44,7 @@ final readonly class NotifyHabitHandler
         foreach ($subscriptions as $index => $subscription) {
             $transport = $this->transportRegistry->getTransport($subscription['type']);
 
-            if (!$transport instanceof \App\Notification\Service\Transport\PushTransportInterface) {
+            if (! $transport instanceof \App\Notification\Service\Transport\PushTransportInterface) {
                 continue;
             }
 
