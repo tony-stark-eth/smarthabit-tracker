@@ -92,6 +92,13 @@ jobs:
           VITE_API_PROXY_TARGET: https://localhost
           # Caddy uses self-signed certs in dev — accept them for the proxy
           NODE_TLS_REJECT_UNAUTHORIZED: "0"
+      - name: Wait for PHP health
+        run: |
+          for i in $(seq 1 60); do
+            curl -sfk https://localhost/api/v1/health > /dev/null 2>&1 && break
+            sleep 2
+          done
+          curl -sfk https://localhost/api/v1/health || (echo "PHP not healthy after 120s" && exit 1)
       - name: Wait for Vite
         run: |
           for i in $(seq 1 30); do
