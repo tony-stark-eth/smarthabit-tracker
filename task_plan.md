@@ -503,15 +503,25 @@ Wave 1 (parallel):
 
 ## Phase 6 — Deployment & Ops
 
-- [ ] OpenTofu: provision Hetzner VPS
-- [ ] GlitchTip + App compose stacks
-- [ ] Sentry SDK → GlitchTip
-- [ ] PostgreSQL backup (nightly pg_dump → Object Storage)
-- [ ] Backup restore test
-- [ ] Let's Encrypt via Caddy
-- [ ] Manual deployment flow
-- [ ] Smoke tests on production
-- [ ] Lighthouse ≥ 90
+**Status**: IN PROGRESS
+**Note**: OpenTofu modules + compose.prod.yaml already exist from template. This phase adds ops tooling.
+
+### 6.1 — Wave 1 (parallel)
+
+**Agent A (sonnet): GlitchTip + Sentry SDK + backup**
+- [ ] GlitchTip compose stack (`compose.glitchtip.yaml`: glitchtip + redis + postgres)
+- [ ] `composer require sentry/sentry-symfony` + config (`sentry.php`)
+- [ ] SENTRY_DSN env var pointing to GlitchTip
+- [ ] PostgreSQL backup script (`scripts/backup-postgres.sh`: pg_dump → gzip → /mnt/data/backups)
+- [ ] Backup restore script (`scripts/restore-postgres.sh`)
+- [ ] Supercronic crontab with all nightly jobs (backup, learn-timewindows, compute-stats, cleanup)
+
+**Agent B (sonnet): Deploy docs + Lighthouse + smoke tests**
+- [ ] `docs/deployment.md`: step-by-step manual deployment guide (tofu apply → docker compose prod → verify)
+- [ ] Caddy TLS config already handles Let's Encrypt automatically
+- [ ] `scripts/smoke-test.sh`: curl health endpoint + check status
+- [ ] Frontend Lighthouse meta tags (viewport, description, lang)
+- [ ] Update compose.prod.yaml if needed (resource limits, logging)
 
 ## Phase 7 — Native App & Widgets
 

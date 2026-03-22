@@ -1,0 +1,14 @@
+# SmartHabit cron jobs — run by Supercronic inside the PHP container
+# Format: minute hour day-of-month month day-of-week command
+
+# Every 15 minutes: check habits and dispatch push notifications
+*/15 * * * * php /app/bin/console app:check-habits --no-interaction 2>&1
+
+# Nightly 03:00 UTC: learn adaptive time windows
+0 3 * * * php /app/bin/console app:learn-timewindows --no-interaction 2>&1
+
+# Nightly 03:30 UTC: pre-compute statistics
+30 3 * * * php /app/bin/console app:compute-stats --no-interaction 2>&1
+
+# Nightly 04:00 UTC: cleanup stale push subscriptions
+0 4 * * * php /app/bin/console app:cleanup-push-subscriptions --no-interaction 2>&1
