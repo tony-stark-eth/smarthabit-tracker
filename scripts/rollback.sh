@@ -13,14 +13,9 @@ COMPOSE_FILES="-f compose.yaml -f compose.prod.yaml"
 echo "Rolling back to ${REPO}:${TAG}..."
 
 docker pull "${REPO}:${TAG}"
-docker tag "${REPO}:${TAG}" "${REPO}:current"
+docker tag "${REPO}:${TAG}" app-php:prod
 
-docker compose ${COMPOSE_FILES} up -d --no-build
+# --wait blocks until health check passes (entrypoint handles migrations)
+docker compose ${COMPOSE_FILES} up -d --no-build --wait --wait-timeout 120
 
-sleep 10
-if curl -sf http://localhost/api/v1/health > /dev/null; then
-    echo "Rollback successful"
-else
-    echo "ERROR: Health check failed after rollback"
-    exit 1
-fi
+echo "Rollback successful"

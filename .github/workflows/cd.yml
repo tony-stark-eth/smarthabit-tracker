@@ -75,23 +75,14 @@ jobs:
           script: |
             cd /opt/smarthabit
 
-            # Pull latest image
+            # Pull new image
             docker pull ghcr.io/${{ github.repository }}/app:${{ github.sha }}
+            docker tag ghcr.io/${{ github.repository }}/app:${{ github.sha }} app-php:prod
 
-            # Tag as current
-            docker tag ghcr.io/${{ github.repository }}/app:${{ github.sha }} ghcr.io/${{ github.repository }}/app:current
-
-            # Run migrations before switching traffic
-            docker compose -f compose.yaml -f compose.prod.yaml run --rm \
-              -e DATABASE_URL="${DATABASE_URL}" \
-              php php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
-
-            # Restart services with new image
-            docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build
-
-            # Verify health
-            sleep 10
-            curl -sf http://localhost/api/v1/health || exit 1
+            # Restart — entrypoint handles DB wait + migrations automatically.
+            # Docker health check (start_period: 60s) ensures the container is
+            # serving before Compose considers it healthy.
+            docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait --wait-timeout 120
 
             echo "Deployment complete: ${{ github.sha }}"
 

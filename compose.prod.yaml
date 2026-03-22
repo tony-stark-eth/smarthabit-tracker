@@ -22,9 +22,10 @@ services:
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/api/v1/health"]
-      interval: 30s
+      interval: 10s
       timeout: 5s
       retries: 3
+      start_period: 60s  # entrypoint waits for DB + runs migrations before serving
     deploy:
       resources:
         limits:
