@@ -127,7 +127,7 @@
 - [x] Phase 4 complete (MAD algorithm, learned windows)
 - [x] Phase 5 complete (stats, heatmaps, streaks)
 - [x] Phase 6 complete (GlitchTip, backups, deploy docs, smoke tests)
-- [x] Phase 6.5 partial (38 E2E tests written, 11 pass in CI, rest need local debugging — continue-on-error in CI)
+- [x] Phase 6.5 COMPLETE (38 E2E tests, all green locally, continue-on-error removed from CI)
 
 ### Session 5 additional notes
 - Phase 6 added: Sentry/GlitchTip, backup scripts, crontab, deploy docs, smoke tests
@@ -139,15 +139,48 @@
 ### What to do next (Phase 7+)
 - Phase 7: Native App & Widgets (Capacitor, ntfy, APNs, iOS/Android widgets)
 - Phase 8: CI/CD Automation (GitHub Actions CD, GHCR, SSH deploy, Lighthouse CI)
-- E2E fix: debug remaining 27 failures locally with Docker + Playwright UI mode
 - Infection MSI: write more unit tests to raise path coverage MSI from 61% toward 80%
 
 ### Repos
 - Template: https://github.com/tony-stark-eth/template-symfony-sveltekit (v1.0.0)
 - SmartHabit: https://github.com/tony-stark-eth/smarthabit-tracker
 
-### Current test count: 132 backend tests, 346 assertions + 26 E2E tests
-### CI: 4 parallel backend jobs (ECS, PHPStan, Rector, Tests+Infection) + Frontend CI
+### Current test count: 132 backend tests, 346 assertions + 38 E2E tests (all green)
+### CI: 4 parallel backend jobs (ECS, PHPStan, Rector, Tests+Infection) + Frontend CI + E2E
+
+---
+
+## Session 6 — 2026-03-22
+
+### What happened
+- Fixed all 38 E2E tests (were 11/38, now 38/38 green)
+- Removed continue-on-error from CI E2E workflow
+- Backported JWT key path fix to template repo
+
+### Root causes found & fixed
+1. **JWT key paths broken**: `%env(JWT_SECRET_KEY)%` resolved to literal `%kernel.project_dir%/...` (env vars don't resolve Symfony parameters). Fix: use `%kernel.project_dir%` directly
+2. **Rate limiter too strict in dev**: 3 registrations/15min — E2E tests hit cap immediately. Fix: only enforce in prod
+3. **Login field name mismatch**: Auth store sent `{username}` but `security.php` has `username_path: 'email'`. Fix: send `{email}`
+4. **Missing refresh_token handling**: Register/login don't return refresh_token, auth store stored `undefined`. Fix: optional type + guard
+5. **SSR crash on settings page**: `localStorage.getItem('theme')` at module level crashes during SvelteKit SSR. Fix: `typeof localStorage !== 'undefined'` guard
+
+### Key discoveries (apply to all future phases)
+- **%env() cannot resolve %parameter%**: Symfony env var processors don't interpret `%kernel.project_dir%`. Use the parameter directly in PHP config
+- **Rate limiters in dev/test should be relaxed**: Only enforce production limits in prod. Dev/test need 10000+ for E2E
+- **Svelte 5 module-level $state with browser APIs**: Any `localStorage`/`document` access in `$state()` initializer must be guarded for SSR
+- **Playwright getByText() strict mode**: When multiple elements match (e.g., "Today" in nav + content), use a more specific regex
+
+### Template backport
+- JWT key path fix applied to template-symfony-sveltekit repo
+
+### Status
+- [x] 38/38 E2E tests green locally
+- [x] continue-on-error removed from CI
+- [x] Template repo updated
+
+### Next steps
+- Push both repos, verify CI green
+- Resume Phase 7 planning
 
 ### User preferences (apply in future sessions)
 - Use Sonnet (model: "sonnet") for sub-agents doing concrete work

@@ -525,7 +525,7 @@ Wave 1 (parallel):
 
 ## Phase 6.5 — E2E Tests (Playwright)
 
-**Status**: ⚠️ PARTIAL (11/38 E2E pass, CI non-blocking)
+**Status**: ✅ COMPLETE (38/38 E2E green, CI blocking)
 **Rationale**: Unit + integration tests verify backend logic. E2E tests verify the actual user experience end-to-end through the browser.
 
 - [ ] Register → Login → Dashboard loads with empty state

@@ -20,11 +20,11 @@ Template: https://github.com/tony-stark-eth/template-symfony-sveltekit
 ## Current State (Phase 6.5 complete)
 
 - **132 backend tests**, 346 assertions (unit + integration)
-- **38 E2E tests** (Playwright, 11 pass in CI, rest need local debugging)
+- **38 E2E tests** (Playwright, all green)
 - **Infection mutation testing** with Xdebug path coverage (MSI 61%, threshold 50%)
 - **4 parallel CI jobs**: ECS, PHPStan, Rector, Tests+Infection
-- **Separate E2E CI job** with continue-on-error
-- Phases 0–6 complete, Phase 6.5 partial, Phases 7–8 remaining
+- **E2E CI job** (blocking, 1 worker + 2 retries)
+- Phases 0–6.5 complete, Phases 7–8 remaining
 
 ## Guidelines
 
@@ -62,6 +62,7 @@ Template: https://github.com/tony-stark-eth/template-symfony-sveltekit
 - **Infection** runs its own PHPUnit (not --skip-initial-tests) to avoid coverage mismatch
 - **captainhook/plugin-composer** disabled via allow-plugins: false (plugin API, .git not in Docker)
 - **HouseholdAwareUserInterface** in Shared/Contract avoids Stats→Auth phpat violation
+- **JWT key paths**: use `%kernel.project_dir%` directly, NOT `%env(JWT_SECRET_KEY)%` (env vars don't resolve parameters)
 
 ## Planning Files
 
