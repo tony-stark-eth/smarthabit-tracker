@@ -59,6 +59,28 @@ final class StatsServiceTest extends TestCase
         self::assertSame(0, $this->service->currentStreak([]));
     }
 
+    public function testCurrentStreakWithDuplicateDatesCountsOnce(): void
+    {
+        // Two logs for today + one for yesterday → streak=2, not affected by duplicates
+        $today = new \DateTimeImmutable('today');
+        $yesterday = new \DateTimeImmutable('yesterday');
+
+        $result = $this->service->currentStreak([$today, $today, $yesterday]);
+
+        self::assertSame(2, $result);
+    }
+
+    public function testCurrentStreakExactlyTwoDays(): void
+    {
+        // Exactly today + yesterday → streak=2 (not 3 or more from off-by-one errors)
+        $today = new \DateTimeImmutable('today');
+        $yesterday = new \DateTimeImmutable('yesterday');
+
+        $result = $this->service->currentStreak([$today, $yesterday]);
+
+        self::assertSame(2, $result);
+    }
+
     // -------------------------------------------------------------------------
     // longestStreak
     // -------------------------------------------------------------------------
@@ -137,6 +159,191 @@ final class StatsServiceTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // longestStreak — additional edge cases
+    // -------------------------------------------------------------------------
+
+    public function testLongestStreakSingleDateReturnsOne(): void
+    {
+        $dates = [new \DateTimeImmutable('2024-03-15')];
+
+        self::assertSame(1, $this->service->longestStreak($dates));
+    }
+
+    public function testLongestStreakDuplicateDatesCountedOnce(): void
+    {
+        // Three entries for the same day must still count as streak=1
+        $dates = [
+            new \DateTimeImmutable('2024-03-15'),
+            new \DateTimeImmutable('2024-03-15'),
+            new \DateTimeImmutable('2024-03-15'),
+        ];
+
+        self::assertSame(1, $this->service->longestStreak($dates));
+    }
+
+    public function testLongestStreakTwoConsecutiveDaysReturnsTwo(): void
+    {
+        $dates = [
+            new \DateTimeImmutable('2024-03-15'),
+            new \DateTimeImmutable('2024-03-16'),
+        ];
+
+        self::assertSame(2, $this->service->longestStreak($dates));
+    }
+
+    public function testLongestStreakFirstStreakIsLonger(): void
+    {
+        // Streak 1: Jan 10-15 (6 days), Streak 2: Jan 20-21 (2 days)
+        $dates = [
+            new \DateTimeImmutable('2024-01-10'),
+            new \DateTimeImmutable('2024-01-11'),
+            new \DateTimeImmutable('2024-01-12'),
+            new \DateTimeImmutable('2024-01-13'),
+            new \DateTimeImmutable('2024-01-14'),
+            new \DateTimeImmutable('2024-01-15'),
+            new \DateTimeImmutable('2024-01-20'),
+            new \DateTimeImmutable('2024-01-21'),
+        ];
+
+        self::assertSame(6, $this->service->longestStreak($dates));
+    }
+
+    public function testLongestStreakDuplicateInMiddleOfStreakCountsOnce(): void
+    {
+        // Jan1, Jan2 (duplicate), Jan2, Jan3 → unique: [Jan1, Jan2, Jan3] → streak=3
+        // Without array_unique: [Jan1, Jan2, Jan2, Jan3] → diff(Jan2, Jan2)=0 → streak resets → longest=2
+        $dates = [
+            new \DateTimeImmutable('2024-01-01'),
+            new \DateTimeImmutable('2024-01-02'),
+            new \DateTimeImmutable('2024-01-02'), // duplicate
+            new \DateTimeImmutable('2024-01-03'),
+        ];
+
+        self::assertSame(3, $this->service->longestStreak($dates));
+    }
+
+    public function testLongestStreakWithUnsortedInputSortsByDate(): void
+    {
+        // Dates given in scrambled order — sort() must fix this
+        // Without sort: [Jan3, Jan1, Jan2] → diff(Jan3,Jan1)=2 reset, diff(Jan1,Jan2)=1 → longest=2
+        // With sort: [Jan1, Jan2, Jan3] → consecutive streak=3
+        $dates = [
+            new \DateTimeImmutable('2024-01-03'),
+            new \DateTimeImmutable('2024-01-01'),
+            new \DateTimeImmutable('2024-01-02'),
+        ];
+
+        self::assertSame(3, $this->service->longestStreak($dates));
+    }
+
+    // -------------------------------------------------------------------------
+    // completionRate — additional edge cases
+    // -------------------------------------------------------------------------
+
+    public function testCompletionRateDuplicateDaysCountedOnce(): void
+    {
+        // 3 entries for 1 unique day out of 10 = 0.1
+        $dates = [
+            new \DateTimeImmutable('2024-01-01'),
+            new \DateTimeImmutable('2024-01-01'),
+            new \DateTimeImmutable('2024-01-01'),
+        ];
+
+        self::assertEqualsWithDelta(0.1, $this->service->completionRate($dates, 10), 0.001);
+    }
+
+    public function testCompletionRateCapsAtOne(): void
+    {
+        // More unique days than period days must cap at 1.0
+        $dates = [
+            new \DateTimeImmutable('2024-01-01'),
+            new \DateTimeImmutable('2024-01-02'),
+            new \DateTimeImmutable('2024-01-03'),
+        ];
+
+        self::assertEqualsWithDelta(1.0, $this->service->completionRate($dates, 2), 0.001);
+    }
+
+    // -------------------------------------------------------------------------
+    // averageCompletionTime — additional edge cases
+    // -------------------------------------------------------------------------
+
+    public function testAverageCompletionTimeSingleEntryReturnsThatValue(): void
+    {
+        // 09:30 = 9*60 + 30 = 570
+        $times = [new \DateTimeImmutable('09:30')];
+
+        self::assertSame(570, $this->service->averageCompletionTime($times));
+    }
+
+    public function testAverageCompletionTimeEvenCountUsesAverageOfMiddleTwo(): void
+    {
+        // 08:00 = 480, 08:10 = 490, 08:20 = 500, 08:30 = 510
+        // Sorted: [480, 490, 500, 510] count=4, mid=2
+        // Even path: (minutes[1] + minutes[2]) / 2 = (490 + 500) / 2 = 495
+        $times = [
+            new \DateTimeImmutable('08:00'),
+            new \DateTimeImmutable('08:10'),
+            new \DateTimeImmutable('08:20'),
+            new \DateTimeImmutable('08:30'),
+        ];
+
+        self::assertSame(495, $this->service->averageCompletionTime($times));
+    }
+
+    public function testAverageCompletionTimeTwoEntriesUsesEvenPath(): void
+    {
+        // 08:00 = 480, 10:00 = 600; even: (480 + 600) / 2 = 540
+        $times = [
+            new \DateTimeImmutable('08:00'),
+            new \DateTimeImmutable('10:00'),
+        ];
+
+        self::assertSame(540, $this->service->averageCompletionTime($times));
+    }
+
+    public function testAverageCompletionTimeMinutesPartIsUsed(): void
+    {
+        // 07:45 = 7*60+45 = 465; ensure (int)format('i') is included correctly
+        $times = [new \DateTimeImmutable('07:45')];
+
+        self::assertSame(465, $this->service->averageCompletionTime($times));
+    }
+
+    public function testAverageCompletionTimeHourContributesCorrectly(): void
+    {
+        // Midnight: 00:00 = 0; 01:00 = 60; ensure (int)format('G') scales by 60
+        $times = [new \DateTimeImmutable('01:00')];
+
+        self::assertSame(60, $this->service->averageCompletionTime($times));
+    }
+
+    public function testAverageCompletionTimeEvenCountRoundsHalfUp(): void
+    {
+        // 08:00 = 480, 08:21 = 501 (odd sum: 480+501=981, /2=490.5)
+        // round(490.5) = 491, floor(490.5) = 490 → distinguishes round from floor
+        $times = [
+            new \DateTimeImmutable('08:00'),
+            new \DateTimeImmutable('08:21'),
+        ];
+
+        self::assertSame(491, $this->service->averageCompletionTime($times));
+    }
+
+    public function testAverageCompletionTimeUnsortedInputGivesCorrectMedian(): void
+    {
+        // Without sort, [09:00, 08:00, 08:30] = [540, 480, 510], mid=1, returns 480 (wrong)
+        // With sort, [480, 510, 540], mid=1, returns 510 (correct)
+        $times = [
+            new \DateTimeImmutable('09:00'),
+            new \DateTimeImmutable('08:00'),
+            new \DateTimeImmutable('08:30'),
+        ];
+
+        self::assertSame(510, $this->service->averageCompletionTime($times));
+    }
+
+    // -------------------------------------------------------------------------
     // rateTrend
     // -------------------------------------------------------------------------
 
@@ -152,6 +359,19 @@ final class StatsServiceTest extends TestCase
         $trend = $this->service->rateTrend(0.4, 0.7);
 
         self::assertEqualsWithDelta(-0.3, $trend, 0.001);
+    }
+
+    public function testRateTrendRoundsToTwoDecimalPlaces(): void
+    {
+        // 0.8 - 0.575 = 0.225 → rounded to 2dp = 0.23, not 0.2 (1dp) or 0.225 (3dp)
+        $trend = $this->service->rateTrend(0.8, 0.575);
+
+        self::assertSame(0.23, $trend);
+    }
+
+    public function testRateTrendZeroWhenRatesAreEqual(): void
+    {
+        self::assertEqualsWithDelta(0.0, $this->service->rateTrend(0.5, 0.5), 0.001);
     }
 
     // -------------------------------------------------------------------------
@@ -180,6 +400,33 @@ final class StatsServiceTest extends TestCase
         self::assertSame(0, $heatmap[7]); // Sunday
     }
 
+    public function testWeekdayHeatmapContainsExactlySevenKeys(): void
+    {
+        $heatmap = $this->service->weekdayHeatmap([]);
+
+        self::assertCount(7, $heatmap);
+        for ($day = 1; $day <= 7; $day++) {
+            self::assertArrayHasKey($day, $heatmap);
+            self::assertSame(0, $heatmap[$day]);
+        }
+    }
+
+    public function testWeekdayHeatmapAllSevenDays(): void
+    {
+        // 2024-01-01 (Mon) through 2024-01-07 (Sun) covers all weekdays
+        $dates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $dates[] = new \DateTimeImmutable('2024-01-0' . ($i + 1));
+        }
+
+        $heatmap = $this->service->weekdayHeatmap($dates);
+
+        for ($day = 1; $day <= 7; $day++) {
+            self::assertArrayHasKey($day, $heatmap);
+            self::assertSame(1, $heatmap[$day], "Day {$day} should have count 1");
+        }
+    }
+
     // -------------------------------------------------------------------------
     // timeHeatmap
     // -------------------------------------------------------------------------
@@ -206,5 +453,31 @@ final class StatsServiceTest extends TestCase
         self::assertSame(1, $heatmap[22]);
         self::assertSame(0, $heatmap[0]);
         self::assertSame(0, $heatmap[23]);
+    }
+
+    public function testTimeHeatmapContainsExactlyTwentyFourKeys(): void
+    {
+        $heatmap = $this->service->timeHeatmap([]);
+
+        self::assertCount(24, $heatmap);
+        for ($hour = 0; $hour <= 23; $hour++) {
+            self::assertArrayHasKey($hour, $heatmap);
+            self::assertSame(0, $heatmap[$hour]);
+        }
+    }
+
+    public function testTimeHeatmapMidnightAndEndOfDay(): void
+    {
+        $times = [
+            new \DateTimeImmutable('00:00'),
+            new \DateTimeImmutable('23:59'),
+        ];
+
+        $heatmap = $this->service->timeHeatmap($times);
+
+        self::assertArrayHasKey(0, $heatmap);
+        self::assertArrayHasKey(23, $heatmap);
+        self::assertSame(1, $heatmap[0]);
+        self::assertSame(1, $heatmap[23]);
     }
 }

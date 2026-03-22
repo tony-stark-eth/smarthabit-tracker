@@ -248,5 +248,27 @@ test.describe('Dashboard dark mode', () => {
     });
 });
 
-// Stats page screenshot omitted — API response format mismatch prevents rendering.
-// Will be added once the stats frontend is fixed.
+// ---------------------------------------------------------------------------
+// Stats page
+// ---------------------------------------------------------------------------
+
+test.describe('Stats', () => {
+    test.use({ viewport: MOBILE });
+
+    test('10 — Stats page with data', async ({ page }) => {
+        const { token } = await registerAndLogin(page);
+
+        const h1 = await createHabit(page, token, 'Morning Run');
+        const h2 = await createHabit(page, token, 'Read 30 Minutes');
+        await createHabit(page, token, 'Drink 2L Water');
+
+        await logHabit(page, token, h1);
+        await logHabit(page, token, h2);
+
+        await page.goto('/stats');
+        await expect(page.getByText('Statistics')).toBeVisible({ timeout: 15_000 });
+        await page.waitForLoadState('networkidle');
+        await page.waitForTimeout(1000);
+        await shot(page, '10-stats');
+    });
+});

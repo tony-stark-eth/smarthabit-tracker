@@ -164,6 +164,68 @@ final class ApnsTransportTest extends TestCase
         self::assertNotNull($result->reason);
     }
 
+    public function testSendErrorWithJsonReasonExtractsReasonField(): void
+    {
+        // extractReason: JSON with 'reason' key must return that reason (not 'HTTP 400')
+        // Tests mutant: `$data['reason'] ?? 'HTTP %d'` coalesce operand swap
+        $subscription = [
+            'device_token' => 'some-token',
+        ];
+
+        $response = self::createStub(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getContent')->willReturn('{"reason":"BadDeviceToken"}');
+
+        $httpClient = self::createStub(HttpClientInterface::class);
+        $httpClient->method('request')->willReturn($response);
+
+        $transport = new ApnsTransport($httpClient, $this->jwtGenerator, self::BUNDLE_ID);
+        $result = $transport->send($subscription, $this->payload);
+
+        self::assertSame('BadDeviceToken', $result->reason);
+    }
+
+    public function testSendErrorWithEmptyBodyFallsBackToHttpStatusCode(): void
+    {
+        // extractReason: empty body must return 'HTTP 400', not extract reason from JSON
+        // Tests mutant: `$responseBody === ''` → `$responseBody !== ''`
+        $subscription = [
+            'device_token' => 'some-token',
+        ];
+
+        $response = self::createStub(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getContent')->willReturn('');
+
+        $httpClient = self::createStub(HttpClientInterface::class);
+        $httpClient->method('request')->willReturn($response);
+
+        $transport = new ApnsTransport($httpClient, $this->jwtGenerator, self::BUNDLE_ID);
+        $result = $transport->send($subscription, $this->payload);
+
+        self::assertSame('HTTP 400', $result->reason);
+    }
+
+    public function testSendErrorWithJsonMissingReasonFallsBackToHttpStatusCode(): void
+    {
+        // extractReason: JSON without 'reason' key must return 'HTTP 400'
+        $subscription = [
+            'device_token' => 'some-token',
+        ];
+
+        $response = self::createStub(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getContent')->willReturn('{"code":"SomeCode"}');
+
+        $httpClient = self::createStub(HttpClientInterface::class);
+        $httpClient->method('request')->willReturn($response);
+
+        $transport = new ApnsTransport($httpClient, $this->jwtGenerator, self::BUNDLE_ID);
+        $result = $transport->send($subscription, $this->payload);
+
+        self::assertSame('HTTP 400', $result->reason);
+    }
+
     public function testSendTransportExceptionReturnsFailureWithZeroStatusCode(): void
     {
         $subscription = [

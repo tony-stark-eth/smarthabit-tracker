@@ -19,9 +19,9 @@ Template: https://github.com/tony-stark-eth/template-symfony-sveltekit
 
 ## Current State (Phase 6.5 complete)
 
-- **194 backend tests**, 554 assertions (unit + integration)
+- **233 backend tests**, 701 assertions (unit + integration)
 - **38 E2E tests** (Playwright, all green)
-- **Infection mutation testing** with Xdebug path coverage (MSI 61%, threshold 50%)
+- **Infection mutation testing** with Xdebug path coverage (MSI 93%, threshold 80%)
 - **4 parallel CI jobs**: ECS, PHPStan, Rector, Tests+Infection
 - **E2E CI job** (blocking, 1 worker + 2 retries)
 - Phases 0–8 complete (Stage 4 native widgets deferred)

@@ -11,7 +11,6 @@
     },
     "logs": {
         "text": "var/infection/infection.log",
-        "html": "var/infection/infection.html",
         "summary": "var/infection/summary.log"
     },
     "tmpDir": "var/infection/tmp",
@@ -26,10 +25,15 @@
         "@default": true,
         "global-ignoreSourceCodeByRegex": [
             "\\?\\? 0"
-        ]
+        ],
+        "UnwrapRtrim": {
+            "ignore": [
+                "App\\Notification\\Service\\ApnsJwtGenerator"
+            ]
+        }
     },
     // Path coverage (--path-coverage) is stricter than line coverage.
-    // Current: MSI ~80%, Covered MSI ~61%. Target: raise as unit test coverage improves.
-    "minMsi": 50,
-    "minCoveredMsi": 50
+    // Current: MSI 92%, Covered MSI 92%. Remaining 35 escaped mutants are mostly harmless.
+    "minMsi": 80,
+    "minCoveredMsi": 80
 }

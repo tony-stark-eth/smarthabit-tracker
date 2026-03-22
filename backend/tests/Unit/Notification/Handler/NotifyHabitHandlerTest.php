@@ -9,6 +9,8 @@ use App\Habit\Entity\Habit;
 use App\Habit\Enum\HabitFrequency;
 use App\Household\Entity\Household;
 use App\Notification\Entity\NotificationLog;
+use App\Notification\Enum\NotificationChannel;
+use App\Notification\Enum\NotificationStatus;
 use App\Notification\Handler\NotifyHabitHandler;
 use App\Notification\Message\NotifyHabitMessage;
 use App\Notification\Service\Transport\PushPayload;
@@ -220,6 +222,260 @@ final class NotifyHabitHandlerTest extends TestCase
 
         self::assertInstanceOf(NotificationLog::class, $persistedLog);
         self::assertSame('Server Error', $persistedLog->getErrorReason());
+    }
+
+    public function testInvokeSkipsNullTransportAndProcessesNextSubscription(): void
+    {
+        // First subscription type has no matching transport (continue, not break)
+        // Second subscription type is 'web_push' which IS supported → one log persisted
+        $household = new Household('Test Household');
+        $user = new User($household, 'user@example.com', 'hashed', 'Alice');
+        $user->setPushSubscriptions([
+            [
+                'type' => 'unknown_transport',
+                'endpoint' => 'https://example.com/push1',
+                'keys' => [
+                    'p256dh' => 'key1',
+                    'auth' => 'auth1',
+                ],
+                'device_name' => 'Unknown',
+                'last_seen' => '2024-01-01',
+            ],
+            [
+                'type' => 'web_push',
+                'endpoint' => 'https://example.com/push2',
+                'keys' => [
+                    'p256dh' => 'key2',
+                    'auth' => 'auth2',
+                ],
+                'device_name' => 'Desktop',
+                'last_seen' => '2024-01-01',
+            ],
+        ]);
+
+        $habit = new Habit(
+            household: $household,
+            name: 'Morning Run',
+            frequency: HabitFrequency::DAILY,
+        );
+
+        // Transport only supports 'web_push', not 'unknown_transport'
+        $transport = self::createStub(PushTransportInterface::class);
+        $transport->method('supports')->willReturnCallback(
+            static fn (string $type): bool => $type === 'web_push',
+        );
+        $transport->method('send')->willReturn(PushResult::success(201));
+
+        $registry = new TransportRegistry([$transport]);
+
+        $persistCount = 0;
+        $em = $this->createMock(EntityManagerInterface::class);
+        $em->method('find')->willReturnCallback(
+            static function (string $class) use ($user, $habit): mixed {
+                return match ($class) {
+                    User::class => $user,
+                    Habit::class => $habit,
+                    default => null,
+                };
+            },
+        );
+        $em->method('persist')->willReturnCallback(
+            static function () use (&$persistCount): void {
+                ++$persistCount;
+            },
+        );
+        $em->expects(self::once())->method('flush');
+
+        $handler = new NotifyHabitHandler($em, $registry);
+        $handler(new NotifyHabitMessage(
+            $habit->getId()->toRfc4122(),
+            $user->getId()->toRfc4122(),
+        ));
+
+        // Only the second subscription (web_push) should have been persisted
+        self::assertSame(1, $persistCount, 'Only the second subscription should generate a log (continue skips first)');
+    }
+
+    public function testInvokeLogChannelFallsBackToWebPushWhenTypeUnknown(): void
+    {
+        // 'apns' is a valid NotificationChannel, but 'ntfy' is also valid.
+        // Use a type string that is NOT in the NotificationChannel enum to trigger the `?? WEB_PUSH` fallback
+        [$em, $user, $habit] = $this->buildEmWithUserAndHabit([
+            [
+                'type' => 'completely_unknown_type',
+                'endpoint' => 'https://example.com/push',
+                'keys' => [
+                    'p256dh' => 'key',
+                    'auth' => 'auth',
+                ],
+                'device_name' => 'Device',
+                'last_seen' => '2024-01-01',
+            ],
+        ]);
+
+        $transport = self::createStub(PushTransportInterface::class);
+        $transport->method('supports')->willReturn(true);
+        $transport->method('send')->willReturn(PushResult::success(201));
+
+        $registry = new TransportRegistry([$transport]);
+
+        $persistedLog = null;
+        $em->method('persist')->willReturnCallback(
+            static function (object $entity) use (&$persistedLog): void {
+                if ($entity instanceof NotificationLog) {
+                    $persistedLog = $entity;
+                }
+            },
+        );
+
+        $handler = new NotifyHabitHandler($em, $registry);
+        $handler(new NotifyHabitMessage(
+            $habit->getId()->toRfc4122(),
+            $user->getId()->toRfc4122(),
+        ));
+
+        self::assertInstanceOf(NotificationLog::class, $persistedLog);
+        self::assertSame(NotificationChannel::WEB_PUSH, $persistedLog->getChannel());
+    }
+
+    public function testInvokeLogStatusIsSentOnSuccessfulSend(): void
+    {
+        [$em, $user, $habit] = $this->buildEmWithUserAndHabit([
+            [
+                'type' => 'web_push',
+                'endpoint' => 'https://example.com/push',
+                'keys' => [
+                    'p256dh' => 'key',
+                    'auth' => 'auth',
+                ],
+                'device_name' => 'Desktop',
+                'last_seen' => '2024-01-01',
+            ],
+        ]);
+
+        $transport = self::createStub(PushTransportInterface::class);
+        $transport->method('supports')->willReturn(true);
+        $transport->method('send')->willReturn(PushResult::success(201));
+
+        $registry = new TransportRegistry([$transport]);
+
+        $persistedLog = null;
+        $em->method('persist')->willReturnCallback(
+            static function (object $entity) use (&$persistedLog): void {
+                if ($entity instanceof NotificationLog) {
+                    $persistedLog = $entity;
+                }
+            },
+        );
+
+        $handler = new NotifyHabitHandler($em, $registry);
+        $handler(new NotifyHabitMessage(
+            $habit->getId()->toRfc4122(),
+            $user->getId()->toRfc4122(),
+        ));
+
+        self::assertInstanceOf(NotificationLog::class, $persistedLog);
+        self::assertSame(NotificationStatus::SENT, $persistedLog->getStatus());
+    }
+
+    public function testInvokeLogStatusIsFailedOnFailedSend(): void
+    {
+        [$em, $user, $habit] = $this->buildEmWithUserAndHabit([
+            [
+                'type' => 'web_push',
+                'endpoint' => 'https://example.com/push',
+                'keys' => [
+                    'p256dh' => 'key',
+                    'auth' => 'auth',
+                ],
+                'device_name' => 'Desktop',
+                'last_seen' => '2024-01-01',
+            ],
+        ]);
+
+        $transport = self::createStub(PushTransportInterface::class);
+        $transport->method('supports')->willReturn(true);
+        $transport->method('send')->willReturn(PushResult::failure(500, 'Internal Error'));
+
+        $registry = new TransportRegistry([$transport]);
+
+        $persistedLog = null;
+        $em->method('persist')->willReturnCallback(
+            static function (object $entity) use (&$persistedLog): void {
+                if ($entity instanceof NotificationLog) {
+                    $persistedLog = $entity;
+                }
+            },
+        );
+
+        $handler = new NotifyHabitHandler($em, $registry);
+        $handler(new NotifyHabitMessage(
+            $habit->getId()->toRfc4122(),
+            $user->getId()->toRfc4122(),
+        ));
+
+        self::assertInstanceOf(NotificationLog::class, $persistedLog);
+        self::assertSame(NotificationStatus::FAILED, $persistedLog->getStatus());
+    }
+
+    public function testInvokeRemovesSubscriptionWithReindexedKeys(): void
+    {
+        // Two subscriptions: remove the first, second must be at index 0 afterwards
+        $sub1 = [
+            'type' => 'web_push',
+            'endpoint' => 'https://example.com/push1',
+            'keys' => [
+                'p256dh' => 'key1',
+                'auth' => 'auth1',
+            ],
+            'device_name' => 'Phone',
+            'last_seen' => '2024-01-01',
+        ];
+        $sub2 = [
+            'type' => 'web_push',
+            'endpoint' => 'https://example.com/push2',
+            'keys' => [
+                'p256dh' => 'key2',
+                'auth' => 'auth2',
+            ],
+            'device_name' => 'Desktop',
+            'last_seen' => '2024-01-01',
+        ];
+
+        [$em, $user, $habit] = $this->buildEmWithUserAndHabit([$sub1, $sub2]);
+
+        // First send returns shouldRemove=true, second returns success
+        $callCount = 0;
+        $transport = self::createStub(PushTransportInterface::class);
+        $transport->method('supports')->willReturn(true);
+        $transport->method('send')->willReturnCallback(
+            static function () use (&$callCount): PushResult {
+                ++$callCount;
+
+                return $callCount === 1
+                    ? PushResult::failure(410, 'Gone', shouldRemove: true)
+                    : PushResult::success(201);
+            },
+        );
+
+        $registry = new TransportRegistry([$transport]);
+        $em->method('persist');
+
+        $handler = new NotifyHabitHandler($em, $registry);
+        $handler(new NotifyHabitMessage(
+            $habit->getId()->toRfc4122(),
+            $user->getId()->toRfc4122(),
+        ));
+
+        $remaining = $user->getPushSubscriptions();
+        self::assertIsArray($remaining);
+        self::assertCount(1, $remaining);
+        // array_values reindex means index must be 0, not 1
+        self::assertArrayHasKey(0, $remaining);
+        $first = $remaining[0];
+        self::assertIsArray($first);
+        self::assertArrayHasKey('endpoint', $first);
+        self::assertSame('https://example.com/push2', $first['endpoint']);
     }
 
     /**

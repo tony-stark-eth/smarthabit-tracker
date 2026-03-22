@@ -119,11 +119,10 @@ final class StatsController extends AbstractController
 
         if ($habits === []) {
             return new JsonResponse([
-                'household_id' => $household->getId()->toRfc4122(),
-                'habits' => [],
-                'overall_completion_rate_30d' => 0.0,
+                'overall_completion_rate' => 0.0,
                 'weekday_heatmap' => array_fill(1, 7, 0),
                 'time_heatmap' => array_fill(0, 24, 0),
+                'habits' => [],
             ]);
         }
 
@@ -167,8 +166,9 @@ final class StatsController extends AbstractController
             );
 
             $habitStats[] = [
-                'habit_id' => $habitId,
-                'habit_name' => $habit->getName(),
+                'id' => $habitId,
+                'name' => $habit->getName(),
+                'icon' => $habit->getIcon(),
                 'completion_rate_30d' => $this->statsService->completionRate($dates30d, 30),
                 'current_streak' => $this->statsService->currentStreak(array_values($allDates)),
             ];
@@ -190,11 +190,10 @@ final class StatsController extends AbstractController
         $timeHeatmap = $this->statsService->timeHeatmap($allDates90d);
 
         return new JsonResponse([
-            'household_id' => $household->getId()->toRfc4122(),
-            'habits' => $habitStats,
-            'overall_completion_rate_30d' => $overallRate,
+            'overall_completion_rate' => $overallRate,
             'weekday_heatmap' => $weekdayHeatmap,
             'time_heatmap' => $timeHeatmap,
+            'habits' => $habitStats,
         ]);
     }
 }

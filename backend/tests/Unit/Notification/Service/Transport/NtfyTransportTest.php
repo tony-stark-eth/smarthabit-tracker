@@ -147,6 +147,59 @@ final class NtfyTransportTest extends TestCase
         self::assertNotNull($result->reason);
     }
 
+    public function testSend500ExactlyIsHandledAsServerError(): void
+    {
+        // Status 500 must match `>= 500` (not `> 500`), returning 'Server error' message
+        $subscription = [
+            'topic' => 'my-topic',
+        ];
+
+        $response = self::createStub(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(500);
+
+        $httpClient = self::createStub(HttpClientInterface::class);
+        $httpClient->method('request')->willReturn($response);
+
+        $transport = new NtfyTransport($httpClient, self::SERVER_URL);
+        $result = $transport->send($subscription, $this->payload);
+
+        self::assertFalse($result->success);
+        self::assertSame(500, $result->statusCode);
+        self::assertFalse($result->shouldRemoveSubscription);
+        self::assertStringContainsString('500', (string) $result->reason);
+        self::assertStringContainsString('Server error', (string) $result->reason);
+    }
+
+    public function testSend5xxMessageDiffersFromUnexpectedStatus(): void
+    {
+        // Status 500 returns 'Server error: 500', distinguishable from 'Unexpected status: 400'
+        $subscription = [
+            'topic' => 'my-topic',
+        ];
+
+        $responseServer = self::createStub(ResponseInterface::class);
+        $responseServer->method('getStatusCode')->willReturn(500);
+
+        $responseUnexpected = self::createStub(ResponseInterface::class);
+        $responseUnexpected->method('getStatusCode')->willReturn(400);
+
+        $httpClient1 = self::createStub(HttpClientInterface::class);
+        $httpClient1->method('request')->willReturn($responseServer);
+
+        $httpClient2 = self::createStub(HttpClientInterface::class);
+        $httpClient2->method('request')->willReturn($responseUnexpected);
+
+        $transport1 = new NtfyTransport($httpClient1, self::SERVER_URL);
+        $transport2 = new NtfyTransport($httpClient2, self::SERVER_URL);
+
+        $result500 = $transport1->send($subscription, $this->payload);
+        $result400 = $transport2->send($subscription, $this->payload);
+
+        self::assertNotSame($result500->reason, $result400->reason);
+        self::assertStringContainsString('Server error', (string) $result500->reason);
+        self::assertStringContainsString('Unexpected status', (string) $result400->reason);
+    }
+
     public function testSendTransportExceptionReturnsFailure(): void
     {
         $subscription = [

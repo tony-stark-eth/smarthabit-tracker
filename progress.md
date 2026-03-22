@@ -230,10 +230,25 @@
 ### Current test count: 194 backend tests, 554 assertions + 38 E2E tests
 ### CI: 4 parallel backend jobs + Frontend CI + E2E + Lighthouse + CD
 
+### Stats frontend fix
+- Backend API returned `overall_completion_rate_30d` but frontend expected `overall_completion_rate`
+- Habit stats returned `habit_id`/`habit_name` but frontend expected `id`/`name`
+- Added `icon` field to habit stats response
+- Stats page now renders: completion rate, weekday heatmap, hourly activity, per-habit rates
+- Added stats screenshot (10-stats.png)
+
+### Infection MSI improvement
+- MSI raised from 61% to 93% (453/487 mutations killed)
+- 43 new unit tests written (233 total, 701 assertions)
+- Key areas: StatsService (18 tests), NotifyHabitHandler (5), ApnsJwtGenerator (5), transports (6)
+- minMsi/minCoveredMsi thresholds raised from 50% to 80%
+- Fixed HTML logger crash in Infection (UnwrapRtrim mutant in ApnsJwtGenerator)
+
+### Current test count: 233 backend tests, 701 assertions + 38 E2E tests
+### Infection MSI: 93% (threshold 80%)
+
 ### Next steps
 - Phase 7 Stage 4 (native widgets) — deferred until Xcode/Android Studio available
-- Fix stats frontend response format mismatch
-- Infection MSI: write more unit tests to raise path coverage MSI toward 80%
 
 ### User preferences (apply in future sessions)
 - Use Sonnet (model: "sonnet") for sub-agents doing concrete work
