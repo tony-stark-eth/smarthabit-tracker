@@ -125,13 +125,15 @@
 - [x] Phase 2 complete (PWA, Mercure, history, offline)
 - [x] Phase 3 complete (Web Push, cron, messenger)
 - [x] Phase 4 complete (MAD algorithm, learned windows)
-- [ ] Phase 5 in progress (stats service, charts, heatmaps)
+- [x] Phase 5 complete (stats, heatmaps, streaks)
+- [x] Phase 6 complete (GlitchTip, backups, deploy docs, smoke tests)
+- [x] Phase 6.5 complete (26 Playwright E2E tests)
 
 ### Repos
 - Template: https://github.com/tony-stark-eth/template-symfony-sveltekit (v1.0.0)
 - SmartHabit: https://github.com/tony-stark-eth/smarthabit-tracker
 
-### Current test count: 117 tests, 315 assertions
+### Current test count: 132 backend tests, 346 assertions + 26 E2E tests
 ### CI: 4 parallel backend jobs (ECS, PHPStan, Rector, Tests+Infection) + Frontend CI
 
 ### User preferences (apply in future sessions)
