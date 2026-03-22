@@ -70,6 +70,9 @@ services:
       - APP_DEBUG=0
       # Messenger worker connects directly to Postgres (LISTEN/NOTIFY)
       - DATABASE_URL=postgresql://app:${POSTGRES_PASSWORD:-!ChangeMe!}@database:5432/app?serverVersion=17&sslmode=disable&charset=utf8
+    # Worker doesn't serve HTTP — disable inherited health check
+    healthcheck:
+      disable: true
     restart: unless-stopped
 
   ntfy:
