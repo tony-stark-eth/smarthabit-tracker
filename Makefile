@@ -1,4 +1,4 @@
-.PHONY: help up down build logs shell quality ecs ecs-check phpstan rector rector-check test test-unit test-integration infection infection-fast frontend-install frontend-dev frontend-build frontend-check frontend-lint db-migrate db-diff db-reset tofu-init tofu-plan tofu-apply
+.PHONY: help up down build logs shell quality ecs ecs-check phpstan rector rector-check test test-unit test-integration infection infection-fast frontend-install frontend-dev frontend-build frontend-check frontend-lint db-migrate db-diff db-reset tofu-init tofu-plan tofu-apply tofu-destroy deploy-init deploy deploy-rollback deploy-logs deploy-destroy
 
 help:                 ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -100,3 +100,59 @@ tofu-plan:            ## OpenTofu plan (dry-run)
 
 tofu-apply:           ## OpenTofu apply (WARNING: creates real resources!)
 	cd infrastructure && tofu apply
+
+tofu-destroy:         ## OpenTofu destroy (removes all cloud resources, stops billing)
+	cd infrastructure && tofu destroy
+
+# ── Production Deployment ─────────────────────────────
+PROD_COMPOSE = docker compose -f compose.yaml -f compose.prod.yaml
+DEPLOY_HOST  ?= $(shell grep DEPLOY_HOST .env 2>/dev/null | cut -d= -f2)
+
+deploy-init:          ## First-time server setup (run locally, SSHs into server)
+	@echo "── Provisioning infrastructure ──"
+	cd infrastructure && tofu init && tofu apply
+	@echo ""
+	@echo "── Setting up server ──"
+	ssh $(DEPLOY_HOST) '\
+		apt-get update && apt-get install -y docker.io docker-compose-plugin && \
+		systemctl enable docker && \
+		mkdir -p /opt/smarthabit'
+	@echo ""
+	@echo "── Cloning repo on server ──"
+	ssh $(DEPLOY_HOST) '\
+		git clone https://github.com/tony-stark-eth/smarthabit-tracker /opt/smarthabit || \
+		(cd /opt/smarthabit && git pull)'
+	@echo ""
+	@echo "── Copy .env to server (edit secrets first!) ──"
+	scp .env.example $(DEPLOY_HOST):/opt/smarthabit/.env
+	@echo ""
+	@echo "Done. Next steps:"
+	@echo "  1. ssh $(DEPLOY_HOST)"
+	@echo "  2. Edit /opt/smarthabit/.env (DATABASE_URL, JWT_PASSPHRASE, VAPID keys)"
+	@echo "  3. make deploy"
+
+deploy:               ## Deploy latest main to production
+	ssh $(DEPLOY_HOST) '\
+		cd /opt/smarthabit && \
+		git pull && \
+		docker compose -f compose.yaml -f compose.prod.yaml build --pull && \
+		docker compose -f compose.yaml -f compose.prod.yaml up -d --wait --wait-timeout 120'
+	@echo "Deploy complete."
+
+deploy-rollback:      ## Rollback to previous image (usage: make deploy-rollback TAG=abc1234)
+	ssh $(DEPLOY_HOST) '\
+		cd /opt/smarthabit && \
+		docker pull ghcr.io/tony-stark-eth/smarthabit-tracker/app:$(or $(TAG),latest) && \
+		docker tag ghcr.io/tony-stark-eth/smarthabit-tracker/app:$(or $(TAG),latest) app-php:prod && \
+		docker compose -f compose.yaml -f compose.prod.yaml up -d --no-build --wait --wait-timeout 120'
+	@echo "Rollback complete."
+
+deploy-logs:          ## Follow production logs
+	ssh $(DEPLOY_HOST) 'cd /opt/smarthabit && docker compose -f compose.yaml -f compose.prod.yaml logs -f'
+
+deploy-destroy:       ## Tear down everything (server + infra, stops all billing)
+	@echo "This will DESTROY the production server and all data."
+	@read -p "Type 'yes' to confirm: " confirm && [ "$$confirm" = "yes" ] || exit 1
+	ssh $(DEPLOY_HOST) 'cd /opt/smarthabit && docker compose -f compose.yaml -f compose.prod.yaml down -v' || true
+	cd infrastructure && tofu destroy
+	@echo "All resources destroyed. Billing stopped."
