@@ -523,6 +523,21 @@ Wave 1 (parallel):
 - [ ] Frontend Lighthouse meta tags (viewport, description, lang)
 - [ ] Update compose.prod.yaml if needed (resource limits, logging)
 
+## Phase 6.5 — E2E Tests (Playwright)
+
+**Status**: IN PROGRESS
+**Rationale**: Unit + integration tests verify backend logic. E2E tests verify the actual user experience end-to-end through the browser.
+
+- [ ] Register → Login → Dashboard loads with empty state
+- [ ] Create habit → appears on dashboard → tap to log → green indicator
+- [ ] Settings: change language → UI switches to German
+- [ ] Settings: change theme → dark mode applies
+- [ ] History: create logs → navigate to history → logs visible
+- [ ] GDPR: export data → download triggers
+- [ ] Household: display invite code → copy works
+- [ ] Offline: disconnect → tap log → reconnect → syncs
+- [ ] PWA: manifest served correctly, SW registers
+
 ## Phase 7 — Native App & Widgets
 
 - [ ] **Stufe 2**: Multi-transport push (Strategy Pattern) + Capacitor app
