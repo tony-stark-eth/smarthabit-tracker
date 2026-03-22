@@ -26,6 +26,7 @@ return static function (ContainerConfigurator $container): void {
             ],
             'routing' => [
                 'Symfony\Component\Mailer\Messenger\SendEmailMessage' => 'async',
+                'App\Notification\Message\NotifyHabitMessage' => 'async',
             ],
         ],
     ]);

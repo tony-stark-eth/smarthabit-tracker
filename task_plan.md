@@ -407,14 +407,53 @@ Wave 2 (integration):
 
 ## Phase 3 — Notifications (Web Push only)
 
-- [ ] VAPID key pair, `minishlink/web-push` integration
-- [ ] Push subscription registration + lifecycle
-- [ ] Service Worker push handler
-- [ ] Cron + Messenger Worker (per-user timezone check)
-- [ ] NotificationLog + deduplication
-- [ ] Notification tap → app opens + logs
-- [ ] Cleanup command
-- [ ] Unit + Integration tests, Infection MSI ≥ 80%
+**Status**: IN PROGRESS
+**Scope**: Web Push via minishlink/web-push. No ntfy/APNs (Phase 7).
+
+### 3.1 — Wave 1: Backend infrastructure (parallel)
+
+**Agent A (sonnet): Web Push service + subscription endpoints**
+- [ ] `composer require minishlink/web-push`
+- [ ] VAPID key generation command or env var setup
+- [ ] `POST /api/v1/user/push-subscription` — idempotent upsert (by endpoint)
+- [ ] `DELETE /api/v1/user/push-subscription` — remove by endpoint
+- [ ] `WebPushService` wrapper around minishlink/web-push
+- [ ] Add `pushMessageId` + `errorReason` nullable columns to NotificationLog + migration
+- [ ] Handle HTTP 410 (Gone) → remove stale subscription immediately
+
+**Agent B (sonnet): Cron command + Messenger handler**
+- [ ] `app:check-habits` console command: load habits + users, check timezone + time window + frequency + deduplication, dispatch NotifyHabitMessage
+- [ ] `NotifyHabitMessage` (async message) + `NotifyHabitHandler` (sends Web Push, persists NotificationLog)
+- [ ] Dedup: check NotificationLog for today (user timezone) before dispatching
+- [ ] Messenger config: async transport for notifications
+- [ ] Supercronic crontab: every 15 min
+
+### 3.2 — Wave 2: Frontend + Cleanup (parallel)
+
+**Agent C (sonnet): Service Worker push + frontend subscription**
+- [ ] Service Worker: `push` event → showNotification with actions (Log ✓ / Later)
+- [ ] Service Worker: `notificationclick` → POST log + open app
+- [ ] Frontend: request notification permission on dashboard load
+- [ ] Frontend: register push subscription via POST /api/v1/user/push-subscription
+- [ ] Frontend: send VAPID public key for subscription
+
+**Agent D (sonnet): Cleanup command + tests**
+- [ ] `app:cleanup-push-subscriptions` command: remove entries where last_seen > 30 days
+- [ ] Integration tests: push subscription CRUD, check-habits dispatches message, cleanup removes stale
+- [ ] Unit tests: TimeWindowChecker, dedup logic, subscription manager
+- [ ] Infection MSI ≥ 80%
+
+### 3 Parallelization Map
+
+```
+Wave 1 (parallel):
+  Agent A (sonnet): [Web Push service + subscription API  ]
+  Agent B (sonnet): [Cron command + Messenger handler     ]
+
+Wave 2 (needs Wave 1):
+  Agent C (sonnet): [Service Worker push + frontend sub   ]
+  Agent D (sonnet): [Cleanup + tests + Infection          ]
+```
 
 ## Phase 4 — Intelligence
 

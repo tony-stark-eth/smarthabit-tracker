@@ -48,6 +48,7 @@ return static function (ContainerConfigurator $container): void {
             ['path' => '^/api/v1/health', 'roles' => 'PUBLIC_ACCESS'],
             ['path' => '^/api/v1/privacy', 'roles' => 'PUBLIC_ACCESS'],
             ['path' => '^/api/v1/password/(forgot|reset)', 'roles' => 'PUBLIC_ACCESS'],
+            ['path' => '^/api/v1/vapid-key', 'roles' => 'PUBLIC_ACCESS'],
             ['path' => '^/api/v1/', 'roles' => 'ROLE_USER'],
         ],
     ]);

@@ -15,5 +15,7 @@ return static function (ContainerConfigurator $container): void {
             '../src/DependencyInjection/',
             '../src/Entity/',
             '../src/Kernel.php',
+            '../src/Notification/Service/WebPushService.php',
+            '../src/Notification/Controller/PushSubscriptionController.php',
         ]);
 };

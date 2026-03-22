@@ -35,6 +35,10 @@ final class NotificationLog
         #[ORM\ManyToOne(targetEntity: Habit::class)]
         #[ORM\JoinColumn(nullable: true)]
         private readonly ?Habit $habit = null,
+        #[ORM\Column(type: Types::STRING, length: 255, nullable: true)]
+        private ?string $pushMessageId = null,
+        #[ORM\Column(type: Types::TEXT, nullable: true)]
+        private ?string $errorReason = null,
     ) {
         $this->id = Uuid::v7();
     }
@@ -77,5 +81,25 @@ final class NotificationLog
     public function setStatus(NotificationStatus $status): void
     {
         $this->status = $status;
+    }
+
+    public function getPushMessageId(): ?string
+    {
+        return $this->pushMessageId;
+    }
+
+    public function setPushMessageId(?string $pushMessageId): void
+    {
+        $this->pushMessageId = $pushMessageId;
+    }
+
+    public function getErrorReason(): ?string
+    {
+        return $this->errorReason;
+    }
+
+    public function setErrorReason(?string $errorReason): void
+    {
+        $this->errorReason = $errorReason;
     }
 }
