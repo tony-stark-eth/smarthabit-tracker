@@ -8,10 +8,11 @@
 Household habit tracking app with adaptive notifications. Track daily habits, get smart reminders based on your patterns, and share progress with your household.
 
 <p align="center">
-  <img src="docs/screenshots/04-dashboard-progress.png" width="200" alt="Dashboard" />
-  <img src="docs/screenshots/05-dashboard-alldone.png" width="200" alt="All Done" />
-  <img src="docs/screenshots/09-dashboard-dark.png" width="200" alt="Dark Mode" />
-  <img src="docs/screenshots/07-settings-light.png" width="200" alt="Settings" />
+  <img src="docs/screenshots/01-login.png" width="180" alt="Login" />
+  <img src="docs/screenshots/04-dashboard-progress.png" width="180" alt="Dashboard — partial progress" />
+  <img src="docs/screenshots/05-dashboard-alldone.png" width="180" alt="Dashboard — all done" />
+  <img src="docs/screenshots/09-dashboard-dark.png" width="180" alt="Dashboard — dark mode" />
+  <img src="docs/screenshots/10-stats.png" width="180" alt="Statistics" />
 </p>
 
 ## Features
@@ -55,15 +56,14 @@ docker compose exec php vendor/bin/phpunit
 cd frontend && bun install && bun run test:e2e
 ```
 
-## Screenshots
+<details>
+<summary><strong>More Screenshots</strong></summary>
 
-| Login | Empty Dashboard | Progress | All Done |
-|:---:|:---:|:---:|:---:|
-| ![Login](docs/screenshots/01-login.png) | ![Empty](docs/screenshots/03-dashboard-empty.png) | ![Progress](docs/screenshots/04-dashboard-progress.png) | ![Done](docs/screenshots/05-dashboard-alldone.png) |
+| Register | Empty State | One-Tap Logging | Settings (Light) | Settings (Dark) |
+|:---:|:---:|:---:|:---:|:---:|
+| <img src="docs/screenshots/02-register.png" width="160" /> | <img src="docs/screenshots/03-dashboard-empty.png" width="160" /> | <img src="docs/screenshots/06-dashboard-tap.png" width="160" /> | <img src="docs/screenshots/07-settings-light.png" width="160" /> | <img src="docs/screenshots/08-settings-dark.png" width="160" /> |
 
-| Settings (Light) | Settings (Dark) | Dashboard (Dark) | Stats |
-|:---:|:---:|:---:|:---:|
-| ![Light](docs/screenshots/07-settings-light.png) | ![Dark](docs/screenshots/08-settings-dark.png) | ![Dark Dashboard](docs/screenshots/09-dashboard-dark.png) | ![Stats](docs/screenshots/10-stats.png) |
+</details>
 
 ## Architecture
 
