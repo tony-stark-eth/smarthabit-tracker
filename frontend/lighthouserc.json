@@ -1,9 +1,6 @@
 {
   "ci": {
     "collect": {
-      "startServerCommand": "node_modules/.bin/sirv build --single --port 8080 --quiet",
-      "startServerReadyPattern": "ready",
-      "url": ["http://localhost:8080/"],
       "numberOfRuns": 3,
       "settings": {
         "chromeFlags": "--no-sandbox"

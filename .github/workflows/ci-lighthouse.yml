@@ -21,15 +21,30 @@ jobs:
         with:
           bun-version: latest
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Install and build
         working-directory: frontend
         run: |
           bun install --frozen-lockfile
           bun run build
 
+      - name: Start static server
+        working-directory: frontend
+        run: npx -y sirv-cli build --single --port 8080 --quiet &
+
+      - name: Wait for server
+        run: |
+          for i in $(seq 1 15); do
+            curl -s http://localhost:8080 > /dev/null && break
+            sleep 1
+          done
+
       - name: Lighthouse audit
         uses: treosh/lighthouse-ci-action@v12
         with:
+          urls: http://localhost:8080/
           uploadArtifacts: true
           configPath: frontend/lighthouserc.json
-          workingDir: frontend
