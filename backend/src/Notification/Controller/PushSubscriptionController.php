@@ -327,7 +327,7 @@ final class PushSubscriptionController extends AbstractController
         /** @var array<int, array<string, mixed>> $subscriptions */
         $subscriptions = $user->getPushSubscriptions() ?? [];
 
-        $now = (new \DateTimeImmutable())->format(\DateTimeInterface::ATOM);
+        $now = new \DateTimeImmutable()->format(\DateTimeInterface::ATOM);
         $identifier = $this->getIdentifierForType($type, $data);
         $identifierKey = match ($type) {
             'web_push' => 'endpoint',

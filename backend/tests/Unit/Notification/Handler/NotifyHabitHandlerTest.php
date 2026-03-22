@@ -198,12 +198,10 @@ final class NotifyHabitHandlerTest extends TestCase
         $persistedLog = null;
         $em = self::createStub(EntityManagerInterface::class);
         $em->method('find')->willReturnCallback(
-            static function (string $class) use ($user, $habit): mixed {
-                return match ($class) {
-                    User::class => $user,
-                    Habit::class => $habit,
-                    default => null,
-                };
+            static fn(string $class): mixed => match ($class) {
+                User::class => $user,
+                Habit::class => $habit,
+                default => null,
             },
         );
         $em->method('persist')->willReturnCallback(
@@ -271,12 +269,10 @@ final class NotifyHabitHandlerTest extends TestCase
         $persistCount = 0;
         $em = $this->createMock(EntityManagerInterface::class);
         $em->method('find')->willReturnCallback(
-            static function (string $class) use ($user, $habit): mixed {
-                return match ($class) {
-                    User::class => $user,
-                    Habit::class => $habit,
-                    default => null,
-                };
+            static fn(string $class): mixed => match ($class) {
+                User::class => $user,
+                Habit::class => $habit,
+                default => null,
             },
         );
         $em->method('persist')->willReturnCallback(
@@ -496,12 +492,10 @@ final class NotifyHabitHandlerTest extends TestCase
 
         $em = $this->createMock(EntityManagerInterface::class);
         $em->method('find')->willReturnCallback(
-            static function (string $class) use ($user, $habit): mixed {
-                return match ($class) {
-                    User::class => $user,
-                    Habit::class => $habit,
-                    default => null,
-                };
+            static fn(string $class): mixed => match ($class) {
+                User::class => $user,
+                Habit::class => $habit,
+                default => null,
             },
         );
 

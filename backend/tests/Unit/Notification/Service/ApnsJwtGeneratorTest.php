@@ -299,7 +299,7 @@ final class ApnsJwtGeneratorTest extends TestCase
             privateKeyPath: $this->privateKeyPath,
         );
 
-        $firstToken = $generator->generate();
+        $generator->generate();
 
         // Simulate partial cache state: token set but cachedAt is null
         $ref = new \ReflectionObject($generator);
