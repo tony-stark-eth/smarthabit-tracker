@@ -585,6 +585,38 @@ Wave 1 (parallel):
 - [x] `frontend/lighthouserc.json` — assertions (a11y ≥ 0.9 error, perf ≥ 0.9 warn)
 - [x] `docs/deployment.md` — updated with CD flow, secrets, rollback procedures
 
+## Phase 9 — Frontend Gaps (Habit CRUD + History)
+
+**Status**: IN PROGRESS
+**Context**: Backend APIs are complete (Phase 1b). Frontend is missing CRUD UI, history overview, and edit/delete flows.
+
+### 9.1 — Create Habit (FAB + Sheet)
+
+- [ ] Floating Action Button (+) on dashboard (bottom-right, above nav)
+- [ ] Create Habit bottom sheet / modal: name (required), icon (emoji picker or text input), frequency, description, time window start/end (optional), color
+- [ ] POST /api/v1/habits on submit → refresh dashboard
+- [ ] Validation: name required, time window end > start
+
+### 9.2 — Edit + Delete Habit
+
+- [ ] Long-press habit card → navigate to habit detail (already works)
+- [ ] Edit button on habit detail page → edit sheet (same form as create, pre-filled)
+- [ ] PUT /api/v1/habits/{id} on save
+- [ ] Delete button with confirmation dialog → DELETE /api/v1/habits/{id}
+
+### 9.3 — History Overview Page
+
+- [ ] Replace "Coming soon" stub with actual content
+- [ ] List all habits with recent log counts (last 7 days)
+- [ ] Tap habit → navigate to /habits/{id} (existing detail page)
+
+### 9.4 — Deployment Fixes
+
+- [x] Caddyfile: root * /app/public in external API handle block
+- [x] compose.prod.yaml: mount JWT keys + Caddyfile
+- [x] Remove basic auth (incompatible with SPA — use Cloudflare Access)
+- [ ] Resend domain verification (manual: user must add DNS records)
+
 ---
 
 ## Decisions Log

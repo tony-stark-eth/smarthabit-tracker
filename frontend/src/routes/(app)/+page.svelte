@@ -5,6 +5,7 @@
     import { registerPushSubscription } from '$lib/api/push';
     import HabitCard from '$lib/components/HabitCard.svelte';
     import ProgressBar from '$lib/components/ProgressBar.svelte';
+    import CreateHabitSheet from '$lib/components/CreateHabitSheet.svelte';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -52,6 +53,7 @@
     let error = $state<string | null>(null);
     let loading = $state(true);
     let loaded = $state(false);
+    let sheetOpen = $state(false);
 
     // ---------------------------------------------------------------------------
     // Greeting
@@ -102,6 +104,23 @@
             // Revert on error
             await load();
         }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Sheet helpers
+    // ---------------------------------------------------------------------------
+
+    function openSheet(): void {
+        sheetOpen = true;
+    }
+
+    function closeSheet(): void {
+        sheetOpen = false;
+    }
+
+    function handleHabitCreated(): void {
+        sheetOpen = false;
+        load();
     }
 
     // ---------------------------------------------------------------------------
@@ -219,6 +238,9 @@
             <div class="empty-state">
                 <p class="empty-title">No habits yet</p>
                 <p class="empty-subtitle">Add your first habit to get started.</p>
+                <button class="empty-cta" onclick={openSheet}>
+                    Create your first habit
+                </button>
             </div>
         {:else}
             <ul class="habit-list" aria-label="Today's habits">
@@ -245,6 +267,16 @@
         {/if}
     {/if}
 </div>
+
+<!-- Floating action button -->
+<button class="fab" onclick={openSheet} aria-label="Create habit">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+    </svg>
+</button>
+
+<CreateHabitSheet open={sheetOpen} onClose={closeSheet} onCreated={handleHabitCreated} />
 
 <style>
     @keyframes slide-up {
@@ -406,6 +438,7 @@
         border-radius: var(--radius-xl);
         display: flex;
         flex-direction: column;
+        align-items: center;
         gap: 0.375rem;
     }
 
@@ -420,5 +453,55 @@
         font-size: 0.875rem;
         color: var(--color-text-muted);
         margin: 0;
+    }
+
+    .empty-cta {
+        margin-top: 1rem;
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        font-family: var(--font-sans);
+        color: var(--color-accent-text);
+        background: var(--color-accent);
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background 0.15s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .empty-cta:hover {
+        background: var(--color-accent-hover);
+    }
+
+    /* Floating action button */
+    .fab {
+        position: fixed;
+        bottom: calc(4rem + 1rem + env(safe-area-inset-bottom));
+        right: 1.25rem;
+        width: 3.25rem;
+        height: 3.25rem;
+        border-radius: 50%;
+        background: var(--color-accent);
+        color: var(--color-accent-text);
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 50;
+        box-shadow: 0 4px 16px color-mix(in srgb, var(--color-accent) 40%, transparent);
+        transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .fab:hover {
+        background: var(--color-accent-hover);
+        transform: scale(1.06);
+        box-shadow: 0 6px 20px color-mix(in srgb, var(--color-accent) 50%, transparent);
+    }
+
+    .fab:active {
+        transform: scale(0.94);
     }
 </style>
