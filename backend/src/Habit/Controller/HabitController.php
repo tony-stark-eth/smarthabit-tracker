@@ -41,6 +41,19 @@ final class HabitController extends AbstractController
         ]);
     }
 
+    #[Route('/api/v1/habits/{id}', name: 'api_habits_show', methods: ['GET'])]
+    public function show(string $id): JsonResponse
+    {
+        $habit = $this->entityManager->getRepository(Habit::class)->find($id);
+        if (! $habit instanceof Habit) {
+            return $this->notFoundResponse();
+        }
+
+        $this->denyAccessUnlessGranted(HouseholdVoter::VIEW, $habit);
+
+        return new JsonResponse($this->serializeHabit($habit));
+    }
+
     #[Route('/api/v1/habits', name: 'api_habits_create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {

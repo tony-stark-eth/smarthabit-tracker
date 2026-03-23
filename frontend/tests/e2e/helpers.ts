@@ -69,6 +69,28 @@ export async function registerUser(page: Page): Promise<{ email: string; token: 
 }
 
 // ---------------------------------------------------------------------------
+// Navigate to an app page, waiting for SvelteKit auth to complete.
+//
+// A full page.goto() re-bootstraps SvelteKit from scratch. The auth store
+// reads the JWT from localStorage and calls fetchUser() — but the layout
+// auth guard $effect can fire before fetchUser completes, redirecting to
+// /welcome. This helper waits until we're no longer on a public route.
+// ---------------------------------------------------------------------------
+
+export async function gotoAuthenticated(page: Page, path: string): Promise<void> {
+    await page.goto(path);
+    // Wait until the auth guard has settled — if it redirects to /welcome,
+    // wait for the redirect back once fetchUser completes.
+    await page.waitForFunction(
+        () => {
+            const p = window.location.pathname;
+            return !p.startsWith('/welcome') && !p.startsWith('/login');
+        },
+        { timeout: 20_000 },
+    );
+}
+
+// ---------------------------------------------------------------------------
 // Create a habit via the API and return its UUID.
 // ---------------------------------------------------------------------------
 

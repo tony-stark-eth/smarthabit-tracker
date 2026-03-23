@@ -209,7 +209,7 @@
         confirmDeleteOpen = false;
         try {
             await client.delete(`/habits/${habitId}`);
-            goto(resolve('/'));
+            await goto(resolve('/'));
         } catch (e) {
             error = e instanceof Error ? e.message : 'Failed to delete habit';
             deleting = false;
