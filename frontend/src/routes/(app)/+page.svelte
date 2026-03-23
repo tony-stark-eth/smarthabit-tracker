@@ -107,6 +107,32 @@
     }
 
     // ---------------------------------------------------------------------------
+    // One-tap unlogging with optimistic update
+    // ---------------------------------------------------------------------------
+
+    async function unlogHabit(habitId: string): Promise<void> {
+        if (data === null) return;
+
+        const habit = data.habits.find(h => h.id === habitId);
+        if (habit === undefined || !habit.is_done_today || habit.last_log === null) return;
+
+        const lastLogId = habit.last_log.id;
+
+        // Optimistic update
+        habit.is_done_today = false;
+        habit.last_log = null;
+        data.summary.done -= 1;
+        data.summary.completion_rate = data.summary.done / data.summary.total;
+
+        try {
+            await client.delete(`/habits/${habitId}/log/${lastLogId}`);
+        } catch {
+            // Revert on error
+            await load();
+        }
+    }
+
+    // ---------------------------------------------------------------------------
     // Sheet helpers
     // ---------------------------------------------------------------------------
 
@@ -260,6 +286,7 @@
                             isDoneToday={habit.is_done_today}
                             lastLog={habit.last_log}
                             onLog={() => logHabit(habit.id)}
+                            onUnlog={() => unlogHabit(habit.id)}
                         />
                     </li>
                 {/each}

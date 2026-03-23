@@ -305,5 +305,8 @@
 - [x] Template repo backported
 - [x] Create habit UI (Phase 9.1)
 - [x] History overview page (Phase 9.3)
-- [x] Edit + delete habit UI (Phase 9.2) — CreateHabitSheet refactored to support edit mode, ConfirmDialog for delete, both on habit detail page
+- [x] Edit + delete habit UI (Phase 9.2)
+- [x] Dashboard UX fix (Phase 9.5) — tap card body navigates to detail, tap green check undoes log
+- [x] Per-habit stats fix (Phase 9.5) — backend now returns all fields frontend expects (name, icon, prev_30d, weekly_buckets, formatted avg time)
+- [x] Stale cache fix — cache:warmup in entrypoint, no-cache headers on SW + index.html
 - [ ] Resend domain verification (manual: user adds DNS records)

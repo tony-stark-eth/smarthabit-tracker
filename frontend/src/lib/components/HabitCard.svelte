@@ -17,6 +17,7 @@
         isDoneToday: boolean;
         lastLog: LastLog | null;
         onLog: () => void;
+        onUnlog: () => void;
     }
 
     const {
@@ -29,28 +30,13 @@
         isDoneToday,
         lastLog,
         onLog,
+        onUnlog,
     }: Props = $props();
 
     let justLogged = $state(false);
 
-    // ---------------------------------------------------------------------------
-    // Long-press to navigate to history
-    // ---------------------------------------------------------------------------
-
-    let pressTimer: ReturnType<typeof setTimeout> | null = null;
-
-    function onTouchStart(): void {
-        pressTimer = setTimeout(() => {
-            pressTimer = null;
-            goto(resolve(`/habits/${id}`));
-        }, 500);
-    }
-
-    function onTouchEnd(): void {
-        if (pressTimer !== null) {
-            clearTimeout(pressTimer);
-            pressTimer = null;
-        }
+    function navigateToDetail(): void {
+        goto(resolve(`/habits/${id}`));
     }
 
     function formatTime(isoString: string): string {
@@ -71,14 +57,18 @@
         return nowMinutes > endMinutes;
     }
 
-    function handleLog(): void {
-        if (isDoneToday) return;
-        justLogged = true;
-        onLog();
-        // Reset animation class after animation completes
-        setTimeout(() => {
-            justLogged = false;
-        }, 350);
+    function handleCheckButton(event: MouseEvent): void {
+        event.stopPropagation();
+        if (isDoneToday) {
+            onUnlog();
+        } else {
+            justLogged = true;
+            onLog();
+            // Reset animation class after animation completes
+            setTimeout(() => {
+                justLogged = false;
+            }, 350);
+        }
     }
 </script>
 
@@ -88,9 +78,6 @@
     class:just-logged={justLogged}
     data-id={id}
     role="article"
-    ontouchstart={onTouchStart}
-    ontouchend={onTouchEnd}
-    ontouchcancel={onTouchEnd}
 >
     <div class="card-icon" aria-hidden="true">
         {#if icon}
@@ -100,7 +87,14 @@
         {/if}
     </div>
 
-    <div class="card-body">
+    <div
+        class="card-body"
+        role="button"
+        tabindex="0"
+        aria-label="View details for {name}"
+        onclick={navigateToDetail}
+        onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigateToDetail(); }}
+    >
         <span class="card-name">{name}</span>
 
         <div class="card-meta">
@@ -133,9 +127,8 @@
     <button
         class="check-btn"
         class:check-btn--done={isDoneToday}
-        onclick={handleLog}
-        disabled={isDoneToday}
-        aria-label="Log {name}"
+        onclick={handleCheckButton}
+        aria-label={isDoneToday ? `Undo ${name}` : `Log ${name}`}
         aria-pressed={isDoneToday}
     >
         {#if isDoneToday}
@@ -202,6 +195,11 @@
         display: flex;
         flex-direction: column;
         gap: 0.25rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0;
+        text-align: left;
     }
 
     .card-name {
@@ -302,10 +300,10 @@
         background: var(--color-success);
         border-color: var(--color-success);
         color: #ffffff;
-        cursor: default;
     }
 
-    .check-btn:disabled {
-        opacity: 1; /* keep full opacity when done */
+    .check-btn--done:hover {
+        background: color-mix(in srgb, var(--color-success) 85%, #000);
+        border-color: color-mix(in srgb, var(--color-success) 85%, #000);
     }
 </style>

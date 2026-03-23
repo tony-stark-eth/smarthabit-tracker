@@ -587,7 +587,7 @@ Wave 1 (parallel):
 
 ## Phase 9 — Frontend Gaps (Habit CRUD + History)
 
-**Status**: ✅ COMPLETE (9.1 + 9.2 + 9.3)
+**Status**: ✅ COMPLETE (9.1–9.5)
 **Context**: Backend APIs are complete (Phase 1b). Frontend was missing CRUD UI, history overview, and edit/delete flows.
 
 ### 9.1 — Create Habit (FAB + Sheet) ✅ COMPLETE
@@ -611,6 +611,15 @@ Wave 1 (parallel):
 - [x] Each habit shows icon, name, last completion time (or "Never")
 - [x] Tap habit → navigate to /habits/{id} (existing detail page with paginated logs)
 - [x] Loading skeleton, error state with retry
+
+### 9.5 — Dashboard UX + Stats Fix ✅ COMPLETE
+
+- [x] HabitCard: tap card body → navigate to detail (replaced undiscoverable long-press)
+- [x] HabitCard: tap green check button → undo log (DELETE /habits/{id}/log/{logId})
+- [x] Dashboard: `unlogHabit` with optimistic update + revert on error
+- [x] Per-habit stats API: add habit_name, habit_icon, completion_rate_prev_30d, weekly_buckets
+- [x] Per-habit stats API: format average_completion_time as "HH:MM" string
+- [x] Per-habit stats page now renders fully (streaks, rate, trend, weekly chart)
 
 ### 9.4 — Deployment Fixes
 

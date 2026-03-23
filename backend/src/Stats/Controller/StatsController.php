@@ -91,14 +91,41 @@ final class StatsController extends AbstractController
         $trend = $this->statsService->rateTrend($completionRate30d, $completionRatePrev30d);
 
         $avgTime = $this->statsService->averageCompletionTime($logDates);
+        $avgTimeFormatted = $avgTime !== null
+            ? sprintf('%02d:%02d', intdiv($avgTime, 60), $avgTime % 60)
+            : null;
+
+        // Compute 4 weekly buckets (Mon–Sun), starting 4 weeks ago
+        $weeklyBuckets = [];
+        for ($i = 3; $i >= 0; $i--) {
+            $weekStart = $now->modify(sprintf('-%d weeks', $i))->modify('Monday this week')->setTime(0, 0, 0);
+            $weekEnd = $weekStart->modify('+7 days');
+
+            $daysInBucket = $weekEnd > $now ? (int) $now->diff($weekStart)->days : 7;
+            $daysInBucket = max(1, $daysInBucket);
+
+            $bucketDates = array_values(array_filter(
+                $dates30d,
+                fn (\DateTimeImmutable $d): bool => $d >= $weekStart && $d < $weekEnd,
+            ));
+
+            $weeklyBuckets[] = [
+                'week_start' => $weekStart->format('Y-m-d'),
+                'completion_rate' => $this->statsService->completionRate($bucketDates, $daysInBucket),
+            ];
+        }
 
         return new JsonResponse([
             'habit_id' => $habit->getId()->toRfc4122(),
+            'habit_name' => $habit->getName(),
+            'habit_icon' => $habit->getIcon(),
             'current_streak' => $currentStreak,
             'longest_streak' => $longestStreak,
             'completion_rate_30d' => $completionRate30d,
-            'avg_completion_time_minutes' => $avgTime,
+            'completion_rate_prev_30d' => $completionRatePrev30d,
+            'average_completion_time' => $avgTimeFormatted,
             'trend' => $trend,
+            'weekly_buckets' => $weeklyBuckets,
         ]);
     }
 
