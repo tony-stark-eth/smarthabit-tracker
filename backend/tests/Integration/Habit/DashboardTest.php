@@ -141,11 +141,15 @@ final class DashboardTest extends WebTestCase
         $em = self::getContainer()->get('doctrine.orm.entity_manager');
 
         /** @var User|null $user */
-        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+        $user = $em->getRepository(User::class)->findOneBy([
+            'email' => $email,
+        ]);
         self::assertInstanceOf(User::class, $user);
 
         /** @var Habit|null $habitEntity */
-        $habitEntity = $em->getRepository(Habit::class)->findOneBy(['id' => $habit['id']]);
+        $habitEntity = $em->getRepository(Habit::class)->findOneBy([
+            'id' => $habit['id'],
+        ]);
         self::assertInstanceOf(Habit::class, $habitEntity);
 
         $log = new HabitLog($habitEntity, $user, $loggedAtUtc, HabitLogSource::MANUAL);
@@ -201,15 +205,22 @@ final class DashboardTest extends WebTestCase
         $em = self::getContainer()->get('doctrine.orm.entity_manager');
 
         /** @var User|null $user */
-        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+        $user = $em->getRepository(User::class)->findOneBy([
+            'email' => $email,
+        ]);
         self::assertInstanceOf(User::class, $user);
 
         /** @var Habit|null $habitEntity */
-        $habitEntity = $em->getRepository(Habit::class)->findOneBy(['id' => $habit['id']]);
+        $habitEntity = $em->getRepository(Habit::class)->findOneBy([
+            'id' => $habit['id'],
+        ]);
         self::assertInstanceOf(Habit::class, $habitEntity);
 
         /** @var list<HabitLog> $logs */
-        $logs = $em->getRepository(HabitLog::class)->findBy(['habit' => $habitEntity, 'user' => $user]);
+        $logs = $em->getRepository(HabitLog::class)->findBy([
+            'habit' => $habitEntity,
+            'user' => $user,
+        ]);
         self::assertCount(1, $logs);
 
         // Use DQL UPDATE to bypass the read-only constructor and rewrite logged_at.
