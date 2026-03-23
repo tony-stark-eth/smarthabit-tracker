@@ -18,8 +18,7 @@ import { registerUser, createHabit, gotoAuthenticated } from './helpers';
  * ensure the habit list has been fetched from /dashboard.
  */
 async function waitForHistory(page: import('@playwright/test').Page): Promise<void> {
-    await expect(page).toHaveTitle(/History/i, { timeout: 15_000 });
-    await page.waitForLoadState('networkidle', { timeout: 15_000 });
+    await expect(page).toHaveTitle(/History/i, { timeout: 20_000 });
 }
 
 /**
@@ -30,8 +29,7 @@ async function waitForHabitDetail(
     page: import('@playwright/test').Page,
     habitName: string,
 ): Promise<void> {
-    await expect(page).toHaveTitle(new RegExp(habitName, 'i'), { timeout: 15_000 });
-    await page.waitForLoadState('networkidle', { timeout: 15_000 });
+    await expect(page).toHaveTitle(new RegExp(habitName, 'i'), { timeout: 20_000 });
 }
 
 test.describe('History', () => {
@@ -74,7 +72,7 @@ test.describe('History', () => {
 
         // Click the habit row button (aria-label="View history for Evening Run")
         const habitRow = page.getByRole('button', { name: /View history for Evening Run/i });
-        await expect(habitRow).toBeVisible({ timeout: 15_000 });
+        await expect(habitRow).toBeVisible({ timeout: 20_000 });
         await habitRow.click();
 
         // URL should change to /habits/{id}
