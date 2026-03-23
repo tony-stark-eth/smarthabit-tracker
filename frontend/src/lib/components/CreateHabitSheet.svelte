@@ -1,11 +1,12 @@
 <script lang="ts">
     import { client, ApiRequestError } from '$lib/api/client';
+    import type { HabitData } from '$lib/types';
 
     // ---------------------------------------------------------------------------
     // Types
     // ---------------------------------------------------------------------------
 
-    interface CreateHabitPayload {
+    interface HabitPayload {
         name: string;
         frequency: 'daily' | 'weekly' | 'custom';
         icon: string | null;
@@ -18,13 +19,14 @@
         open: boolean;
         onClose: () => void;
         onCreated: () => void;
+        habit?: HabitData | undefined;
     }
 
     // ---------------------------------------------------------------------------
     // Props & state
     // ---------------------------------------------------------------------------
 
-    const { open, onClose, onCreated }: Props = $props();
+    const { open, onClose, onCreated, habit = undefined }: Props = $props();
 
     let name = $state('');
     let icon = $state('');
@@ -37,16 +39,35 @@
     let generalError = $state<string | null>(null);
 
     // ---------------------------------------------------------------------------
-    // Reset form when sheet is opened
+    // Helpers
+    // ---------------------------------------------------------------------------
+
+    /** Strip the seconds component from "HH:MM:SS" so time inputs get "HH:MM". */
+    function toTimeInput(value: string | null): string {
+        if (value === null || value === '') return '';
+        // "HH:MM:SS" → "HH:MM", plain "HH:MM" passes through unchanged
+        return value.length > 5 ? value.slice(0, 5) : value;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Reset / pre-fill form when sheet is opened
     // ---------------------------------------------------------------------------
 
     $effect(() => {
         if (open) {
-            name = '';
-            icon = '';
-            frequency = 'daily';
-            timeStart = '';
-            timeEnd = '';
+            if (habit !== undefined) {
+                name = habit.name;
+                icon = habit.icon ?? '';
+                frequency = habit.frequency;
+                timeStart = toTimeInput(habit.time_window_start);
+                timeEnd = toTimeInput(habit.time_window_end);
+            } else {
+                name = '';
+                icon = '';
+                frequency = 'daily';
+                timeStart = '';
+                timeEnd = '';
+            }
             submitting = false;
             fieldErrors = {};
             generalError = null;
@@ -72,7 +93,7 @@
             return;
         }
 
-        const payload: CreateHabitPayload = {
+        const payload: HabitPayload = {
             name: trimmedName,
             frequency,
             icon: trimmedIcon !== '' ? trimmedIcon : null,
@@ -84,7 +105,11 @@
         submitting = true;
 
         try {
-            await client.post('/habits', payload);
+            if (habit !== undefined) {
+                await client.put(`/habits/${habit.id}`, payload);
+            } else {
+                await client.post('/habits', payload);
+            }
             onCreated();
         } catch (err) {
             if (err instanceof ApiRequestError) {
@@ -121,11 +146,11 @@
     ></div>
 
     <!-- Sheet -->
-    <div class="sheet" role="dialog" aria-modal="true" aria-label="Create habit">
+    <div class="sheet" role="dialog" aria-modal="true" aria-label={habit !== undefined ? 'Edit habit' : 'Create habit'}>
         <div class="sheet-handle" aria-hidden="true"></div>
 
         <header class="sheet-header">
-            <h2 class="sheet-title">New habit</h2>
+            <h2 class="sheet-title">{habit !== undefined ? 'Edit habit' : 'New habit'}</h2>
             <button class="close-btn" onclick={onClose} aria-label="Close">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -224,7 +249,7 @@
                         <span class="spinner" aria-hidden="true"></span>
                         Saving…
                     {:else}
-                        Create habit
+                        {habit !== undefined ? 'Save changes' : 'Create habit'}
                     {/if}
                 </button>
             </div>

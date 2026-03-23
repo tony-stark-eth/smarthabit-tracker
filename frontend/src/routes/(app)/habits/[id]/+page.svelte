@@ -3,6 +3,9 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { client } from '$lib/api/client';
+    import CreateHabitSheet from '$lib/components/CreateHabitSheet.svelte';
+    import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
+    import type { HabitData } from '$lib/types';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -27,6 +30,9 @@
         id: string;
         name: string;
         icon: string | null;
+        frequency: 'daily' | 'weekly' | 'custom';
+        time_window_start: string | null;
+        time_window_end: string | null;
     }
 
     interface LogGroup {
@@ -165,6 +171,65 @@
     }
 
     // ---------------------------------------------------------------------------
+    // Edit & delete state
+    // ---------------------------------------------------------------------------
+
+    let editSheetOpen = $state(false);
+    let confirmDeleteOpen = $state(false);
+    let deleting = $state(false);
+
+    // ---------------------------------------------------------------------------
+    // Edit & delete handlers
+    // ---------------------------------------------------------------------------
+
+    function openEditSheet(): void {
+        editSheetOpen = true;
+    }
+
+    function closeEditSheet(): void {
+        editSheetOpen = false;
+    }
+
+    async function handleEditSaved(): Promise<void> {
+        editSheetOpen = false;
+        await loadHabitInfo();
+    }
+
+    function openConfirmDelete(): void {
+        confirmDeleteOpen = true;
+    }
+
+    function cancelDelete(): void {
+        confirmDeleteOpen = false;
+    }
+
+    async function handleDeleteConfirmed(): Promise<void> {
+        if (deleting) return;
+        deleting = true;
+        confirmDeleteOpen = false;
+        try {
+            await client.delete(`/habits/${habitId}`);
+            goto(resolve('/'));
+        } catch (e) {
+            error = e instanceof Error ? e.message : 'Failed to delete habit';
+            deleting = false;
+        }
+    }
+
+    const habitAsEditData = $derived<HabitData | undefined>(
+        habitInfo !== null
+            ? {
+                  id: habitInfo.id,
+                  name: habitInfo.name,
+                  icon: habitInfo.icon,
+                  frequency: habitInfo.frequency,
+                  time_window_start: habitInfo.time_window_start,
+                  time_window_end: habitInfo.time_window_end,
+              }
+            : undefined,
+    );
+
+    // ---------------------------------------------------------------------------
     // Infinite scroll via IntersectionObserver
     // ---------------------------------------------------------------------------
 
@@ -230,19 +295,64 @@
             {/if}
         </div>
 
-        <a
-            href={resolve(`/habits/${habitId}/stats`)}
-            class="stats-btn"
-            aria-label="View statistics for this habit"
-        >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <line x1="18" y1="20" x2="18" y2="10"></line>
-                <line x1="12" y1="20" x2="12" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="14"></line>
-            </svg>
-            Stats
-        </a>
+        <div class="header-actions">
+            <a
+                href={resolve(`/habits/${habitId}/stats`)}
+                class="icon-btn icon-btn--accent"
+                aria-label="View statistics for this habit"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+                Stats
+            </a>
+
+            <button
+                class="icon-btn icon-btn--ghost"
+                onclick={openEditSheet}
+                aria-label="Edit habit"
+                disabled={habitInfo === null}
+            >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+            </button>
+
+            <button
+                class="icon-btn icon-btn--danger"
+                onclick={openConfirmDelete}
+                aria-label="Delete habit"
+                disabled={habitInfo === null || deleting}
+            >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                    <path d="M10 11v6"></path>
+                    <path d="M14 11v6"></path>
+                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                </svg>
+            </button>
+        </div>
     </header>
+
+    <CreateHabitSheet
+        open={editSheetOpen}
+        habit={habitAsEditData}
+        onClose={closeEditSheet}
+        onCreated={handleEditSaved}
+    />
+
+    <ConfirmDialog
+        open={confirmDeleteOpen}
+        title="Delete habit"
+        message="This will permanently delete the habit and all its history. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={handleDeleteConfirmed}
+        onCancel={cancelDelete}
+    />
 
     <!-- Loading state -->
     {#if loading}
@@ -358,27 +468,70 @@
         color: var(--color-text-primary);
     }
 
-    .stats-btn {
+    .header-actions {
         margin-left: auto;
         flex-shrink: 0;
         display: flex;
         align-items: center;
         gap: 0.375rem;
-        padding: 0.4375rem 0.75rem;
+    }
+
+    /* Shared icon button base */
+    .icon-btn {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        padding: 0.4375rem 0.625rem;
         font-size: 0.8125rem;
         font-weight: 600;
         font-family: inherit;
-        color: var(--color-accent);
-        border: 1px solid var(--color-accent);
         border-radius: var(--radius-md);
         background: transparent;
         text-decoration: none;
-        transition: background 0.15s;
+        cursor: pointer;
+        transition: background 0.15s, color 0.15s, opacity 0.15s;
         -webkit-tap-highlight-color: transparent;
+        border: 1px solid transparent;
     }
 
-    .stats-btn:hover {
+    .icon-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+    }
+
+    /* Stats / accent variant */
+    .icon-btn--accent {
+        color: var(--color-accent);
+        border-color: var(--color-accent);
+        padding: 0.4375rem 0.75rem;
+    }
+
+    .icon-btn--accent:hover {
         background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    }
+
+    /* Edit / ghost variant */
+    .icon-btn--ghost {
+        color: var(--color-text-secondary);
+        border-color: var(--color-border-strong);
+        background: var(--color-surface-raised);
+    }
+
+    .icon-btn--ghost:hover:not(:disabled) {
+        background: var(--color-surface);
+        color: var(--color-text-primary);
+    }
+
+    /* Delete / danger variant */
+    .icon-btn--danger {
+        color: var(--color-error);
+        border-color: color-mix(in srgb, var(--color-error) 35%, transparent);
+        background: var(--color-surface-raised);
+    }
+
+    .icon-btn--danger:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--color-error) 8%, transparent);
     }
 
     .header-text {

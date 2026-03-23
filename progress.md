@@ -305,5 +305,5 @@
 - [x] Template repo backported
 - [x] Create habit UI (Phase 9.1)
 - [x] History overview page (Phase 9.3)
-- [ ] Edit + delete habit UI (Phase 9.2)
+- [x] Edit + delete habit UI (Phase 9.2) — CreateHabitSheet refactored to support edit mode, ConfirmDialog for delete, both on habit detail page
 - [ ] Resend domain verification (manual: user adds DNS records)

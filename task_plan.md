@@ -587,7 +587,7 @@ Wave 1 (parallel):
 
 ## Phase 9 — Frontend Gaps (Habit CRUD + History)
 
-**Status**: 9.1 + 9.3 COMPLETE, 9.2 TODO
+**Status**: ✅ COMPLETE (9.1 + 9.2 + 9.3)
 **Context**: Backend APIs are complete (Phase 1b). Frontend was missing CRUD UI, history overview, and edit/delete flows.
 
 ### 9.1 — Create Habit (FAB + Sheet) ✅ COMPLETE
@@ -598,12 +598,12 @@ Wave 1 (parallel):
 - [x] Validation: name required, inline error display
 - [x] Empty state "Create your first habit" button
 
-### 9.2 — Edit + Delete Habit
+### 9.2 — Edit + Delete Habit ✅ COMPLETE
 
-- [ ] Long-press habit card → navigate to habit detail (already works)
-- [ ] Edit button on habit detail page → edit sheet (same form as create, pre-filled)
-- [ ] PUT /api/v1/habits/{id} on save
-- [ ] Delete button with confirmation dialog → DELETE /api/v1/habits/{id}
+- [x] Long-press habit card → navigate to habit detail (already works)
+- [x] Edit button on habit detail page → opens CreateHabitSheet in edit mode (pre-filled)
+- [x] PUT /api/v1/habits/{id} on save → reloads habit info
+- [x] Delete button with ConfirmDialog → DELETE /api/v1/habits/{id} → navigates to dashboard
 
 ### 9.3 — History Overview Page ✅ COMPLETE
 

@@ -2,6 +2,17 @@
  * Shared TypeScript types for the SmartHabit frontend.
  */
 
+export interface HabitData {
+    id: string;
+    name: string;
+    icon: string | null;
+    frequency: 'daily' | 'weekly' | 'custom';
+    /** "HH:MM:SS" format returned by the API, or null. */
+    time_window_start: string | null;
+    /** "HH:MM:SS" format returned by the API, or null. */
+    time_window_end: string | null;
+}
+
 export interface Household {
     id: string;
     name: string;
