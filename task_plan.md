@@ -234,7 +234,7 @@ Agent 1-5:                     [0.9 Integration Test + Finalize]
 - [ ] Consent validation at registration (consent_at + consent_version required)
 
 **Agent E: Email stubs + Password reset**
-- [ ] Mailer config: `null://null` transport (Brevo added later)
+- [ ] Mailer config: Mailpit in dev (`smtp://mailpit:1025`), Resend in prod (SMTP via `.env.local`)
 - [ ] `POST /api/v1/password/forgot` — generate reset token, send email (stubbed)
 - [ ] `POST /api/v1/password/reset` — validate token (1h TTL, single-use), set new password
 - [ ] `PUT /api/v1/user/password` — change password (authenticated, requires current password)

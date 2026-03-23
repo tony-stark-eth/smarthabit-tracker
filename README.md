@@ -34,6 +34,7 @@ Household habit tracking app with adaptive notifications. Track daily habits, ge
 | **Backend** | PHP 8.4, Symfony 8, Doctrine ORM, FrankenPHP (Worker Mode) |
 | **Frontend** | SvelteKit 2, Svelte 5, Bun, TypeScript strict, Tailwind 4 |
 | **Database** | PostgreSQL 17, PgBouncer (Transaction Mode) |
+| **Email** | Mailpit (dev catch-all), Resend (prod SMTP, free tier) |
 | **Push** | Web Push (minishlink), ntfy (self-hosted), APNs (direct HTTP/2) |
 | **Real-time** | Mercure (SSE, built into Caddy) |
 | **Quality** | PHPStan max + 10 extensions, Rector, ECS, Infection (93% MSI) |

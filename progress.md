@@ -257,3 +257,34 @@
 - All configs in PHP, not YAML
 - Docker is the only host dependency — all commands run inside containers
 - Verify CI is green after each phase
+
+---
+
+## Session 7 — 2026-03-23
+
+### What happened
+- Added HTTP basic auth to production Caddyfile (demo/demo1234) — protects external routes, internal :8080 health check unaffected
+- Replaced Brevo with **Mailpit** (dev) + **Resend** (prod) for email delivery
+  - Mailpit: self-hosted email catch-all, Docker service, Web UI at http://localhost:8025
+  - Resend: free tier (3,000 emails/month), standard SMTP — no Symfony bridge package needed
+  - Mailpit disabled in prod via `replicas: 0`
+  - MAILER_DSN set on php + messenger-worker services
+
+### Files changed
+- `docker/frankenphp/Caddyfile` — added basicauth directive
+- `compose.yaml` — added mailpit service, MAILER_DSN on php + messenger-worker
+- `compose.prod.yaml` — disabled mailpit, added MAILER_DSN to required env vars comment
+- `.env.example` — updated mailer section (Mailpit dev, Resend prod)
+- `docs/security.md` — replaced Brevo section with Mailpit/Resend
+- `docs/FULL_PLAN.md` — updated email section + decisions table
+- `docs/phases.md` — updated decisions table
+- `docs/deployment.md` — added MAILER_DSN to .env.local template
+- `README.md` — added Email row to tech stack table
+- `task_plan.md` — updated Agent E mailer config reference
+- `progress.md` — this entry
+
+### Status
+- [x] Basic auth on production
+- [x] Mailpit for dev email
+- [x] Resend config for prod email
+- [x] All docs updated

@@ -55,7 +55,7 @@ Builds on the Repo Template from Phase 0 (`Use this template` → `smarthabit-tr
 - Doctrine Entities + Migrations (incl. all fields: locale, theme, email_verified_at, consent_at, consent_version, deleted_at, updated_at)
 - Auth: Register, Login, JWT (Access + Refresh Token)
 - **Rate Limiting** on auth endpoints (symfony/rate-limiter)
-- **Email Verification** + **Password Reset** flow (Symfony Mailer + Brevo)
+- **Email Verification** + **Password Reset** flow (Symfony Mailer + Resend)
 - **GDPR**: Privacy policy, consent at registration, export + deletion endpoints
 - **Household Isolation Voter**: unit-tested, active from day 1
 - Integration tests for Auth (incl. rate limiting, verification, password reset)
@@ -179,7 +179,7 @@ Builds on the Repo Template from Phase 0 (`Use this template` → `smarthabit-tr
 | Coverage tool? | **Xdebug** with `XDEBUG_MODE=coverage` | FrankenPHP uses ZTS (Zend Thread Safety); PCOV is NTS-only. Xdebug supports ZTS and provides reliable coverage. |
 | Mutation testing scope? | **Unit suite only** | Integration tests are too slow for Infection, cause timeouts. Domain logic is the critical part. |
 | MSI threshold? | **80% MSI, 90% Covered MSI** | Realistic from Phase 3, below that CI doesn't block but warns. |
-| Mocking strategy? | **`createStub()` > `createMock()`** | PHPUnit 13 enforces the separation. Mocks with `seal()` only for external services (WebPush, ntfy, APNs, Brevo). |
+| Mocking strategy? | **`createStub()` > `createMock()`** | PHPUnit 13 enforces the separation. Mocks with `seal()` only for external services (WebPush, ntfy, APNs, Resend). |
 | i18n Frontend? | **paraglide-sveltekit** | Compile-time, zero runtime overhead, type-safe keys. No `$t()` at runtime. |
 | Design direction? | **Neo Utility** + Dark Mode | Functional, data-driven, Sora + JetBrains Mono, progress bar, tags. Dark Mode via CSS Custom Properties + `prefers-color-scheme`. |
 | Color system? | **CSS Custom Properties** with light/dark swap | User preference in DB (`theme: auto/light/dark`), no separate stylesheet. |
@@ -187,7 +187,7 @@ Builds on the Repo Template from Phase 0 (`Use this template` → `smarthabit-tr
 | Statistics calculation? | **Hybrid: on-the-fly + materialized views** | Basic stats (streak, rate) computed live, heatmaps/aggregations precomputed nightly. |
 | Native app? | **Capacitor 6.x** (Phase 7, Stage 2) | Same SvelteKit code, native shell for app stores. |
 | Widgets? | **Staged**: PWA Shortcuts → Capacitor + `capacitor-widget-bridge` → native SwiftUI/Kotlin | Stage 1 costs 30min, Stage 3 ~50-80 lines native code per platform. No custom plugin needed. |
-| Email provider? | **Brevo** (Free Tier) via `symfony/brevo-mailer` | 300 mails/day free, EU-based (GDPR-compliant), official Symfony Bridge. |
+| Email provider? | **Mailpit** (dev) + **Resend** (prod, free tier) | Mailpit catches all dev email locally. Resend: 3,000 emails/month free, standard SMTP, no Symfony bridge needed. |
 | Error tracking? | **GlitchTip 6.x** self-hosted | 512MB RAM, MIT license, Sentry SDK compatible. Migration to Sentry Cloud anytime via DSN swap. |
 | Real-time? | **Mercure** (SSE, built into Caddy) | Already in `dunglas/symfony-docker` template, no extra service. Live updates for household logs. |
 | Hosting? | **Hetzner Cloud VPS** + OpenTofu | IaC, affordable, EU data center (GDPR), good peering. |

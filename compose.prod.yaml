@@ -4,7 +4,7 @@
 #   docker compose -f compose.yaml -f compose.prod.yaml up -d
 #
 # Requires .env.local with: DATABASE_URL, APP_SECRET, MERCURE_JWT_SECRET,
-# JWT_PASSPHRASE, SENTRY_DSN, SERVER_NAME, POSTGRES_PASSWORD, etc.
+# JWT_PASSPHRASE, SENTRY_DSN, SERVER_NAME, POSTGRES_PASSWORD, MAILER_DSN, etc.
 
 services:
   php:
@@ -74,6 +74,11 @@ services:
     healthcheck:
       disable: true
     restart: unless-stopped
+
+  # Mailpit is dev-only — prod uses Resend SMTP via MAILER_DSN in .env.local
+  mailpit:
+    deploy:
+      replicas: 0
 
   ntfy:
     restart: always

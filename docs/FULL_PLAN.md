@@ -19,7 +19,7 @@
 | **Connection Pooling** | PgBouncer 1.23 | Transaction mode, between FrankenPHP and PostgreSQL |
 | **i18n** | paraglide-sveltekit + Symfony Translator | Compile-time i18n in frontend, YAML-based in backend |
 | **Native (later)** | Capacitor 6.x | SvelteKit → iOS/Android App Store, native widgets |
-| **E-Mail** | Symfony Mailer + Brevo | 300 mails/day free, GDPR-compliant (EU), official Symfony Bridge |
+| **E-Mail** | Symfony Mailer + Mailpit (dev) / Resend (prod) | Mailpit catches dev email locally. Resend: 3,000 emails/month free, standard SMTP. |
 | **Monitoring** | GlitchTip 6.x (self-hosted) | Sentry-compatible SDKs, 512MB RAM, MIT license |
 | **Real-Time** | Mercure (in Caddy/FrankenPHP) | SSE for live updates in household, already included in template |
 | **Deployment** | Hetzner VPS + OpenTofu | Infrastructure as Code, CD via GitHub Actions (later) |
@@ -822,7 +822,7 @@ Account deletion removes: User entity, all HabitLogs of the user, all Notificati
 
 ### Privacy Policy
 
-Must contain: data controller, purpose of processing (habit tracking, notifications), legal basis (consent Art. 6(1)(a)), recipients (Brevo for email, ntfy self-hosted for push), third-country transfer (Apple APNs for iOS push — USA, Standard Contractual Clauses; browser push endpoints for Web Push), storage duration, rights (access, deletion, export, withdrawal), contact details. Versioned as Markdown in the repo, retrievable via API. Advantage of the self-hosted approach: push data for Android never leaves the own server (ntfy on Hetzner DE).
+Must contain: data controller, purpose of processing (habit tracking, notifications), legal basis (consent Art. 6(1)(a)), recipients (Resend for email — US-based, DPA available; ntfy self-hosted for push), third-country transfer (Apple APNs for iOS push — USA, Standard Contractual Clauses; Resend — USA; browser push endpoints for Web Push), storage duration, rights (access, deletion, export, withdrawal), contact details. Versioned as Markdown in the repo, retrievable via API. Advantage of the self-hosted approach: push data for Android never leaves the own server (ntfy on Hetzner DE).
 
 ## Security Hardening
 
@@ -865,21 +865,24 @@ Additionally: Caddy has built-in rate limiting (`rate_limit` directive) as a sec
 - **Household Isolation**: Middleware/Voter that verifies every API access only concerns data of the user's own household. Unit-tested.
 - **JWT Blacklist**: On password change/reset all existing refresh tokens are invalidated.
 
-## Email (Symfony Mailer + Brevo)
+## Email (Symfony Mailer + Mailpit / Resend)
 
-### Why Brevo
+### Dev: Mailpit
 
-Free (300 mails/day free tier), EU-based (GDPR-compliant), official Symfony Mailer Bridge (`symfony/brevo-mailer`). No own mail server, no SMTP setup, no deliverability problem. For a household app with few users, 300 mails/day is more than enough.
-
-### Setup
-
-```bash
-composer require symfony/brevo-mailer
-```
+[Mailpit](https://github.com/axllent/mailpit) catches all outgoing email in dev. Web UI at `http://localhost:8025`. No external accounts needed.
 
 ```
-# .env
-MAILER_DSN=brevo+api://API_KEY@default
+# compose.yaml
+MAILER_DSN=smtp://mailpit:1025
+```
+
+### Prod: Resend
+
+[Resend](https://resend.com) — free tier (3,000 emails/month), standard SMTP, no Symfony bridge needed.
+
+```
+# .env.local
+MAILER_DSN=smtp://resend:re_YOUR_API_KEY@smtp.resend.com:465
 ```
 
 ### Mail Types
@@ -1424,7 +1427,7 @@ tests/
 - Symfony Skeleton + Doctrine entities + migrations (incl. all fields: locale, theme, email_verified_at, consent_at, consent_version, deleted_at, updated_at)
 - Auth: Register, Login, JWT (Access + Refresh Token)
 - **Rate Limiting** on auth endpoints (symfony/rate-limiter)
-- **Email Verification** + **Password Reset** flow (Symfony Mailer + Brevo)
+- **Email Verification** + **Password Reset** flow (Symfony Mailer + Resend)
 - **GDPR**: Privacy policy, consent at registration, export + deletion endpoints
 - **Household Isolation Voter**: Unit-tested, active from day 1
 - Integration tests for auth (incl. rate limiting, verification, password reset)
@@ -1542,7 +1545,7 @@ tests/
 | Coverage tool? | **Xdebug** with XDEBUG_MODE=coverage | FrankenPHP uses ZTS (Zend Thread Safety), PCOV only supports NTS. Xdebug provides path coverage + debugging. |
 | Mutation testing scope? | **Unit suite only** | Integration tests are too slow for Infection, produce timeouts. Domain logic is the critical part. |
 | MSI threshold? | **80% MSI, 90% Covered MSI** | Realistic from Phase 3, below that CI does not block but warns. |
-| Mocking strategy? | **`createStub()` > `createMock()`** | PHPUnit 13 enforces the separation. Mocks with `seal()` only for external services (WebPush, ntfy, APNs, Brevo). |
+| Mocking strategy? | **`createStub()` > `createMock()`** | PHPUnit 13 enforces the separation. Mocks with `seal()` only for external services (WebPush, ntfy, APNs, Resend). |
 | i18n Frontend? | **paraglide-sveltekit** | Compile-time, zero runtime overhead, type-safe keys. No `$t()` at runtime. |
 | Design direction? | **Neo Utility** + Dark Mode | Functional, data-driven, Sora + JetBrains Mono, progress bar, tags. Dark Mode via CSS Custom Properties + `prefers-color-scheme`. |
 | Color system? | **CSS Custom Properties** with Light/Dark swap | User preference in DB (`theme: auto/light/dark`), no separate stylesheet. |
@@ -1550,7 +1553,7 @@ tests/
 | Statistics calculation? | **Hybrid: on-the-fly + Materialized Views** | Base stats (streak, rate) calculated live, heatmaps/aggregations precomputed nightly. |
 | Native app? | **Capacitor 6.x** (Phase 7, Stage 2) | Same SvelteKit code, native shell for app stores. |
 | Widgets? | **Incremental**: PWA Shortcuts → Capacitor + `capacitor-widget-bridge` → native SwiftUI/Kotlin | Stage 1 costs 30min, Stage 3 ~50-80 lines native code per platform. No custom plugin needed. |
-| Email provider? | **Brevo** (Free Tier) via `symfony/brevo-mailer` | 300 mails/day free, EU-based (GDPR), official Symfony Bridge. |
+| Email provider? | **Mailpit** (dev) + **Resend** (prod, free tier) | Mailpit catches all dev email locally. Resend: 3,000 emails/month free, standard SMTP, no Symfony bridge needed. |
 | Error tracking? | **GlitchTip 6.x** self-hosted | 512MB RAM, MIT license, Sentry SDK compatible. Migration to Sentry Cloud anytime via DSN swap. |
 | Real-time? | **Mercure** (SSE, built into Caddy) | Already in `dunglas/symfony-docker` template, no extra service. Live updates for household logs. |
 | Hosting? | **Hetzner Cloud VPS** + OpenTofu | IaC, affordable, EU data center (GDPR), good peering. |

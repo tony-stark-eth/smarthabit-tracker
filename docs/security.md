@@ -30,7 +30,7 @@ Account deletion removes: User entity, all HabitLogs of the user, all Notificati
 
 ### Privacy Policy
 
-Must contain: data controller, purpose of processing (habit tracking, notifications), legal basis (consent Art. 6(1)(a) GDPR), recipients (Brevo for email, ntfy self-hosted for push), third-country transfer (Apple APNs for iOS push — USA, Standard Contractual Clauses; browser push endpoints for Web Push), retention period, rights (access, deletion, export, withdrawal), contact details. Versioned as Markdown in the repo, retrievable via API. Advantage of the self-hosted approach: push data for Android never leaves the own server (ntfy on Hetzner DE).
+Must contain: data controller, purpose of processing (habit tracking, notifications), legal basis (consent Art. 6(1)(a) GDPR), recipients (Resend for email — US-based, DPA available; ntfy self-hosted for push), third-country transfer (Apple APNs for iOS push — USA, Standard Contractual Clauses; Resend — USA; browser push endpoints for Web Push), retention period, rights (access, deletion, export, withdrawal), contact details. Versioned as Markdown in the repo, retrievable via API. Advantage of the self-hosted approach: push data for Android never leaves the own server (ntfy on Hetzner DE).
 
 ## Security Hardening
 
@@ -88,22 +88,31 @@ Two layers: Caddy blocks obvious brute-force before PHP is even touched, Symfony
 - **Household Isolation**: Middleware/Voter that verifies every API access only touches data of the user's own household. Unit-tested.
 - **JWT Blacklist**: On password change/reset all existing refresh tokens are invalidated.
 
-## Email (Symfony Mailer + Brevo)
+## Email (Symfony Mailer + Mailpit / Resend)
 
-### Why Brevo
+### Dev: Mailpit
 
-Free (300 mails/day Free Tier), EU-based (GDPR-compliant), official Symfony Mailer Bridge (`symfony/brevo-mailer`). No own mail server, no SMTP setup, no deliverability problems. For a household app with few users, 300 mails/day is more than enough.
-
-### Setup
-
-```bash
-composer require symfony/brevo-mailer
-```
+[Mailpit](https://github.com/axllent/mailpit) is a lightweight, self-hosted email testing tool. All outgoing email is caught and displayed in a web UI at `http://localhost:8025`. No external accounts needed.
 
 ```
-# .env
-MAILER_DSN=brevo+api://API_KEY@default
+# compose.yaml (already configured)
+MAILER_DSN=smtp://mailpit:1025
 ```
+
+### Prod: Resend
+
+[Resend](https://resend.com) provides a free tier (3,000 emails/month) — more than enough for a personal household app. Uses standard SMTP, no Symfony bridge package required.
+
+```
+# .env.local on production server
+MAILER_DSN=smtp://resend:re_YOUR_API_KEY@smtp.resend.com:465
+```
+
+Setup:
+1. Create a free account at https://resend.com
+2. Verify your domain (add DNS records: SPF, DKIM, DMARC)
+3. Generate an API key
+4. Set `MAILER_DSN` in `.env.local` on the production server
 
 ### Email Types
 
