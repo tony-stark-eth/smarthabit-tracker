@@ -9,7 +9,7 @@
 {$SERVER_NAME:localhost} {
     log
 
-    basicauth {
+    basic_auth {
         demo $2a$14$X1n2Hn2OSD9RLdRv5Y.2PuVNREkswi1IdRe8ZQZN1l2LZ1CYbHfWO
     }
 
