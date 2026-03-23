@@ -10,10 +10,6 @@
     log
 
     # API requests → Symfony / FrankenPHP
-    # No basic_auth here — the API has its own JWT authentication.
-    # Applying basic_auth to /api/* causes browsers to re-prompt on any 401
-    # (expired JWT, wrong credentials) because they can't distinguish
-    # "basic auth failed" from "JWT auth failed".
     handle /api/* {
         root * /app/public
         php_server
@@ -36,12 +32,7 @@
     }
 
     # Everything else → SvelteKit static build with SPA fallback
-    # Basic auth protects the frontend from casual access. The API is
-    # already protected by JWT, so only the SPA needs this gate.
     handle {
-        basic_auth {
-            demo $2a$14$X1n2Hn2OSD9RLdRv5Y.2PuVNREkswi1IdRe8ZQZN1l2LZ1CYbHfWO
-        }
         root * /app/frontend/build
         try_files {path} /index.html
         file_server
