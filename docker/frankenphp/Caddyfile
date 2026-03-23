@@ -15,6 +15,7 @@
 
     # API requests → Symfony / FrankenPHP
     handle /api/* {
+        root * /app/public
         php_server
     }
 
