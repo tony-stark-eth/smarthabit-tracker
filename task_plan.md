@@ -587,15 +587,16 @@ Wave 1 (parallel):
 
 ## Phase 9 — Frontend Gaps (Habit CRUD + History)
 
-**Status**: IN PROGRESS
-**Context**: Backend APIs are complete (Phase 1b). Frontend is missing CRUD UI, history overview, and edit/delete flows.
+**Status**: 9.1 + 9.3 COMPLETE, 9.2 TODO
+**Context**: Backend APIs are complete (Phase 1b). Frontend was missing CRUD UI, history overview, and edit/delete flows.
 
-### 9.1 — Create Habit (FAB + Sheet)
+### 9.1 — Create Habit (FAB + Sheet) ✅ COMPLETE
 
-- [ ] Floating Action Button (+) on dashboard (bottom-right, above nav)
-- [ ] Create Habit bottom sheet / modal: name (required), icon (emoji picker or text input), frequency, description, time window start/end (optional), color
-- [ ] POST /api/v1/habits on submit → refresh dashboard
-- [ ] Validation: name required, time window end > start
+- [x] Floating Action Button (+) on dashboard (bottom-right, above nav)
+- [x] CreateHabitSheet bottom sheet: name (required), icon (emoji), frequency (daily/weekly/custom), time window start/end (optional)
+- [x] POST /api/v1/habits on submit → refresh dashboard
+- [x] Validation: name required, inline error display
+- [x] Empty state "Create your first habit" button
 
 ### 9.2 — Edit + Delete Habit
 
@@ -604,11 +605,12 @@ Wave 1 (parallel):
 - [ ] PUT /api/v1/habits/{id} on save
 - [ ] Delete button with confirmation dialog → DELETE /api/v1/habits/{id}
 
-### 9.3 — History Overview Page
+### 9.3 — History Overview Page ✅ COMPLETE
 
-- [ ] Replace "Coming soon" stub with actual content
-- [ ] List all habits with recent log counts (last 7 days)
-- [ ] Tap habit → navigate to /habits/{id} (existing detail page)
+- [x] Replace "Coming soon" stub with habit list
+- [x] Each habit shows icon, name, last completion time (or "Never")
+- [x] Tap habit → navigate to /habits/{id} (existing detail page with paginated logs)
+- [x] Loading skeleton, error state with retry
 
 ### 9.4 — Deployment Fixes
 

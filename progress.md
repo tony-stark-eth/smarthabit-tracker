@@ -283,8 +283,27 @@
 - `task_plan.md` — updated Agent E mailer config reference
 - `progress.md` — this entry
 
+### Deployment fixes discovered during first real usage
+- **Caddyfile missing `root * /app/public`** in external API handle block — `php_server` couldn't find `index.php`, returned 404 on all API calls
+- **JWT keys not mounted in prod** — prod image only has `.gitkeep`, keys live on host. Added volume mount for `backend/config/jwt` and `Caddyfile` in `compose.prod.yaml`
+- **Basic auth incompatible with SPAs** — Mercure SSE, service workers, and programmatic fetch() don't carry basic auth credentials, causing 401 loops. Removed basic auth entirely. Cloudflare Access (free, up to 50 users) is the correct approach for SPA protection.
+- **`basicauth` directive deprecated** in Caddy — must use `basic_auth` (moot now since removed)
+- Resend API key set on production server in `.env.local`
+- Backported all fixes to template repo (template-symfony-sveltekit)
+
+### Frontend features built (Phase 9)
+- **CreateHabitSheet** — bottom sheet with name, icon, frequency, time window fields. FAB (+) on dashboard opens it.
+- **History page** — replaced "Coming soon" stub. Lists all habits with last completion time, tap navigates to per-habit detail page.
+- `bun run check` + `bun run build` pass cleanly
+
 ### Status
-- [x] Basic auth on production
 - [x] Mailpit for dev email
 - [x] Resend config for prod email
-- [x] All docs updated
+- [x] All Brevo references removed from all docs
+- [x] Deployment fixes (Caddyfile root, JWT mount, Caddyfile mount)
+- [x] Basic auth removed (use Cloudflare Access instead)
+- [x] Template repo backported
+- [x] Create habit UI (Phase 9.1)
+- [x] History overview page (Phase 9.3)
+- [ ] Edit + delete habit UI (Phase 9.2)
+- [ ] Resend domain verification (manual: user adds DNS records)
