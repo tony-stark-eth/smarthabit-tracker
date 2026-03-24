@@ -17,12 +17,12 @@
         ariaLabel: string;
     }
 
-    const navItems: NavItem[] = [
+    const navItems = $derived<NavItem[]>([
         { href: hrefToday, label: t('nav_today'), icon: 'today', ariaLabel: t('nav_today') },
         { href: hrefHistory, label: t('nav_history'), icon: 'history', ariaLabel: t('nav_history') },
         { href: hrefStats, label: t('nav_stats'), icon: 'stats', ariaLabel: t('nav_stats') },
         { href: hrefSettings, label: t('nav_settings'), icon: 'settings', ariaLabel: t('nav_settings') },
-    ];
+    ]);
 
     function isActive(path: string): boolean {
         const pathname = $page.url.pathname;
