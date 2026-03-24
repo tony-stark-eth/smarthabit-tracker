@@ -1,4 +1,4 @@
-.PHONY: help up down build logs shell quality ecs ecs-check phpstan rector rector-check test test-unit test-integration infection infection-fast frontend-install frontend-dev frontend-build frontend-check frontend-lint db-migrate db-diff db-reset tofu-init tofu-plan tofu-apply tofu-destroy deploy-init deploy deploy-rollback deploy-logs deploy-destroy
+.PHONY: help up down build logs shell quality ecs ecs-check phpstan rector rector-check test test-unit test-integration infection infection-fast i18n frontend-install frontend-dev frontend-build frontend-check frontend-lint db-migrate db-diff db-reset tofu-init tofu-plan tofu-apply tofu-destroy deploy-init deploy deploy-rollback deploy-logs deploy-destroy
 
 help:                 ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -61,10 +61,13 @@ infection-fast:       ## Mutation testing (changed files only)
 frontend-install:     ## Bun install
 	cd frontend && bun install
 
+i18n:                 ## Generate frontend i18n from Symfony YAML translations
+	cd frontend && bun run i18n:generate
+
 frontend-dev:         ## SvelteKit dev server
 	cd frontend && bun run dev
 
-frontend-build:       ## SvelteKit production build
+frontend-build: i18n  ## SvelteKit production build (auto-generates i18n)
 	cd frontend && bun run build
 
 frontend-check:       ## TypeScript + Svelte check

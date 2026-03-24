@@ -3,10 +3,10 @@ name: Frontend CI
 on:
   push:
     branches: [main]
-    paths: ['frontend/**', '.github/workflows/ci-frontend.yml']
+    paths: ['frontend/**', 'backend/translations/**', '.github/workflows/ci-frontend.yml']
   pull_request:
     branches: [main]
-    paths: ['frontend/**', '.github/workflows/ci-frontend.yml']
+    paths: ['frontend/**', 'backend/translations/**', '.github/workflows/ci-frontend.yml']
 
 jobs:
   lint-and-build:
@@ -20,6 +20,13 @@ jobs:
         with:
           bun-version: latest
       - run: bun install --frozen-lockfile
+      - name: i18n freshness check
+        run: |
+          bun run i18n:generate
+          if ! git diff --exit-code src/lib/i18n/; then
+            echo "::error::Generated i18n files are stale. Run 'cd frontend && bun run i18n:generate' and commit the result."
+            exit 1
+          fi
       - name: ESLint
         run: bun run lint
       - name: Svelte Check (TypeScript)
