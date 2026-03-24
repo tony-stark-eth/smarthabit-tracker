@@ -21,10 +21,11 @@ permissions:
   packages: write
 
 jobs:
-  # ── Gate: wait for all CI checks to pass ─────────────────────────────────
+  # ── Gate: wait for CI checks to pass (skip on manual trigger) ────────────
   ci-check:
     name: CI Gate
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
       - name: Wait for CI
         uses: lewagon/wait-on-check-action@v1.3.4
@@ -38,6 +39,7 @@ jobs:
   build-and-push:
     name: Build & Push Image
     needs: ci-check
+    if: ${{ !cancelled() && (needs.ci-check.result == 'success' || needs.ci-check.result == 'skipped') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
