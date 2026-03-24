@@ -1,6 +1,7 @@
 <script lang="ts">
     import { client } from '$lib/api/client';
     import { getUser, logout, fetchUser } from '$lib/stores/auth.svelte';
+    import { t, setLocale } from '$lib/i18n';
     import type { Household } from '$lib/types';
 
     type Theme = 'auto' | 'light' | 'dark';
@@ -57,6 +58,7 @@
         try {
             await client.put('/user/me', { locale });
             await fetchUser();
+            setLocale(locale);
             localeSaved = true;
             setTimeout(() => (localeSaved = false), 2000);
         } catch {
@@ -162,7 +164,7 @@
 
 <div class="page">
     <header class="page-header">
-        <h1 class="page-title">Settings</h1>
+        <h1 class="page-title">{t('nav_settings')}</h1>
         {#if user}
             <p class="page-subtitle">{user.email}</p>
         {/if}
@@ -170,28 +172,28 @@
 
     <!-- Language -->
     <section class="settings-section">
-        <h2 class="section-title">Language</h2>
+        <h2 class="section-title">{t('settings_language')}</h2>
         <div class="row">
             <select
                 bind:value={locale}
                 class="field-input"
                 disabled={savingLocale}
                 onchange={saveLocale}
-                aria-label="Language"
+                aria-label={t('settings_language')}
             >
                 <option value="en">English</option>
                 <option value="de">Deutsch</option>
             </select>
             {#if localeSaved}
-                <span class="saved-badge">Saved</span>
+                <span class="saved-badge">{t('settings_saved')}</span>
             {/if}
         </div>
-        <p class="section-hint">Sets notification language. UI translation coming soon.</p>
+        <p class="section-hint">{t('settings_language_hint')}</p>
     </section>
 
     <!-- Theme -->
     <section class="settings-section">
-        <h2 class="section-title">Theme</h2>
+        <h2 class="section-title">{t('settings_theme')}</h2>
         <div class="theme-buttons">
             <button
                 class="theme-btn"
@@ -199,7 +201,7 @@
                 onclick={() => setTheme('auto')}
                 disabled={savingTheme}
             >
-                System
+                {t('settings_theme_system')}
             </button>
             <button
                 class="theme-btn"
@@ -207,7 +209,7 @@
                 onclick={() => setTheme('light')}
                 disabled={savingTheme}
             >
-                Light
+                {t('settings_theme_light')}
             </button>
             <button
                 class="theme-btn"
@@ -215,7 +217,7 @@
                 onclick={() => setTheme('dark')}
                 disabled={savingTheme}
             >
-                Dark
+                {t('settings_theme_dark')}
             </button>
         </div>
     </section>
@@ -223,45 +225,45 @@
     <!-- Household -->
     {#if user?.household}
         <section class="settings-section">
-            <h2 class="section-title">Household</h2>
+            <h2 class="section-title">{t('settings_household')}</h2>
             <p class="household-name">{user.household.name}</p>
             <div class="invite-code-row">
                 <div class="invite-code-display">
-                    <span class="invite-code-label">Invite code</span>
+                    <span class="invite-code-label">{t('settings_invite_code')}</span>
                     <code class="invite-code-value">{user.household.invite_code}</code>
                 </div>
                 <button
                     class="action-btn action-btn--copy"
                     onclick={copyInviteCode}
-                    aria-label="Copy invite code"
+                    aria-label={t('settings_copy')}
                 >
-                    {inviteCodeCopied ? 'Copied!' : 'Copy'}
+                    {inviteCodeCopied ? t('settings_copied') : t('settings_copy')}
                 </button>
             </div>
-            <p class="invite-hint">Share this code so others can join your household.</p>
+            <p class="invite-hint">{t('settings_invite_hint')}</p>
         </section>
     {/if}
 
     <!-- Join Household -->
     <section class="settings-section">
-        <h2 class="section-title">Join another household</h2>
+        <h2 class="section-title">{t('settings_join_household')}</h2>
         <p class="join-hint">Enter an invite code to switch to a different household.</p>
         <div class="join-row">
             <input
                 type="text"
                 bind:value={joinCode}
                 class="field-input"
-                placeholder="8-character code"
+                placeholder={t('settings_join_placeholder')}
                 disabled={joining}
                 maxlength={8}
-                aria-label="Invite code"
+                aria-label={t('settings_invite_code')}
             />
             <button
                 class="action-btn action-btn--join"
                 onclick={joinHousehold}
                 disabled={joining || joinCode.trim() === ''}
             >
-                {joining ? 'Joining…' : 'Join'}
+                {joining ? 'Joining…' : t('settings_join')}
             </button>
         </div>
         {#if joinError !== null}
@@ -281,7 +283,7 @@
             onclick={exportData}
             disabled={exporting}
         >
-            {exporting ? 'Exporting…' : 'Export my data'}
+            {exporting ? 'Exporting…' : t('settings_export')}
         </button>
     </section>
 
@@ -301,7 +303,7 @@
                 class="action-btn action-btn--danger"
                 onclick={() => (showDeleteConfirm = true)}
             >
-                Delete account
+                {t('settings_delete_account')}
             </button>
         {:else}
             <div class="delete-confirm-box">
@@ -324,7 +326,7 @@
                         onclick={() => { showDeleteConfirm = false; deleteConfirmText = ''; }}
                         disabled={deleting}
                     >
-                        Cancel
+                        {t('common_cancel')}
                     </button>
                     <button
                         class="action-btn action-btn--danger"

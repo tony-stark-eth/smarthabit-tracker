@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from '$app/stores';
     import { resolve } from '$app/paths';
+    import { t } from '$lib/i18n';
 
     const { children } = $props();
 
@@ -17,10 +18,10 @@
     }
 
     const navItems: NavItem[] = [
-        { href: hrefToday, label: 'Today', icon: 'today', ariaLabel: 'Today' },
-        { href: hrefHistory, label: 'History', icon: 'history', ariaLabel: 'History' },
-        { href: hrefStats, label: 'Stats', icon: 'stats', ariaLabel: 'Stats' },
-        { href: hrefSettings, label: 'Settings', icon: 'settings', ariaLabel: 'Settings' },
+        { href: hrefToday, label: t('nav_today'), icon: 'today', ariaLabel: t('nav_today') },
+        { href: hrefHistory, label: t('nav_history'), icon: 'history', ariaLabel: t('nav_history') },
+        { href: hrefStats, label: t('nav_stats'), icon: 'stats', ariaLabel: t('nav_stats') },
+        { href: hrefSettings, label: t('nav_settings'), icon: 'settings', ariaLabel: t('nav_settings') },
     ];
 
     function isActive(path: string): boolean {

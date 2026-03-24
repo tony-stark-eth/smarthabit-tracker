@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { register } from '$lib/stores/auth.svelte';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Form state — Svelte 5 runes
@@ -80,13 +81,13 @@
     <div class="auth-card">
         <header class="auth-header">
             <h1 class="auth-title">SmartHabit</h1>
-            <p class="auth-subtitle">Create your account</p>
+            <p class="auth-subtitle">{t('auth_register')}</p>
         </header>
 
         <form onsubmit={handleSubmit} class="auth-form" novalidate>
             <!-- Email -->
             <div class="field">
-                <label for="email" class="field-label">Email</label>
+                <label for="email" class="field-label">{t('auth_email')}</label>
                 <input
                     id="email"
                     type="email"
@@ -104,7 +105,7 @@
 
             <!-- Display name -->
             <div class="field">
-                <label for="display_name" class="field-label">Display name</label>
+                <label for="display_name" class="field-label">{t('auth_display_name')}</label>
                 <input
                     id="display_name"
                     type="text"
@@ -122,7 +123,7 @@
 
             <!-- Password -->
             <div class="field">
-                <label for="password" class="field-label">Password</label>
+                <label for="password" class="field-label">{t('auth_password')}</label>
                 <input
                     id="password"
                     type="password"
@@ -140,7 +141,7 @@
 
             <!-- Confirm password -->
             <div class="field">
-                <label for="confirm_password" class="field-label">Confirm password</label>
+                <label for="confirm_password" class="field-label">{t('auth_confirm_password')}</label>
                 <input
                     id="confirm_password"
                     type="password"
@@ -158,7 +159,7 @@
 
             <!-- Timezone (auto-detected, still editable) -->
             <div class="field">
-                <label for="timezone" class="field-label">Timezone</label>
+                <label for="timezone" class="field-label">{t('auth_timezone')}</label>
                 <input
                     id="timezone"
                     type="text"
@@ -171,7 +172,7 @@
 
             <!-- Locale -->
             <div class="field">
-                <label for="locale" class="field-label">Language</label>
+                <label for="locale" class="field-label">{t('settings_language')}</label>
                 <select
                     id="locale"
                     bind:value={locale}
@@ -185,7 +186,7 @@
 
             <!-- Household mode toggle -->
             <fieldset class="toggle-group">
-                <legend class="field-label">Household</legend>
+                <legend class="field-label">{t('settings_household')}</legend>
                 <div class="toggle-buttons">
                     <button
                         type="button"
@@ -193,7 +194,7 @@
                         class:toggle-btn--active={householdMode === 'create'}
                         onclick={() => (householdMode = 'create')}
                     >
-                        Create new household
+                        {t('auth_or_create')}
                     </button>
                     <button
                         type="button"
@@ -201,13 +202,13 @@
                         class:toggle-btn--active={householdMode === 'join'}
                         onclick={() => (householdMode = 'join')}
                     >
-                        Join with invite code
+                        {t('auth_or_join')}
                     </button>
                 </div>
 
                 {#if householdMode === 'create'}
                     <div class="field" style="margin-top: 0.5rem;">
-                        <label for="household_name" class="field-label">Household name</label>
+                        <label for="household_name" class="field-label">{t('auth_household_name')}</label>
                         <input
                             id="household_name"
                             type="text"
@@ -223,7 +224,7 @@
                     </div>
                 {:else}
                     <div class="field" style="margin-top: 0.5rem;">
-                        <label for="invite_code" class="field-label">Invite code</label>
+                        <label for="invite_code" class="field-label">{t('auth_invite_code')}</label>
                         <input
                             id="invite_code"
                             type="text"
@@ -248,7 +249,7 @@
                     disabled={submitting}
                     class="consent-checkbox"
                 />
-                <span class="consent-label">I accept the privacy policy</span>
+                <span class="consent-label">{t('auth_consent')}</span>
             </label>
             {#if fieldErrors['consent']}
                 <p class="field-error">{fieldErrors['consent']}</p>
@@ -259,14 +260,14 @@
             {/if}
 
             <button type="submit" class="btn-primary" disabled={submitting}>
-                {submitting ? 'Creating account…' : 'Sign up'}
+                {submitting ? 'Creating account…' : t('auth_register')}
             </button>
         </form>
 
         <footer class="auth-footer">
             <p>
-                Already have an account?
-                <a href={resolve('/login')} class="auth-link">Log in</a>
+                {t('auth_have_account')}
+                <a href={resolve('/login')} class="auth-link">{t('auth_login')}</a>
             </p>
         </footer>
     </div>

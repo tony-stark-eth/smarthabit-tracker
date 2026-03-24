@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { client } from '$lib/api/client';
+    import { t } from '$lib/i18n';
     import CreateHabitSheet from '$lib/components/CreateHabitSheet.svelte';
     import ConfirmDialog from '$lib/components/ConfirmDialog.svelte';
     import type { HabitData } from '$lib/types';
@@ -82,8 +83,8 @@
 
     function getDateLabel(isoString: string): string {
         const localDay = toLocalDateString(isoString);
-        if (localDay === todayLocalString()) return 'Today';
-        if (localDay === yesterdayLocalString()) return 'Yesterday';
+        if (localDay === todayLocalString()) return t('date_today');
+        if (localDay === yesterdayLocalString()) return t('date_yesterday');
 
         // Format as "March 20" etc.
         const d = new Date(isoString);
@@ -270,7 +271,7 @@
 </script>
 
 <svelte:head>
-    <title>{habitInfo !== null ? habitInfo.name : 'History'} — SmartHabit</title>
+    <title>{habitInfo !== null ? habitInfo.name : t('history_title')} — SmartHabit</title>
 </svelte:head>
 
 <div class="page">
@@ -288,10 +289,10 @@
 
         <div class="header-text">
             <h1 class="page-title">
-                {habitInfo !== null ? habitInfo.name : 'History'}
+                {habitInfo !== null ? habitInfo.name : t('history_title')}
             </h1>
             {#if totalLogs > 0}
-                <p class="page-subtitle">{totalLogs} {totalLogs === 1 ? 'entry' : 'entries'}</p>
+                <p class="page-subtitle">{totalLogs === 1 ? t('habit_entry') : t('habit_entries', { count: totalLogs })}</p>
             {/if}
         </div>
 
@@ -299,14 +300,14 @@
             <a
                 href={resolve(`/habits/${habitId}/stats`)}
                 class="icon-btn icon-btn--accent"
-                aria-label="View statistics for this habit"
+                aria-label={t('nav_stats')}
             >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="18" y1="20" x2="18" y2="10"></line>
                     <line x1="12" y1="20" x2="12" y2="4"></line>
                     <line x1="6" y1="20" x2="6" y2="14"></line>
                 </svg>
-                Stats
+                {t('nav_stats')}
             </a>
 
             <button
@@ -347,9 +348,9 @@
 
     <ConfirmDialog
         open={confirmDeleteOpen}
-        title="Delete habit"
-        message="This will permanently delete the habit and all its history. This action cannot be undone."
-        confirmLabel="Delete"
+        title={t('habit_delete_title')}
+        message={t('habit_delete_message')}
+        confirmLabel={t('habit_delete_confirm')}
         onConfirm={handleDeleteConfirmed}
         onCancel={cancelDelete}
     />
@@ -367,7 +368,7 @@
     {#if error !== null && !loading}
         <div class="error-card" role="alert">
             <p class="error-text">{error}</p>
-            <button class="retry-btn" onclick={load}>Try again</button>
+            <button class="retry-btn" onclick={load}>{t('common_try_again')}</button>
         </div>
     {/if}
 
@@ -375,8 +376,8 @@
     {#if !loading && error === null}
         {#if logs.length === 0}
             <div class="empty-state">
-                <p class="empty-title">No logs yet</p>
-                <p class="empty-subtitle">Complete this habit to see history here.</p>
+                <p class="empty-title">{t('habit_no_logs')}</p>
+                <p class="empty-subtitle">{t('habit_no_logs_hint')}</p>
             </div>
         {:else}
             <div class="log-groups">
@@ -414,7 +415,7 @@
                         {/if}
                     </div>
                 {:else}
-                    <p class="end-of-list">All entries loaded</p>
+                    <p class="end-of-list">{t('habit_all_loaded')}</p>
                 {/if}
             </div>
         {/if}

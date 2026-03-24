@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { login } from '$lib/stores/auth.svelte';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Form state
@@ -35,12 +36,12 @@
     <div class="auth-card">
         <header class="auth-header">
             <h1 class="auth-title">SmartHabit</h1>
-            <p class="auth-subtitle">Log in to your account</p>
+            <p class="auth-subtitle">{t('auth_login')}</p>
         </header>
 
         <form onsubmit={handleSubmit} class="auth-form" novalidate>
             <div class="field">
-                <label for="email" class="field-label">Email</label>
+                <label for="email" class="field-label">{t('auth_email')}</label>
                 <input
                     id="email"
                     type="email"
@@ -54,7 +55,7 @@
             </div>
 
             <div class="field">
-                <label for="password" class="field-label">Password</label>
+                <label for="password" class="field-label">{t('auth_password')}</label>
                 <input
                     id="password"
                     type="password"
@@ -72,14 +73,14 @@
             {/if}
 
             <button type="submit" class="btn-primary" disabled={submitting}>
-                {submitting ? 'Logging in…' : 'Log in'}
+                {submitting ? 'Logging in…' : t('auth_login')}
             </button>
         </form>
 
         <footer class="auth-footer">
             <p>
-                Don't have an account?
-                <a href={resolve('/register')} class="auth-link">Sign up</a>
+                {t('auth_no_account')}
+                <a href={resolve('/register')} class="auth-link">{t('auth_register')}</a>
             </p>
         </footer>
     </div>

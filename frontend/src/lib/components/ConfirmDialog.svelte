@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { t } from '$lib/i18n';
+
     // ---------------------------------------------------------------------------
     // Types
     // ---------------------------------------------------------------------------
@@ -64,7 +66,7 @@
 
         <div class="dialog-actions">
             <button type="button" class="btn-cancel" onclick={onCancel}>
-                Cancel
+                {t('common_cancel')}
             </button>
             <button type="button" class="btn-confirm" onclick={onConfirm}>
                 {confirmLabel}

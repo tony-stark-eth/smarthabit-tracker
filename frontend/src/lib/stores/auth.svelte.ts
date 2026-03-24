@@ -4,6 +4,7 @@
  */
 
 import { client, clearTokens } from '$lib/api/client';
+import { setLocale } from '$lib/i18n';
 import type { User, RegisterData } from '$lib/types';
 
 // ---------------------------------------------------------------------------
@@ -68,6 +69,7 @@ export async function fetchUser(): Promise<void> {
     try {
         const response = await client.get<{ user: User }>('/user/me');
         user = response.user;
+        setLocale(user.locale);
     } catch {
         user = null;
         authenticated = false;

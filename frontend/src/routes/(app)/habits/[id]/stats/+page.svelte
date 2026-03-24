@@ -3,6 +3,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { client } from '$lib/api/client';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -45,9 +46,9 @@
     }
 
     function trendLabel(trend: number): string {
-        if (trend > 0.02) return 'Improving';
-        if (trend < -0.02) return 'Declining';
-        return 'Stable';
+        if (trend > 0.02) return t('stats_trend_improving');
+        if (trend < -0.02) return t('stats_trend_declining');
+        return t('stats_trend_stable');
     }
 
     function trendArrow(trend: number): string {
@@ -114,7 +115,7 @@
         <button
             class="back-btn"
             onclick={() => goto(resolve(`/habits/${habitId}`))}
-            aria-label="Back to habit history"
+            aria-label={t('history_title')}
         >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <polyline points="15 18 9 12 15 6"></polyline>
@@ -123,9 +124,9 @@
 
         <div class="header-text">
             <h1 class="page-title">
-                {stats !== null ? stats.habit_name : 'Statistics'}
+                {stats !== null ? stats.habit_name : t('stats_title')}
             </h1>
-            <p class="page-subtitle">Statistics</p>
+            <p class="page-subtitle">{t('stats_subtitle')}</p>
         </div>
     </header>
 
@@ -142,7 +143,7 @@
     {#if error !== null && !loading}
         <div class="error-card" role="alert">
             <p class="error-text">{error}</p>
-            <button class="retry-btn" onclick={load}>Try again</button>
+            <button class="retry-btn" onclick={load}>{t('common_try_again')}</button>
         </div>
     {/if}
 
@@ -150,24 +151,24 @@
         <!-- Streaks row -->
         <div class="metrics-row">
             <div class="metric-card">
-                <span class="metric-label">Current Streak</span>
+                <span class="metric-label">{t('stats_current_streak')}</span>
                 <div class="metric-number">
                     <span class="metric-value">{stats.current_streak}</span>
-                    <span class="metric-unit">days</span>
+                    <span class="metric-unit">{t('stats_days')}</span>
                 </div>
             </div>
             <div class="metric-card">
-                <span class="metric-label">Longest Streak</span>
+                <span class="metric-label">{t('stats_longest_streak')}</span>
                 <div class="metric-number">
                     <span class="metric-value">{stats.longest_streak}</span>
-                    <span class="metric-unit">days</span>
+                    <span class="metric-unit">{t('stats_days')}</span>
                 </div>
             </div>
         </div>
 
         <!-- Completion rate 30d -->
         <section class="card">
-            <h2 class="card-title">Completion Rate</h2>
+            <h2 class="card-title">{t('stats_completion_rate')}</h2>
             <div class="big-number">
                 <span class="big-value">{formatPercent(stats.completion_rate_30d)}</span>
                 <span class="big-unit">%</span>
@@ -175,13 +176,13 @@
             <div class="progress-track" role="progressbar" aria-valuenow={Math.round(stats.completion_rate_30d * 100)} aria-valuemin={0} aria-valuemax={100}>
                 <div class="progress-fill" style="width: {formatPercent(stats.completion_rate_30d)}%"></div>
             </div>
-            <p class="card-hint">Last 30 days</p>
+            <p class="card-hint">{t('stats_last_30_days')}</p>
         </section>
 
         <!-- Average time + trend -->
         <div class="metrics-row">
             <div class="metric-card">
-                <span class="metric-label">Average Time</span>
+                <span class="metric-label">{t('stats_avg_time')}</span>
                 {#if stats.average_completion_time !== null}
                     <span class="metric-time">{stats.average_completion_time}</span>
                 {:else}
@@ -189,7 +190,7 @@
                 {/if}
             </div>
             <div class="metric-card">
-                <span class="metric-label">Trend</span>
+                <span class="metric-label">{t('stats_trend')}</span>
                 <div class="trend-display {trendClass(stats.trend)}">
                     <span class="trend-arrow">{trendArrow(stats.trend)}</span>
                     <span class="trend-text">{trendLabel(stats.trend)}</span>
@@ -200,7 +201,7 @@
         <!-- Weekly bar chart (last 4 weeks) -->
         {#if weeklyBarData().length > 0}
             <section class="card">
-                <h2 class="card-title">Weekly Completion (last 4 weeks)</h2>
+                <h2 class="card-title">{t('stats_weekly_chart')}</h2>
                 <svg viewBox="0 0 200 110" class="chart" aria-label="Weekly completion chart">
                     {#each weeklyBarData() as value, i (i)}
                         <rect

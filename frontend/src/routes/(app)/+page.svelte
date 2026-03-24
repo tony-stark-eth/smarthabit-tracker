@@ -6,6 +6,7 @@
     import HabitCard from '$lib/components/HabitCard.svelte';
     import ProgressBar from '$lib/components/ProgressBar.svelte';
     import CreateHabitSheet from '$lib/components/CreateHabitSheet.svelte';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -61,9 +62,9 @@
 
     function getGreeting(): string {
         const hour = new Date().getHours();
-        if (hour < 12) return 'Good morning';
-        if (hour < 17) return 'Good afternoon';
-        return 'Good evening';
+        if (hour < 12) return t('dashboard_good_morning');
+        if (hour < 17) return t('dashboard_good_afternoon');
+        return t('dashboard_good_evening');
     }
 
     // ---------------------------------------------------------------------------
@@ -237,7 +238,7 @@
     {#if data !== null && data.summary.done >= data.summary.total && data.summary.total > 0}
         <div class="all-done-banner" role="status">
             <span class="all-done-emoji" aria-hidden="true">🎉</span>
-            <span class="all-done-text">All done for today!</span>
+            <span class="all-done-text">{t('dashboard_all_done')}</span>
         </div>
     {/if}
 
@@ -254,7 +255,7 @@
     {#if error !== null && !loading}
         <div class="error-card" role="alert">
             <p class="error-text">{error}</p>
-            <button class="retry-btn" onclick={load}>Try again</button>
+            <button class="retry-btn" onclick={load}>{t('common_try_again')}</button>
         </div>
     {/if}
 
@@ -262,10 +263,10 @@
     {#if data !== null && !loading}
         {#if data.habits.length === 0}
             <div class="empty-state">
-                <p class="empty-title">No habits yet</p>
-                <p class="empty-subtitle">Add your first habit to get started.</p>
+                <p class="empty-title">{t('dashboard_no_habits')}</p>
+                <p class="empty-subtitle">{t('dashboard_no_habits_hint')}</p>
                 <button class="empty-cta" onclick={openSheet}>
-                    Create your first habit
+                    {t('dashboard_create_first')}
                 </button>
             </div>
         {:else}

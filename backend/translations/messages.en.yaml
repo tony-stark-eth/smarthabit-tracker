@@ -4,6 +4,10 @@ auth:
     email_taken: "This email is already registered"
     invalid_timezone: "Invalid timezone"
     consent_required: "You must accept the privacy policy"
+    password_too_short: "Password must be at least 8 characters"
+    display_name_required: "Display name is required"
+    household_required: "Household name or invite code is required"
+    invalid_invite_code: "Invalid invite code"
   login:
     success: "Login successful"
     invalid_credentials: "Invalid email or password"
@@ -21,12 +25,19 @@ auth:
     success: "Email verified successfully"
     invalid_token: "Invalid or expired verification token"
     already_verified: "Email is already verified"
+  unauthorized: "Unauthorized"
+  invalid_json: "Invalid request body"
+  rate_limit_exceeded: "Too many requests. Please try again later."
 household:
   join:
     success: "Joined household successfully"
     invalid_code: "Invalid invite code"
   isolation:
     access_denied: "You do not have access to this resource"
+habit:
+  name_required: "Name is required"
+  invalid_frequency: "Invalid frequency"
+  not_found: "Habit not found"
 gdpr:
   export:
     success: "Your data export is ready"
@@ -38,3 +49,148 @@ validation:
   email_invalid: "Please enter a valid email address"
   password_too_short: "Password must be at least 8 characters"
   display_name_too_long: "Display name must be 100 characters or less"
+
+# ── Frontend UI strings ─────────────────────────────────────────────────────
+# These keys are extracted at build time into frontend/src/lib/i18n/en.ts
+# by scripts/generate-i18n.sh. They are the single source of truth for all
+# user-visible text in the app.
+
+ui:
+  nav:
+    today: "Today"
+    history: "History"
+    stats: "Stats"
+    settings: "Settings"
+
+  auth:
+    login: "Log in"
+    register: "Sign up"
+    email: "Email"
+    password: "Password"
+    confirm_password: "Confirm password"
+    display_name: "Display name"
+    timezone: "Timezone"
+    consent: "I accept the privacy policy"
+    household_name: "Household name"
+    invite_code: "Invite code"
+    or_join: "Or join an existing household"
+    or_create: "Or create a new household"
+    no_account: "Don't have an account?"
+    have_account: "Already have an account?"
+
+  welcome:
+    title: "SmartHabit"
+    subtitle: "Household habit tracking with adaptive notifications"
+    login: "Log in"
+    register: "Create account"
+
+  dashboard:
+    good_morning: "Good morning"
+    good_afternoon: "Good afternoon"
+    good_evening: "Good evening"
+    all_done: "All done for today!"
+    no_habits: "No habits yet"
+    no_habits_hint: "Add your first habit to get started."
+    create_first: "Create your first habit"
+    progress: "{done} of {total} done"
+    progress_all_done: "All done for today!"
+
+  habit:
+    not_yet: "Not yet completed"
+    done_by: "Today {time} by {name}"
+    overdue: "Overdue"
+    auto_badge: "Auto"
+    log: "Log {name}"
+    undo: "Undo {name}"
+    view_details: "View details for {name}"
+    new: "New habit"
+    edit: "Edit habit"
+    name: "Name"
+    name_required: "Name is required."
+    icon: "Icon"
+    icon_hint: "optional emoji"
+    frequency: "Frequency"
+    frequency_daily: "Daily"
+    frequency_weekly: "Weekly"
+    frequency_custom: "Custom"
+    time_window: "Time window"
+    time_window_hint: "optional"
+    time_from: "From"
+    time_to: "To"
+    create: "Create habit"
+    save: "Save changes"
+    saving: "Saving…"
+    create_aria: "Create habit"
+    edit_aria: "Edit habit"
+    entries: "{count} entries"
+    entry: "1 entry"
+    no_logs: "No logs yet"
+    no_logs_hint: "Complete this habit to see history here."
+    all_loaded: "All entries loaded"
+    delete_title: "Delete habit"
+    delete_message: "This will permanently delete the habit and all its history. This action cannot be undone."
+    delete_confirm: "Delete"
+
+  history:
+    title: "History"
+    habits_count: "{count} habits"
+    habit_count: "1 habit"
+    no_habits: "No habits yet"
+    no_habits_hint: "Add your first habit to see history here."
+    last_completed: "Last completed: {when}"
+    never: "Never"
+    today_at: "Today at {time}"
+    yesterday_at: "Yesterday at {time}"
+    view: "View history for {name}"
+
+  date:
+    today: "Today"
+    yesterday: "Yesterday"
+
+  stats:
+    title: "Statistics"
+    subtitle: "Statistics"
+    current_streak: "Current Streak"
+    longest_streak: "Longest Streak"
+    completion_rate: "Completion Rate"
+    last_30_days: "Last 30 days"
+    avg_time: "Average Time"
+    trend: "Trend"
+    trend_improving: "Improving"
+    trend_declining: "Declining"
+    trend_stable: "Stable"
+    days: "days"
+    weekly_chart: "Weekly Completion (last 4 weeks)"
+    household: "Household Overview"
+    overall_rate: "Overall Completion Rate"
+    weekday_heatmap: "Activity by Weekday"
+    time_heatmap: "Activity by Hour"
+    per_habit: "Per-Habit Rates (30 days)"
+    no_data: "Not enough data yet"
+
+  settings:
+    language: "Language"
+    language_hint: "Sets app and notification language."
+    theme: "Theme"
+    theme_system: "System"
+    theme_light: "Light"
+    theme_dark: "Dark"
+    household: "Household"
+    invite_code: "Invite code"
+    invite_hint: "Share this code so others can join your household."
+    copy: "Copy"
+    copied: "Copied!"
+    join_household: "Join another household"
+    join_placeholder: "Enter invite code"
+    join: "Join"
+    export: "Export my data"
+    delete_account: "Delete account"
+    saved: "Saved"
+
+  common:
+    close: "Close"
+    cancel: "Cancel"
+    back: "Back to dashboard"
+    try_again: "Try again"
+    error: "Something went wrong. Please try again."
+    loading: "Loading..."

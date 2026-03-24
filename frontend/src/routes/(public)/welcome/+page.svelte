@@ -1,5 +1,6 @@
 <script lang="ts">
     import { resolve } from '$app/paths';
+    import { t } from '$lib/i18n';
 
     const features = [
         {
@@ -42,15 +43,14 @@
 <div class="landing">
     <!-- Hero -->
     <header class="hero">
-        <h1 class="hero-title">SmartHabit</h1>
+        <h1 class="hero-title">{t('welcome_title')}</h1>
         <p class="hero-tagline">Build better habits, together.</p>
         <p class="hero-subtitle">
-            Track daily habits with your household. Get adaptive reminders
-            that learn your routine. See your streaks grow.
+            {t('welcome_subtitle')}
         </p>
         <div class="hero-actions">
-            <a href={resolve('/register')} class="btn btn-primary">Get Started</a>
-            <a href={resolve('/login')} class="btn btn-secondary">Log In</a>
+            <a href={resolve('/register')} class="btn btn-primary">{t('welcome_register')}</a>
+            <a href={resolve('/login')} class="btn btn-secondary">{t('welcome_login')}</a>
         </div>
     </header>
 

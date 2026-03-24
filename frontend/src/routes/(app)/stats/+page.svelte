@@ -1,5 +1,6 @@
 <script lang="ts">
     import { client } from '$lib/api/client';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -100,8 +101,8 @@
 
 <div class="page">
     <header class="page-header">
-        <h1 class="page-title">Statistics</h1>
-        <p class="page-subtitle">Household Overview</p>
+        <h1 class="page-title">{t('stats_title')}</h1>
+        <p class="page-subtitle">{t('stats_household')}</p>
     </header>
 
     {#if loading}
@@ -115,14 +116,14 @@
     {#if error !== null && !loading}
         <div class="error-card" role="alert">
             <p class="error-text">{error}</p>
-            <button class="retry-btn" onclick={load}>Try again</button>
+            <button class="retry-btn" onclick={load}>{t('common_try_again')}</button>
         </div>
     {/if}
 
     {#if stats !== null && !loading}
         <!-- Overall completion rate -->
         <section class="card">
-            <h2 class="card-title">Completion Rate</h2>
+            <h2 class="card-title">{t('stats_completion_rate')}</h2>
             <div class="big-number">
                 <span class="big-value">{formatPercent(stats.overall_completion_rate)}</span>
                 <span class="big-unit">%</span>
@@ -130,14 +131,14 @@
             <div class="progress-track" role="progressbar" aria-valuenow={Math.round(stats.overall_completion_rate * 100)} aria-valuemin={0} aria-valuemax={100}>
                 <div class="progress-fill" style="width: {formatPercent(stats.overall_completion_rate)}%"></div>
             </div>
-            <p class="card-hint">Last 30 days across all habits</p>
+            <p class="card-hint">{t('stats_last_30_days')}</p>
         </section>
 
         <!-- Weekday heatmap -->
         <section class="card">
-            <h2 class="card-title">Activity by Weekday</h2>
+            <h2 class="card-title">{t('stats_weekday_heatmap')}</h2>
             {#if maxWeekday() === 0}
-                <p class="no-data">Not enough data yet</p>
+                <p class="no-data">{t('stats_no_data')}</p>
             {:else}
                 <svg viewBox="0 0 280 58" class="heatmap" aria-label="Weekday activity heatmap">
                     {#each weekdayData() as [_day, count], i (i)}
@@ -159,9 +160,9 @@
 
         <!-- Time-of-day heatmap -->
         <section class="card">
-            <h2 class="card-title">Activity by Hour</h2>
+            <h2 class="card-title">{t('stats_time_heatmap')}</h2>
             {#if maxTime() === 0}
-                <p class="no-data">Not enough data yet</p>
+                <p class="no-data">{t('stats_no_data')}</p>
             {:else}
                 <div class="time-heatmap-grid" aria-label="Hourly activity heatmap">
                     {#each timeData() as [hour, count] (hour)}
@@ -184,7 +185,7 @@
         <!-- Per-habit mini cards -->
         {#if stats.habits.length > 0}
             <section class="card">
-                <h2 class="card-title">Per Habit (30 days)</h2>
+                <h2 class="card-title">{t('stats_per_habit')}</h2>
                 <div class="habit-list">
                     {#each stats.habits as habit (habit.id)}
                         <div class="habit-row">

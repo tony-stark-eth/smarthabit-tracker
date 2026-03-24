@@ -1,6 +1,7 @@
 <script lang="ts">
     import { client, ApiRequestError } from '$lib/api/client';
     import type { HabitData } from '$lib/types';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -89,7 +90,7 @@
         const trimmedIcon = icon.trim();
 
         if (trimmedName === '') {
-            fieldErrors = { name: 'Name is required.' };
+            fieldErrors = { name: t('habit_name_required') };
             return;
         }
 
@@ -115,7 +116,7 @@
             if (err instanceof ApiRequestError) {
                 generalError = err.message;
             } else {
-                generalError = 'Something went wrong. Please try again.';
+                generalError = t('common_error');
             }
         } finally {
             submitting = false;
@@ -140,18 +141,18 @@
         class="backdrop"
         role="button"
         tabindex="-1"
-        aria-label="Close sheet"
+        aria-label={t('common_close')}
         onclick={onClose}
         onkeydown={handleBackdropKeydown}
     ></div>
 
     <!-- Sheet -->
-    <div class="sheet" role="dialog" aria-modal="true" aria-label={habit !== undefined ? 'Edit habit' : 'Create habit'}>
+    <div class="sheet" role="dialog" aria-modal="true" aria-label={habit !== undefined ? t('habit_edit_aria') : t('habit_create_aria')}>
         <div class="sheet-handle" aria-hidden="true"></div>
 
         <header class="sheet-header">
-            <h2 class="sheet-title">{habit !== undefined ? 'Edit habit' : 'New habit'}</h2>
-            <button class="close-btn" onclick={onClose} aria-label="Close">
+            <h2 class="sheet-title">{habit !== undefined ? t('habit_edit') : t('habit_new')}</h2>
+            <button class="close-btn" onclick={onClose} aria-label={t('common_close')}>
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
                     <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -162,7 +163,7 @@
         <form class="sheet-form" onsubmit={handleSubmit} novalidate>
             <!-- Name -->
             <div class="field" class:field--error={fieldErrors.name !== undefined}>
-                <label class="field-label" for="habit-name">Name <span class="required" aria-hidden="true">*</span></label>
+                <label class="field-label" for="habit-name">{t('habit_name')} <span class="required" aria-hidden="true">*</span></label>
                 <input
                     id="habit-name"
                     class="field-input"
@@ -181,7 +182,7 @@
 
             <!-- Icon -->
             <div class="field">
-                <label class="field-label" for="habit-icon">Icon <span class="field-hint">(optional emoji)</span></label>
+                <label class="field-label" for="habit-icon">{t('habit_icon')} <span class="field-hint">{t('habit_icon_hint')}</span></label>
                 <input
                     id="habit-icon"
                     class="field-input field-input--icon"
@@ -195,12 +196,12 @@
 
             <!-- Frequency -->
             <div class="field">
-                <label class="field-label" for="habit-frequency">Frequency</label>
+                <label class="field-label" for="habit-frequency">{t('habit_frequency')}</label>
                 <div class="select-wrapper">
                     <select id="habit-frequency" class="field-select" bind:value={frequency}>
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="custom">Custom</option>
+                        <option value="daily">{t('habit_frequency_daily')}</option>
+                        <option value="weekly">{t('habit_frequency_weekly')}</option>
+                        <option value="custom">{t('habit_frequency_custom')}</option>
                     </select>
                     <svg class="select-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <polyline points="6 9 12 15 18 9"></polyline>
@@ -210,10 +211,10 @@
 
             <!-- Time window -->
             <fieldset class="field fieldset">
-                <legend class="field-label">Time window <span class="field-hint">(optional)</span></legend>
+                <legend class="field-label">{t('habit_time_window')} <span class="field-hint">{t('habit_time_window_hint')}</span></legend>
                 <div class="time-row">
                     <div class="time-field">
-                        <label class="time-label" for="habit-time-start">From</label>
+                        <label class="time-label" for="habit-time-start">{t('habit_time_from')}</label>
                         <input
                             id="habit-time-start"
                             class="field-input"
@@ -223,7 +224,7 @@
                     </div>
                     <span class="time-sep" aria-hidden="true">–</span>
                     <div class="time-field">
-                        <label class="time-label" for="habit-time-end">To</label>
+                        <label class="time-label" for="habit-time-end">{t('habit_time_to')}</label>
                         <input
                             id="habit-time-end"
                             class="field-input"
@@ -242,14 +243,14 @@
             <!-- Actions -->
             <div class="sheet-actions">
                 <button type="button" class="btn-cancel" onclick={onClose} disabled={submitting}>
-                    Cancel
+                    {t('common_cancel')}
                 </button>
                 <button type="submit" class="btn-submit" disabled={submitting} aria-busy={submitting}>
                     {#if submitting}
                         <span class="spinner" aria-hidden="true"></span>
-                        Saving…
+                        {t('habit_saving')}
                     {:else}
-                        {habit !== undefined ? 'Save changes' : 'Create habit'}
+                        {habit !== undefined ? t('habit_save') : t('habit_create')}
                     {/if}
                 </button>
             </div>

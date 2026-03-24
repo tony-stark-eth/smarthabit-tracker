@@ -2,6 +2,7 @@
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
     import { client } from '$lib/api/client';
+    import { t } from '$lib/i18n';
 
     // ---------------------------------------------------------------------------
     // Types
@@ -53,7 +54,7 @@
     // ---------------------------------------------------------------------------
 
     function formatLastCompleted(lastLog: LastLog | null): string {
-        if (lastLog === null) return 'Never';
+        if (lastLog === null) return t('history_never');
 
         const d = new Date(lastLog.logged_at);
         const now = new Date();
@@ -64,8 +65,8 @@
 
         const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
 
-        if (logStr === todayStr) return `Today at ${timeStr}`;
-        if (logStr === yesterdayStr) return `Yesterday at ${timeStr}`;
+        if (logStr === todayStr) return t('history_today_at', { time: timeStr });
+        if (logStr === yesterdayStr) return t('history_yesterday_at', { time: timeStr });
 
         return d.toLocaleDateString(undefined, { month: 'long', day: 'numeric' }) + ` at ${timeStr}`;
     }
@@ -111,9 +112,9 @@
 <div class="page">
     <!-- Header -->
     <header class="page-header">
-        <h1 class="page-title">History</h1>
+        <h1 class="page-title">{t('history_title')}</h1>
         {#if data !== null}
-            <p class="page-subtitle">{data.habits.length} {data.habits.length === 1 ? 'habit' : 'habits'}</p>
+            <p class="page-subtitle">{data.habits.length === 1 ? t('history_habit_count') : t('history_habits_count', { count: data.habits.length })}</p>
         {/if}
     </header>
 
@@ -130,7 +131,7 @@
     {#if error !== null && !loading}
         <div class="error-card" role="alert">
             <p class="error-text">{error}</p>
-            <button class="retry-btn" onclick={load}>Try again</button>
+            <button class="retry-btn" onclick={load}>{t('common_try_again')}</button>
         </div>
     {/if}
 
@@ -138,8 +139,8 @@
     {#if data !== null && !loading}
         {#if data.habits.length === 0}
             <div class="empty-state">
-                <p class="empty-title">No habits yet</p>
-                <p class="empty-subtitle">Add your first habit to see history here.</p>
+                <p class="empty-title">{t('history_no_habits')}</p>
+                <p class="empty-subtitle">{t('history_no_habits_hint')}</p>
             </div>
         {:else}
             <ul class="habit-list" aria-label="All habits">
@@ -152,7 +153,7 @@
                         <button
                             class="habit-row"
                             onclick={() => goto(resolve(`/habits/${habit.id}`))}
-                            aria-label="View history for {habit.name}"
+                            aria-label={t('history_view', { name: habit.name })}
                         >
                             <span class="habit-icon" aria-hidden="true">
                                 {#if habit.icon !== null && habit.icon !== ''}
@@ -164,7 +165,7 @@
 
                             <span class="habit-body">
                                 <span class="habit-name">{habit.name}</span>
-                                <span class="habit-meta">Last completed: {formatLastCompleted(habit.last_log)}</span>
+                                <span class="habit-meta">{t('history_last_completed', { when: formatLastCompleted(habit.last_log) })}</span>
                             </span>
 
                             <svg

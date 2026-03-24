@@ -1,6 +1,7 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
     import { resolve } from '$app/paths';
+    import { t } from '$lib/i18n';
 
     interface LastLog {
         logged_at: string;
@@ -91,7 +92,7 @@
         class="card-body"
         role="button"
         tabindex="0"
-        aria-label="View details for {name}"
+        aria-label={t('habit_view_details', { name })}
         onclick={navigateToDetail}
         onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigateToDetail(); }}
     >
@@ -106,20 +107,20 @@
                 >
                     {timeWindowStart.slice(0, 5)}–{timeWindowEnd.slice(0, 5)}
                     {#if isOverdue()}
-                        <span class="overdue-label">Overdue</span>
+                        <span class="overdue-label">{t('habit_overdue')}</span>
                     {/if}
                 </span>
                 {#if timeWindowMode === 'auto'}
-                    <span class="auto-badge" aria-label="Learned time window">Auto</span>
+                    <span class="auto-badge" aria-label="Learned time window">{t('habit_auto_badge')}</span>
                 {/if}
             {/if}
 
             {#if isDoneToday && lastLog !== null}
                 <span class="card-subtitle card-subtitle--done">
-                    Today <span class="log-time">{formatTime(lastLog.logged_at)}</span> by {lastLog.user_display_name}
+                    {t('habit_done_by', { time: formatTime(lastLog.logged_at), name: lastLog.user_display_name })}
                 </span>
             {:else if !isDoneToday}
-                <span class="card-subtitle card-subtitle--pending">Not yet completed</span>
+                <span class="card-subtitle card-subtitle--pending">{t('habit_not_yet')}</span>
             {/if}
         </div>
     </div>
@@ -128,7 +129,7 @@
         class="check-btn"
         class:check-btn--done={isDoneToday}
         onclick={handleCheckButton}
-        aria-label={isDoneToday ? `Undo ${name}` : `Log ${name}`}
+        aria-label={isDoneToday ? t('habit_undo', { name }) : t('habit_log', { name })}
         aria-pressed={isDoneToday}
     >
         {#if isDoneToday}

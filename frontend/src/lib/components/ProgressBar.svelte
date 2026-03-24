@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { t } from '$lib/i18n';
+
     interface Props {
         done: number;
         total: number;
@@ -10,8 +12,8 @@
     const allDone = $derived(total > 0 && done >= total);
     const label = $derived(
         allDone
-            ? 'All done for today!'
-            : `${done} of ${total} done`
+            ? t('dashboard_progress_all_done')
+            : t('dashboard_progress', { done, total })
     );
 </script>
 

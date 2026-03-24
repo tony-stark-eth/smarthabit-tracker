@@ -3,6 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "i18n:generate": "bun run scripts/generate-i18n.ts",
         "dev": "vite dev",
         "build": "vite build",
         "preview": "vite preview",
@@ -37,7 +38,8 @@
         "tailwindcss": "^4",
         "typescript": "^5.7",
         "typescript-eslint": "^8.57.1",
-        "vite": "^6"
+        "vite": "^6",
+        "yaml": "^2.8.3"
     },
     "dependencies": {
         "@capacitor/app": "^8.0.1",
