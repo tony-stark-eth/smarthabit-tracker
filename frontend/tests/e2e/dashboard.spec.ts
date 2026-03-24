@@ -67,9 +67,9 @@ test.describe('Dashboard — habit card', () => {
         // Tap the check button — triggers optimistic update
         await checkBtn.click();
 
-        // After logging, the button becomes pressed (disabled) and aria-pressed=true
-        await expect(checkBtn).toHaveAttribute('aria-pressed', 'true', { timeout: 5_000 });
-        await expect(checkBtn).toBeDisabled();
+        // After logging, the button becomes a toggle (aria-pressed=true, aria-label changes to "Undo ...")
+        const undoBtn = page.getByRole('button', { name: /Undo Evening Walk/i });
+        await expect(undoBtn).toHaveAttribute('aria-pressed', 'true', { timeout: 5_000 });
     });
 
     test('logged habit shows done state after API log + page reload', async ({ page }) => {
@@ -87,10 +87,9 @@ test.describe('Dashboard — habit card', () => {
 
         await expect(page.getByText('Drink Water')).toBeVisible({ timeout: 10_000 });
 
-        // When the habit is done, the check button is disabled and aria-pressed=true
-        const checkBtn = page.getByRole('button', { name: /Log Drink Water/i });
+        // When done, the check button is a toggle: aria-pressed=true, label changes to "Undo ..."
+        const checkBtn = page.getByRole('button', { name: /Undo Drink Water/i });
         await expect(checkBtn).toHaveAttribute('aria-pressed', 'true', { timeout: 5_000 });
-        await expect(checkBtn).toBeDisabled();
 
         // The done subtitle shows when the habit was logged (contains "Today HH:MM")
         await expect(page.getByText(/Today \d{1,2}:\d{2}/i)).toBeVisible();
