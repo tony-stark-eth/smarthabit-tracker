@@ -1,4 +1,4 @@
-.PHONY: help up down build logs shell quality ecs ecs-check phpstan rector rector-check test test-unit test-integration infection infection-fast i18n frontend-install frontend-dev frontend-build frontend-check frontend-lint db-migrate db-diff db-reset tofu-init tofu-plan tofu-apply tofu-destroy deploy-init deploy deploy-rollback deploy-logs deploy-destroy
+.PHONY: help up down build logs shell quality ecs ecs-check phpstan rector rector-check test test-unit test-integration infection infection-fast i18n frontend-install frontend-dev frontend-build frontend-check frontend-lint db-migrate db-diff db-reset tofu-init tofu-plan tofu-apply tofu-destroy deploy-init deploy deploy-rollback deploy-logs deploy-destroy security security-bearer security-semgrep security-audit
 
 help:                 ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -159,3 +159,16 @@ deploy-destroy:       ## Tear down everything (server + infra, stops all billing
 	ssh $(DEPLOY_HOST) 'cd /opt/smarthabit && docker compose -f compose.yaml -f compose.prod.yaml down -v' || true
 	cd infrastructure && tofu destroy
 	@echo "All resources destroyed. Billing stopped."
+
+# ── Security Scanning ─────────────────────────────────
+security:             ## Run all security scans
+	@$(MAKE) security-bearer security-semgrep security-audit
+
+security-bearer:      ## Bearer SAST scan
+	bearer scan .
+
+security-semgrep:     ## Semgrep SAST + secrets scan
+	semgrep scan --config auto --config p/secrets
+
+security-audit:       ## Composer audit (known CVEs)
+	cd backend && composer audit --locked
