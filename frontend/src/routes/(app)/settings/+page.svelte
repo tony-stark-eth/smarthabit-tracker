@@ -186,6 +186,7 @@
                 <span class="saved-badge">Saved</span>
             {/if}
         </div>
+        <p class="section-hint">Sets notification language. UI translation coming soon.</p>
     </section>
 
     <!-- Theme -->
@@ -556,8 +557,10 @@
     }
 
     .action-btn--copy {
+        width: auto;
         min-width: 5rem;
         text-align: center;
+        padding: 0.5rem 1rem;
         color: var(--color-accent);
         border-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
     }
@@ -568,6 +571,7 @@
         color: var(--color-accent);
     }
 
+    .section-hint,
     .invite-hint {
         font-size: 0.8125rem;
         color: var(--color-text-muted);
