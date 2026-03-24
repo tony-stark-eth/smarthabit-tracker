@@ -30,7 +30,7 @@ jobs:
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ github.sha }}
-          check-regexp: '^(Backend|Frontend|Playwright)'
+          check-regexp: '^(Backend|Frontend)'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 
