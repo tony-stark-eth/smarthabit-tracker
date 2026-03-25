@@ -25,10 +25,11 @@ services:
       # OpenTelemetry — MUST be in compose environment (not .env), see P1 pitfall
       - OTEL_PHP_AUTOLOAD_ENABLED=true
       - OTEL_SERVICE_NAME=smart-habit-api
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://openobserve:5080
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://openobserve:5080/api/default
       - OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
       - OTEL_PROPAGATORS=tracecontext,baggage
       - OTEL_TRACES_SAMPLER=always_on
+      - OTEL_LOGS_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic ${O2_AUTH_TOKEN:-}
     restart: unless-stopped
     # Override dev bind mounts, use only Caddy TLS/config + JWT keys + Caddyfile
