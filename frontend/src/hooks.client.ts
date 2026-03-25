@@ -11,6 +11,7 @@ if (O2_ENDPOINT) {
 		clientToken: O2_STREAM,
 		site: O2_ENDPOINT,
 		organizationIdentifier: O2_ORG,
+		apiVersion: 'v1',
 		service: 'smart-habit-frontend',
 		env: import.meta.env.MODE,
 		forwardErrorsToLogs: true,
@@ -22,9 +23,10 @@ if (O2_ENDPOINT) {
 		clientToken: O2_STREAM,
 		site: O2_ENDPOINT,
 		organizationIdentifier: O2_ORG,
+		apiVersion: 'v1',
 		service: 'smart-habit-frontend',
 		env: import.meta.env.MODE,
-		trackInteractions: true,
+		trackUserInteractions: true,
 		trackResources: true,
 	});
 }
