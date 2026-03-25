@@ -17,7 +17,7 @@ final class ExceptionTraceListener
     {
         $span = Span::getCurrent();
 
-        if (!$span->isRecording()) {
+        if (! $span->isRecording()) {
             return;
         }
 
