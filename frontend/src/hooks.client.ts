@@ -28,6 +28,7 @@ if (O2_ENDPOINT) {
 		env: import.meta.env.MODE,
 		trackUserInteractions: true,
 		trackResources: true,
+		insecureHTTP: false,
 	});
 }
 
