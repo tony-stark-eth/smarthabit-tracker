@@ -14,8 +14,10 @@ Sentry SDKs cannot talk to it. This means we don't just swap a DSN — we swap t
 **Chosen approach**:
 - **Backend**: OpenTelemetry PHP SDK → OTLP → OpenObserve (traces + structured logs)
 - **Frontend**: `@openobserve/browser-logs` + `@openobserve/browser-rum` → OpenObserve (errors + RUM)
-- **Infrastructure logs**: Caddy stays on disk for fail2ban; PHP logs go via OTel
+- **Infrastructure logs**: Caddy stays on disk for fail2ban only (no log collector sidecar)
 - **Alerting**: OpenObserve email alerts (via existing Resend SMTP) replace GlitchTip notifications
+- **Cutover**: Hard cut (stop GlitchTip → start OpenObserve, no parallel operation)
+- **Error grouping**: Manual log search acceptable — household app, not a SaaS
 
 ---
 
@@ -51,20 +53,25 @@ Sentry SDKs cannot talk to it. This means we don't just swap a DSN — we swap t
 
 ---
 
-## Phase 1: OpenObserve Deployment `[ ]`
-**Goal**: Get OpenObserve running alongside GlitchTip (parallel operation).
+## Phase 1: OpenObserve Deployment + GlitchTip Removal `[ ]`
+**Goal**: Stop GlitchTip, start OpenObserve (hard cut).
 
 ### Changes
 - [ ] Create `compose.openobserve.yaml` (single container, port 5080, /mnt/data/openobserve volume)
 - [ ] Add memory tuning env vars for CX23
-- [ ] Add OpenObserve to cloud-init (conditional start, same pattern as GlitchTip)
+- [ ] Replace GlitchTip with OpenObserve in cloud-init
 - [ ] Add Caddy reverse proxy path `/o2/*` → OpenObserve (keeps it behind auth/same-origin)
-- [ ] Update Hetzner firewall: add port 5080 temporarily for initial setup, then remove after Caddy proxy works
-- [ ] Test: access UI, create org, verify data persistence after restart
+- [ ] Stop GlitchTip on production: `docker compose -f compose.glitchtip.yaml down`
+- [ ] Start OpenObserve on production
+- [ ] Delete `compose.glitchtip.yaml`
+- [ ] Update Hetzner firewall — remove port 8000 (GlitchTip)
+- [ ] Test: access UI via `/o2/`, create org, verify data persistence after restart
 
 ### Files
 - `compose.openobserve.yaml` (new)
+- `compose.glitchtip.yaml` (delete)
 - `infrastructure/modules/server/cloud-init.yml`
+- `infrastructure/modules/network/main.tf` (remove port 8000)
 - `docker/frankenphp/Caddyfile`
 
 ---
@@ -132,25 +139,20 @@ environment:
 
 ---
 
-## Phase 4: Deployment & Cutover `[ ]`
-**Goal**: Deploy to production, verify, then remove GlitchTip.
+## Phase 4: Deploy & Verify `[ ]`
+**Goal**: Deploy backend + frontend changes to production, configure alerting.
 
 ### Changes
 - [ ] Update `scripts/first-deploy.sh` — replace GlitchTip setup with OpenObserve setup
+- [ ] Deploy to production (rebuild image, restart containers)
+- [ ] Verify: backend traces visible in OpenObserve
+- [ ] Verify: frontend errors visible in OpenObserve
 - [ ] Configure OpenObserve email alerts (error-level logs → Resend SMTP)
-- [ ] Deploy to production (parallel: both GlitchTip and OpenObserve running)
-- [ ] Verify: backend traces, frontend errors, alerting
-- [ ] Remove GlitchTip: `docker compose -f compose.glitchtip.yaml down -v`
-- [ ] Delete `compose.glitchtip.yaml`
-- [ ] Remove GlitchTip from cloud-init
-- [ ] Update Hetzner firewall — remove port 8000
 - [ ] Remove `VITE_SENTRY_DSN` GitHub secret
 
 ### Files
 - `scripts/first-deploy.sh`
-- `compose.glitchtip.yaml` (delete)
-- `infrastructure/modules/server/cloud-init.yml`
-- `infrastructure/modules/network/main.tf` (remove port 8000)
+- `.github/workflows/cd.yml`
 
 ---
 
