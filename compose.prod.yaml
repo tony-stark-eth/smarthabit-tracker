@@ -124,6 +124,8 @@ services:
       ZO_SMTP_USER_NAME: ${ZO_SMTP_USER_NAME:-}
       ZO_SMTP_PASSWORD: ${ZO_SMTP_PASSWORD:-}
       ZO_SMTP_FROM_EMAIL: ${ZO_SMTP_FROM_EMAIL:-}
+    ports:
+      - "5080:5080"
     volumes:
       - /mnt/data/openobserve:/data
     restart: unless-stopped
