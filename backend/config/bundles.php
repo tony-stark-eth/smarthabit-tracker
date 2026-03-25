@@ -11,5 +11,5 @@ return [
     Symfony\Bundle\MercureBundle\MercureBundle::class => ['all' => true],
     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
-    Sentry\SentryBundle\SentryBundle::class => ['all' => true],
+    OpenTelemetry\Contrib\Symfony\OtelSdkBundle\OtelSdkBundle::class => ['all' => true],
 ];

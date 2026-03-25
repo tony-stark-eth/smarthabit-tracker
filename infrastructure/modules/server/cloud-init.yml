@@ -43,13 +43,7 @@ runcmd:
     fi
 
   # Datenverzeichnisse anlegen
-  - mkdir -p /mnt/data/postgres /mnt/data/backups
-
-  # Start GlitchTip (error tracking) if compose file exists
-  - |
-    if [ -f /opt/smarthabit/compose.glitchtip.yaml ]; then
-      cd /opt/smarthabit && docker compose -f compose.glitchtip.yaml up -d
-    fi
+  - mkdir -p /mnt/data/postgres /mnt/data/backups /mnt/data/openobserve
 
   # unattended-upgrades konfigurieren
   - dpkg-reconfigure -plow unattended-upgrades
