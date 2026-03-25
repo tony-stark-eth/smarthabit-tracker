@@ -37,11 +37,6 @@ resource "hcloud_firewall" "app" {
     source_ips = ["0.0.0.0/0", "::/0"]
   }
 
-  # GlitchTip (error tracking UI)
-  rule {
-    direction  = "in"
-    protocol   = "tcp"
-    port       = "8000"
-    source_ips = ["0.0.0.0/0", "::/0"]
-  }
+  # OpenObserve UI is accessed via SSH tunnel (not exposed to the internet).
+  # Browser SDK telemetry goes through Caddy at /o2/* (same-origin).
 }

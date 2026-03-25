@@ -56,6 +56,12 @@
         reverse_proxy ntfy:80
     }
 
+    # OpenObserve — browser SDK telemetry ingestion (same-origin, no CORS)
+    handle /o2/* {
+        uri strip_prefix /o2
+        reverse_proxy openobserve:5080
+    }
+
     # Everything else → SvelteKit static build with SPA fallback
     handle {
         root * /app/frontend/build
