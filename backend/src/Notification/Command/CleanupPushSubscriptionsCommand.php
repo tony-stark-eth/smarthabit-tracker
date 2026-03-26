@@ -26,7 +26,7 @@ final class CleanupPushSubscriptionsCommand extends Command
         $users = $this->em->getRepository(User::class)->findAll();
         $removed = 0;
 
-        $cutoff = new \DateTimeImmutable('-30 days');
+        $cutoff = \Carbon\CarbonImmutable::now()->subDays(30);
 
         foreach ($users as $user) {
             $removed += $this->cleanupUser($user, $cutoff);

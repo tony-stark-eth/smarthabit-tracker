@@ -56,7 +56,7 @@ final readonly class NotifyHabitHandler
                 user: $user,
                 channel: $channel ?? NotificationChannel::WEB_PUSH,
                 status: $result->success ? NotificationStatus::SENT : NotificationStatus::FAILED,
-                sentAt: new \DateTimeImmutable(),
+                sentAt: \Carbon\CarbonImmutable::now(),
                 message: $habit->getName(),
                 habit: $habit,
                 errorReason: $result->success ? null : $result->reason,

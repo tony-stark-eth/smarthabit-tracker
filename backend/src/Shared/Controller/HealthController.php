@@ -35,7 +35,7 @@ final readonly class HealthController
             'status' => 'ok',
             'database' => 'connected',
             'version' => $_SERVER['DEPLOY_SHA'] ?? 'dev',
-            'timestamp' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
+            'timestamp' => \Carbon\CarbonImmutable::now()->format(\DateTimeInterface::ATOM),
         ]);
     }
 
@@ -56,7 +56,7 @@ final readonly class HealthController
 
         return new JsonResponse([
             'status' => 'ok',
-            'timestamp' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
+            'timestamp' => \Carbon\CarbonImmutable::now()->format(\DateTimeInterface::ATOM),
         ]);
     }
 }

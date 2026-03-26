@@ -56,8 +56,8 @@ final class Habit
         private TimeWindowMode $timeWindowMode = TimeWindowMode::MANUAL,
     ) {
         $this->id = Uuid::v7();
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = \Carbon\CarbonImmutable::now();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function getId(): Uuid
@@ -133,37 +133,37 @@ final class Habit
     public function setName(string $name): void
     {
         $this->name = $name;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setDescription(?string $description): void
     {
         $this->description = $description;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setFrequency(HabitFrequency $frequency): void
     {
         $this->frequency = $frequency;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setIcon(?string $icon): void
     {
         $this->icon = $icon;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setColor(?string $color): void
     {
         $this->color = $color;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setSortOrder(int $sortOrder): void
     {
         $this->sortOrder = $sortOrder;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setTimeWindow(
@@ -174,30 +174,30 @@ final class Habit
         $this->timeWindowStart = $start;
         $this->timeWindowEnd = $end;
         $this->timeWindowMode = $mode;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setTimeWindowStart(?\DateTimeImmutable $start): void
     {
         $this->timeWindowStart = $start;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setTimeWindowEnd(?\DateTimeImmutable $end): void
     {
         $this->timeWindowEnd = $end;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setTimeWindowMode(TimeWindowMode $mode): void
     {
         $this->timeWindowMode = $mode;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function softDelete(): void
     {
-        $this->deletedAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->deletedAt = \Carbon\CarbonImmutable::now();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 }

@@ -97,7 +97,7 @@ final class CheckHabitsCommand extends Command
     private function isInTimeWindow(Habit $habit, User $user): bool
     {
         $tz = new \DateTimeZone($user->getTimezone());
-        $now = new \DateTimeImmutable('now', $tz);
+        $now = \Carbon\CarbonImmutable::now($tz);
         $currentTime = (int) $now->format('Hi'); // e.g. 0732
 
         $start = $habit->getTimeWindowStart();
@@ -115,8 +115,8 @@ final class CheckHabitsCommand extends Command
     private function isLoggedToday(Habit $habit, User $user): bool
     {
         $tz = new \DateTimeZone($user->getTimezone());
-        $todayStart = new \DateTimeImmutable('now', $tz)->setTime(0, 0)->setTimezone(new \DateTimeZone('UTC'));
-        $todayEnd = new \DateTimeImmutable('now', $tz)->setTime(23, 59, 59)->setTimezone(new \DateTimeZone('UTC'));
+        $todayStart = \Carbon\CarbonImmutable::now($tz)->setTime(0, 0)->setTimezone(new \DateTimeZone('UTC'));
+        $todayEnd = \Carbon\CarbonImmutable::now($tz)->setTime(23, 59, 59)->setTimezone(new \DateTimeZone('UTC'));
 
         $count = $this->em->createQueryBuilder()
             ->select('COUNT(hl.id)')
@@ -135,7 +135,7 @@ final class CheckHabitsCommand extends Command
     private function wasNotifiedToday(Habit $habit, User $user): bool
     {
         $tz = new \DateTimeZone($user->getTimezone());
-        $todayStart = new \DateTimeImmutable('now', $tz)->setTime(0, 0)->setTimezone(new \DateTimeZone('UTC'));
+        $todayStart = \Carbon\CarbonImmutable::now($tz)->setTime(0, 0)->setTimezone(new \DateTimeZone('UTC'));
 
         $count = $this->em->createQueryBuilder()
             ->select('COUNT(nl.id)')

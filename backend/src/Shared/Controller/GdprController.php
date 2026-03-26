@@ -96,7 +96,7 @@ final class GdprController extends AbstractController
                 'message' => $log->getMessage(),
                 'habit_id' => $log->getHabit()?->getId()->toRfc4122(),
             ], $notificationLogs),
-            'exported_at' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
+            'exported_at' => \Carbon\CarbonImmutable::now()->format(\DateTimeInterface::ATOM),
         ];
 
         $response = new JsonResponse($data);

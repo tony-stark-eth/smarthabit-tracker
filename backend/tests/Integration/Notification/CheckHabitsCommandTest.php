@@ -48,7 +48,7 @@ final class CheckHabitsCommandTest extends KernelTestCase
                     'auth' => 'tBHItJI5svbpez7KI4CCXg',
                 ],
                 'device_name' => 'Test Browser',
-                'last_seen' => new \DateTimeImmutable()->format(\DateTimeInterface::ATOM),
+                'last_seen' => \Carbon\CarbonImmutable::now()->format(\DateTimeInterface::ATOM),
             ],
         ]);
         $em->persist($user);
@@ -58,8 +58,8 @@ final class CheckHabitsCommandTest extends KernelTestCase
             household: $household,
             name: 'Test Habit ' . uniqid('', true),
             frequency: HabitFrequency::DAILY,
-            timeWindowStart: new \DateTimeImmutable('00:00'),
-            timeWindowEnd: new \DateTimeImmutable('23:59'),
+            timeWindowStart: \Carbon\CarbonImmutable::parse('00:00'),
+            timeWindowEnd: \Carbon\CarbonImmutable::parse('23:59'),
         );
         $em->persist($habit);
         $em->flush();

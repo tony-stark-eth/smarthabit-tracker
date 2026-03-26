@@ -35,8 +35,8 @@ final class CleanupPushSubscriptionsCommandTest extends KernelTestCase
             timezone: 'UTC',
         );
 
-        $staleDate = new \DateTimeImmutable('-60 days')->format(\DateTimeInterface::ATOM);
-        $freshDate = new \DateTimeImmutable('-1 day')->format(\DateTimeInterface::ATOM);
+        $staleDate = \Carbon\CarbonImmutable::now()->subDays(60)->format(\DateTimeInterface::ATOM);
+        $freshDate = \Carbon\CarbonImmutable::now()->subDays(1)->format(\DateTimeInterface::ATOM);
 
         $user->setPushSubscriptions([
             [

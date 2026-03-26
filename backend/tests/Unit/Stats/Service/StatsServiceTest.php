@@ -24,9 +24,9 @@ final class StatsServiceTest extends TestCase
 
     public function testCurrentStreakThreeConsecutiveDays(): void
     {
-        $today = new \DateTimeImmutable('today');
-        $yesterday = new \DateTimeImmutable('yesterday');
-        $twoDaysAgo = new \DateTimeImmutable('-2 days');
+        $today = \Carbon\CarbonImmutable::today();
+        $yesterday = \Carbon\CarbonImmutable::yesterday();
+        $twoDaysAgo = \Carbon\CarbonImmutable::now()->subDays(2);
 
         $result = $this->service->currentStreak([$today, $yesterday, $twoDaysAgo]);
 
@@ -35,8 +35,8 @@ final class StatsServiceTest extends TestCase
 
     public function testCurrentStreakGapYesterdayReturnsZero(): void
     {
-        $threeDaysAgo = new \DateTimeImmutable('-3 days');
-        $fourDaysAgo = new \DateTimeImmutable('-4 days');
+        $threeDaysAgo = \Carbon\CarbonImmutable::now()->subDays(3);
+        $fourDaysAgo = \Carbon\CarbonImmutable::now()->subDays(4);
 
         $result = $this->service->currentStreak([$threeDaysAgo, $fourDaysAgo]);
 
@@ -45,9 +45,9 @@ final class StatsServiceTest extends TestCase
 
     public function testCurrentStreakStartedYesterdayCounts(): void
     {
-        $yesterday = new \DateTimeImmutable('yesterday');
-        $twoDaysAgo = new \DateTimeImmutable('-2 days');
-        $threeDaysAgo = new \DateTimeImmutable('-3 days');
+        $yesterday = \Carbon\CarbonImmutable::yesterday();
+        $twoDaysAgo = \Carbon\CarbonImmutable::now()->subDays(2);
+        $threeDaysAgo = \Carbon\CarbonImmutable::now()->subDays(3);
 
         $result = $this->service->currentStreak([$yesterday, $twoDaysAgo, $threeDaysAgo]);
 
@@ -62,8 +62,8 @@ final class StatsServiceTest extends TestCase
     public function testCurrentStreakWithDuplicateDatesCountsOnce(): void
     {
         // Two logs for today + one for yesterday → streak=2, not affected by duplicates
-        $today = new \DateTimeImmutable('today');
-        $yesterday = new \DateTimeImmutable('yesterday');
+        $today = \Carbon\CarbonImmutable::today();
+        $yesterday = \Carbon\CarbonImmutable::yesterday();
 
         $result = $this->service->currentStreak([$today, $today, $yesterday]);
 
@@ -73,8 +73,8 @@ final class StatsServiceTest extends TestCase
     public function testCurrentStreakExactlyTwoDays(): void
     {
         // Exactly today + yesterday → streak=2 (not 3 or more from off-by-one errors)
-        $today = new \DateTimeImmutable('today');
-        $yesterday = new \DateTimeImmutable('yesterday');
+        $today = \Carbon\CarbonImmutable::today();
+        $yesterday = \Carbon\CarbonImmutable::yesterday();
 
         $result = $this->service->currentStreak([$today, $yesterday]);
 
@@ -90,15 +90,15 @@ final class StatsServiceTest extends TestCase
         // Streak 1: Jan 1-3 (3 days)
         // Streak 2: Jan 10-15 (6 days)
         $dates = [
-            new \DateTimeImmutable('2024-01-01'),
-            new \DateTimeImmutable('2024-01-02'),
-            new \DateTimeImmutable('2024-01-03'),
-            new \DateTimeImmutable('2024-01-10'),
-            new \DateTimeImmutable('2024-01-11'),
-            new \DateTimeImmutable('2024-01-12'),
-            new \DateTimeImmutable('2024-01-13'),
-            new \DateTimeImmutable('2024-01-14'),
-            new \DateTimeImmutable('2024-01-15'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-02'),
+            \Carbon\CarbonImmutable::parse('2024-01-03'),
+            \Carbon\CarbonImmutable::parse('2024-01-10'),
+            \Carbon\CarbonImmutable::parse('2024-01-11'),
+            \Carbon\CarbonImmutable::parse('2024-01-12'),
+            \Carbon\CarbonImmutable::parse('2024-01-13'),
+            \Carbon\CarbonImmutable::parse('2024-01-14'),
+            \Carbon\CarbonImmutable::parse('2024-01-15'),
         ];
 
         self::assertSame(6, $this->service->longestStreak($dates));
@@ -132,7 +132,7 @@ final class StatsServiceTest extends TestCase
 
     public function testCompletionRateZeroPeriodReturnsZero(): void
     {
-        $dates = [new \DateTimeImmutable('today')];
+        $dates = [\Carbon\CarbonImmutable::today()];
 
         self::assertEqualsWithDelta(0.0, $this->service->completionRate($dates, 0), 0.001);
     }
@@ -145,9 +145,9 @@ final class StatsServiceTest extends TestCase
     {
         // 420 = 07:00, 430 = 07:10, 440 = 07:20
         $times = [
-            new \DateTimeImmutable('07:00'),
-            new \DateTimeImmutable('07:10'),
-            new \DateTimeImmutable('07:20'),
+            \Carbon\CarbonImmutable::parse('07:00'),
+            \Carbon\CarbonImmutable::parse('07:10'),
+            \Carbon\CarbonImmutable::parse('07:20'),
         ];
 
         self::assertSame(430, $this->service->averageCompletionTime($times));
@@ -164,7 +164,7 @@ final class StatsServiceTest extends TestCase
 
     public function testLongestStreakSingleDateReturnsOne(): void
     {
-        $dates = [new \DateTimeImmutable('2024-03-15')];
+        $dates = [\Carbon\CarbonImmutable::parse('2024-03-15')];
 
         self::assertSame(1, $this->service->longestStreak($dates));
     }
@@ -173,9 +173,9 @@ final class StatsServiceTest extends TestCase
     {
         // Three entries for the same day must still count as streak=1
         $dates = [
-            new \DateTimeImmutable('2024-03-15'),
-            new \DateTimeImmutable('2024-03-15'),
-            new \DateTimeImmutable('2024-03-15'),
+            \Carbon\CarbonImmutable::parse('2024-03-15'),
+            \Carbon\CarbonImmutable::parse('2024-03-15'),
+            \Carbon\CarbonImmutable::parse('2024-03-15'),
         ];
 
         self::assertSame(1, $this->service->longestStreak($dates));
@@ -184,8 +184,8 @@ final class StatsServiceTest extends TestCase
     public function testLongestStreakTwoConsecutiveDaysReturnsTwo(): void
     {
         $dates = [
-            new \DateTimeImmutable('2024-03-15'),
-            new \DateTimeImmutable('2024-03-16'),
+            \Carbon\CarbonImmutable::parse('2024-03-15'),
+            \Carbon\CarbonImmutable::parse('2024-03-16'),
         ];
 
         self::assertSame(2, $this->service->longestStreak($dates));
@@ -195,14 +195,14 @@ final class StatsServiceTest extends TestCase
     {
         // Streak 1: Jan 10-15 (6 days), Streak 2: Jan 20-21 (2 days)
         $dates = [
-            new \DateTimeImmutable('2024-01-10'),
-            new \DateTimeImmutable('2024-01-11'),
-            new \DateTimeImmutable('2024-01-12'),
-            new \DateTimeImmutable('2024-01-13'),
-            new \DateTimeImmutable('2024-01-14'),
-            new \DateTimeImmutable('2024-01-15'),
-            new \DateTimeImmutable('2024-01-20'),
-            new \DateTimeImmutable('2024-01-21'),
+            \Carbon\CarbonImmutable::parse('2024-01-10'),
+            \Carbon\CarbonImmutable::parse('2024-01-11'),
+            \Carbon\CarbonImmutable::parse('2024-01-12'),
+            \Carbon\CarbonImmutable::parse('2024-01-13'),
+            \Carbon\CarbonImmutable::parse('2024-01-14'),
+            \Carbon\CarbonImmutable::parse('2024-01-15'),
+            \Carbon\CarbonImmutable::parse('2024-01-20'),
+            \Carbon\CarbonImmutable::parse('2024-01-21'),
         ];
 
         self::assertSame(6, $this->service->longestStreak($dates));
@@ -213,10 +213,10 @@ final class StatsServiceTest extends TestCase
         // Jan1, Jan2 (duplicate), Jan2, Jan3 → unique: [Jan1, Jan2, Jan3] → streak=3
         // Without array_unique: [Jan1, Jan2, Jan2, Jan3] → diff(Jan2, Jan2)=0 → streak resets → longest=2
         $dates = [
-            new \DateTimeImmutable('2024-01-01'),
-            new \DateTimeImmutable('2024-01-02'),
-            new \DateTimeImmutable('2024-01-02'), // duplicate
-            new \DateTimeImmutable('2024-01-03'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-02'),
+            \Carbon\CarbonImmutable::parse('2024-01-02'), // duplicate
+            \Carbon\CarbonImmutable::parse('2024-01-03'),
         ];
 
         self::assertSame(3, $this->service->longestStreak($dates));
@@ -228,9 +228,9 @@ final class StatsServiceTest extends TestCase
         // Without sort: [Jan3, Jan1, Jan2] → diff(Jan3,Jan1)=2 reset, diff(Jan1,Jan2)=1 → longest=2
         // With sort: [Jan1, Jan2, Jan3] → consecutive streak=3
         $dates = [
-            new \DateTimeImmutable('2024-01-03'),
-            new \DateTimeImmutable('2024-01-01'),
-            new \DateTimeImmutable('2024-01-02'),
+            \Carbon\CarbonImmutable::parse('2024-01-03'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-02'),
         ];
 
         self::assertSame(3, $this->service->longestStreak($dates));
@@ -244,9 +244,9 @@ final class StatsServiceTest extends TestCase
     {
         // 3 entries for 1 unique day out of 10 = 0.1
         $dates = [
-            new \DateTimeImmutable('2024-01-01'),
-            new \DateTimeImmutable('2024-01-01'),
-            new \DateTimeImmutable('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
         ];
 
         self::assertEqualsWithDelta(0.1, $this->service->completionRate($dates, 10), 0.001);
@@ -256,9 +256,9 @@ final class StatsServiceTest extends TestCase
     {
         // More unique days than period days must cap at 1.0
         $dates = [
-            new \DateTimeImmutable('2024-01-01'),
-            new \DateTimeImmutable('2024-01-02'),
-            new \DateTimeImmutable('2024-01-03'),
+            \Carbon\CarbonImmutable::parse('2024-01-01'),
+            \Carbon\CarbonImmutable::parse('2024-01-02'),
+            \Carbon\CarbonImmutable::parse('2024-01-03'),
         ];
 
         self::assertEqualsWithDelta(1.0, $this->service->completionRate($dates, 2), 0.001);
@@ -271,7 +271,7 @@ final class StatsServiceTest extends TestCase
     public function testAverageCompletionTimeSingleEntryReturnsThatValue(): void
     {
         // 09:30 = 9*60 + 30 = 570
-        $times = [new \DateTimeImmutable('09:30')];
+        $times = [\Carbon\CarbonImmutable::parse('09:30')];
 
         self::assertSame(570, $this->service->averageCompletionTime($times));
     }
@@ -282,10 +282,10 @@ final class StatsServiceTest extends TestCase
         // Sorted: [480, 490, 500, 510] count=4, mid=2
         // Even path: (minutes[1] + minutes[2]) / 2 = (490 + 500) / 2 = 495
         $times = [
-            new \DateTimeImmutable('08:00'),
-            new \DateTimeImmutable('08:10'),
-            new \DateTimeImmutable('08:20'),
-            new \DateTimeImmutable('08:30'),
+            \Carbon\CarbonImmutable::parse('08:00'),
+            \Carbon\CarbonImmutable::parse('08:10'),
+            \Carbon\CarbonImmutable::parse('08:20'),
+            \Carbon\CarbonImmutable::parse('08:30'),
         ];
 
         self::assertSame(495, $this->service->averageCompletionTime($times));
@@ -295,8 +295,8 @@ final class StatsServiceTest extends TestCase
     {
         // 08:00 = 480, 10:00 = 600; even: (480 + 600) / 2 = 540
         $times = [
-            new \DateTimeImmutable('08:00'),
-            new \DateTimeImmutable('10:00'),
+            \Carbon\CarbonImmutable::parse('08:00'),
+            \Carbon\CarbonImmutable::parse('10:00'),
         ];
 
         self::assertSame(540, $this->service->averageCompletionTime($times));
@@ -305,7 +305,7 @@ final class StatsServiceTest extends TestCase
     public function testAverageCompletionTimeMinutesPartIsUsed(): void
     {
         // 07:45 = 7*60+45 = 465; ensure (int)format('i') is included correctly
-        $times = [new \DateTimeImmutable('07:45')];
+        $times = [\Carbon\CarbonImmutable::parse('07:45')];
 
         self::assertSame(465, $this->service->averageCompletionTime($times));
     }
@@ -313,7 +313,7 @@ final class StatsServiceTest extends TestCase
     public function testAverageCompletionTimeHourContributesCorrectly(): void
     {
         // Midnight: 00:00 = 0; 01:00 = 60; ensure (int)format('G') scales by 60
-        $times = [new \DateTimeImmutable('01:00')];
+        $times = [\Carbon\CarbonImmutable::parse('01:00')];
 
         self::assertSame(60, $this->service->averageCompletionTime($times));
     }
@@ -323,8 +323,8 @@ final class StatsServiceTest extends TestCase
         // 08:00 = 480, 08:21 = 501 (odd sum: 480+501=981, /2=490.5)
         // round(490.5) = 491, floor(490.5) = 490 → distinguishes round from floor
         $times = [
-            new \DateTimeImmutable('08:00'),
-            new \DateTimeImmutable('08:21'),
+            \Carbon\CarbonImmutable::parse('08:00'),
+            \Carbon\CarbonImmutable::parse('08:21'),
         ];
 
         self::assertSame(491, $this->service->averageCompletionTime($times));
@@ -335,9 +335,9 @@ final class StatsServiceTest extends TestCase
         // Without sort, [09:00, 08:00, 08:30] = [540, 480, 510], mid=1, returns 480 (wrong)
         // With sort, [480, 510, 540], mid=1, returns 510 (correct)
         $times = [
-            new \DateTimeImmutable('09:00'),
-            new \DateTimeImmutable('08:00'),
-            new \DateTimeImmutable('08:30'),
+            \Carbon\CarbonImmutable::parse('09:00'),
+            \Carbon\CarbonImmutable::parse('08:00'),
+            \Carbon\CarbonImmutable::parse('08:30'),
         ];
 
         self::assertSame(510, $this->service->averageCompletionTime($times));
@@ -382,9 +382,9 @@ final class StatsServiceTest extends TestCase
     {
         // 2024-01-01 is Monday (N=1), 2024-01-03 is Wednesday (N=3)
         $dates = [
-            new \DateTimeImmutable('2024-01-01'), // Mon
-            new \DateTimeImmutable('2024-01-01'), // Mon (duplicate date, same weekday)
-            new \DateTimeImmutable('2024-01-03'), // Wed
+            \Carbon\CarbonImmutable::parse('2024-01-01'), // Mon
+            \Carbon\CarbonImmutable::parse('2024-01-01'), // Mon (duplicate date, same weekday)
+            \Carbon\CarbonImmutable::parse('2024-01-03'), // Wed
         ];
 
         /** @var array<int<1,7>, int> $heatmap */
@@ -434,10 +434,10 @@ final class StatsServiceTest extends TestCase
     public function testTimeHeatmapCountsPerHour(): void
     {
         $times = [
-            new \DateTimeImmutable('08:00'),
-            new \DateTimeImmutable('08:30'),
-            new \DateTimeImmutable('14:00'),
-            new \DateTimeImmutable('22:45'),
+            \Carbon\CarbonImmutable::parse('08:00'),
+            \Carbon\CarbonImmutable::parse('08:30'),
+            \Carbon\CarbonImmutable::parse('14:00'),
+            \Carbon\CarbonImmutable::parse('22:45'),
         ];
 
         /** @var list<int> $heatmap */
@@ -469,8 +469,8 @@ final class StatsServiceTest extends TestCase
     public function testTimeHeatmapMidnightAndEndOfDay(): void
     {
         $times = [
-            new \DateTimeImmutable('00:00'),
-            new \DateTimeImmutable('23:59'),
+            \Carbon\CarbonImmutable::parse('00:00'),
+            \Carbon\CarbonImmutable::parse('23:59'),
         ];
 
         $heatmap = $this->service->timeHeatmap($times);

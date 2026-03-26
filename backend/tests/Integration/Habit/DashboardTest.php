@@ -9,6 +9,7 @@ use App\Habit\Controller\DashboardController;
 use App\Habit\Entity\Habit;
 use App\Habit\Entity\HabitLog;
 use App\Habit\Enum\HabitLogSource;
+use Carbon\CarbonImmutable;
 use Doctrine\ORM\EntityManager;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -17,6 +18,12 @@ use Symfony\Component\HttpFoundation\Request;
 #[CoversClass(DashboardController::class)]
 final class DashboardTest extends WebTestCase
 {
+    protected function tearDown(): void
+    {
+        CarbonImmutable::setTestNow();
+        parent::tearDown();
+    }
+
     public function testDashboardReturnsHabitsWithSummary(): void
     {
         $token = $this->registerAndGetToken();
@@ -129,12 +136,15 @@ final class DashboardTest extends WebTestCase
         $token = $this->registerAndGetToken($email, 'Pacific/Auckland');
         $habit = $this->createHabit($token, 'Auckland Habit');
 
+        // Freeze time to noon UTC — safely away from any timezone day-boundary.
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('today 12:00', 'UTC'));
+
         // Compute a UTC timestamp that is "today" in Auckland but "yesterday" in UTC.
         // Auckland is UTC+12 (NZST) or UTC+13 (NZDT). Taking local 00:30 and converting
         // to UTC always lands on the previous UTC calendar day.
         $aucklandTz = new \DateTimeZone('Pacific/Auckland');
         $utcTz = new \DateTimeZone('UTC');
-        $nowAuckland = new \DateTimeImmutable('now', $aucklandTz);
+        $nowAuckland = CarbonImmutable::now($aucklandTz);
         $loggedAtUtc = $nowAuckland->setTime(0, 30, 0)->setTimezone($utcTz);
 
         /** @var EntityManager $em */
@@ -194,11 +204,14 @@ final class DashboardTest extends WebTestCase
         $habit = $this->createHabit($token, 'LA Habit');
         $this->createLog($token, $habit['id']);
 
+        // Freeze time to noon UTC — safely away from any timezone day-boundary.
+        CarbonImmutable::setTestNow(CarbonImmutable::parse('today 12:00', 'UTC'));
+
         // Rewrite the log's logged_at to a UTC timestamp that is "today" in UTC
         // but "yesterday" in America/Los_Angeles.
         // LA is UTC-7 (PDT) or UTC-8 (PST). UTC 01:00 = 18:00 or 17:00 previous day in LA.
         $utcTz = new \DateTimeZone('UTC');
-        $nowUtc = new \DateTimeImmutable('now', $utcTz);
+        $nowUtc = CarbonImmutable::now($utcTz);
         $loggedAtUtc = $nowUtc->setTime(1, 0, 0);
 
         /** @var EntityManager $em */

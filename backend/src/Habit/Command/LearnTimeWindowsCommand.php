@@ -38,7 +38,7 @@ final class LearnTimeWindowsCommand extends Command
             ->getResult();
 
         $updated = 0;
-        $since = new \DateTimeImmutable('-21 days');
+        $since = \Carbon\CarbonImmutable::now()->subDays(21);
 
         foreach ($habits as $habit) {
             /** @var list<HabitLog> $logs */

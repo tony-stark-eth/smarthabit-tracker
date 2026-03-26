@@ -82,7 +82,7 @@ final class DashboardController extends AbstractController
         }
 
         $tz = new \DateTimeZone($timezone);
-        $now = new \DateTimeImmutable('now', $tz);
+        $now = \Carbon\CarbonImmutable::now($tz)->toDateTimeImmutable();
         $startUtc = $now->setTime(0, 0, 0)->setTimezone(new \DateTimeZone('UTC'));
         $endUtc = $now->setTime(23, 59, 59)->setTimezone(new \DateTimeZone('UTC'));
 

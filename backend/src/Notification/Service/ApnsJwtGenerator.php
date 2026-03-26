@@ -21,7 +21,7 @@ class ApnsJwtGenerator
 
     public function generate(): string
     {
-        $now = time();
+        $now = \Carbon\Carbon::now()->getTimestamp();
 
         if ($this->cachedToken !== null && $this->cachedAt !== null && ($now - $this->cachedAt) < self::CACHE_TTL_SECONDS) {
             return $this->cachedToken;

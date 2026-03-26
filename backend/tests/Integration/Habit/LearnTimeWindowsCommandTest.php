@@ -116,8 +116,8 @@ final class LearnTimeWindowsCommandTest extends KernelTestCase
         );
         $em->persist($user);
 
-        $manualStart = new \DateTimeImmutable('08:00');
-        $manualEnd = new \DateTimeImmutable('09:00');
+        $manualStart = \Carbon\CarbonImmutable::parse('08:00');
+        $manualEnd = \Carbon\CarbonImmutable::parse('09:00');
 
         $habit = new Habit(
             household: $household,

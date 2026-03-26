@@ -83,7 +83,7 @@ final class RegisterController extends AbstractController
             ],
             Response::HTTP_TOO_MANY_REQUESTS,
             [
-                'Retry-After' => $limit->getRetryAfter()->getTimestamp() - time(),
+                'Retry-After' => $limit->getRetryAfter()->getTimestamp() - \Carbon\Carbon::now()->getTimestamp(),
             ],
         );
     }

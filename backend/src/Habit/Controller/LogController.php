@@ -216,7 +216,7 @@ final class LogController extends AbstractController
         $source = HabitLogSource::tryFrom($sourceValue) ?? HabitLogSource::MANUAL;
         $note = isset($data['note']) && is_string($data['note']) ? $data['note'] : null;
 
-        return new HabitLog($habit, $user, new \DateTimeImmutable(), $source, $note);
+        return new HabitLog($habit, $user, \Carbon\CarbonImmutable::now(), $source, $note);
     }
 
     private function getAuthenticatedUser(): ?User

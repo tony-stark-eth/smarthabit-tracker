@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+use Rector\Carbon\Rector\FuncCall\DateFuncCallToCarbonRector;
+use Rector\Carbon\Rector\FuncCall\TimeFuncCallToCarbonRector;
+use Rector\Carbon\Rector\MethodCall\DateTimeMethodCallToCarbonRector;
+use Rector\Carbon\Rector\New_\DateTimeInstanceToCarbonRector;
 use Rector\Config\RectorConfig;
 use Rector\Doctrine\Set\DoctrineSetList;
 use Rector\PHPUnit\Set\PHPUnitSetList;
@@ -21,4 +25,19 @@ return RectorConfig::configure()
         DoctrineSetList::DOCTRINE_ORM_214,
         DoctrineSetList::DOCTRINE_CODE_QUALITY,
         PHPUnitSetList::PHPUNIT_120,
+    ])
+    ->withRules([
+        DateTimeInstanceToCarbonRector::class,
+        DateTimeMethodCallToCarbonRector::class,
+        DateFuncCallToCarbonRector::class,
+        TimeFuncCallToCarbonRector::class,
+    ])
+    ->withSkip([
+        // Doctrine hydrates datetime columns as DateTimeImmutable — narrowing
+        // entity getter return types to CarbonImmutable causes TypeErrors.
+        \Rector\TypeDeclaration\Rector\ClassMethod\NarrowObjectReturnTypeRector::class => [
+            __DIR__ . '/src/Auth/Entity',
+            __DIR__ . '/src/Habit/Entity',
+            __DIR__ . '/src/Household/Entity',
+        ],
     ]);

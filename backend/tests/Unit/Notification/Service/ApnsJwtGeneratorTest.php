@@ -74,7 +74,7 @@ final class ApnsJwtGeneratorTest extends TestCase
 
     public function testGenerateJwtClaimsContainIssAndIat(): void
     {
-        $before = time();
+        $before = \Carbon\Carbon::now()->getTimestamp();
 
         $generator = new ApnsJwtGenerator(
             teamId: 'TEAMID1234',
@@ -83,7 +83,7 @@ final class ApnsJwtGeneratorTest extends TestCase
         );
 
         $token = $generator->generate();
-        $after = time();
+        $after = \Carbon\Carbon::now()->getTimestamp();
 
         $parts = \explode('.', $token);
 
@@ -202,7 +202,7 @@ final class ApnsJwtGeneratorTest extends TestCase
         // Force the cached timestamp to be 3001 seconds ago (> 3000s TTL)
         $ref = new \ReflectionObject($generator);
         $cachedAt = $ref->getProperty('cachedAt');
-        $cachedAt->setValue($generator, time() - 3001);
+        $cachedAt->setValue($generator, \Carbon\Carbon::now()->subSeconds(3001)->getTimestamp());
 
         $secondToken = $generator->generate();
 
@@ -222,7 +222,7 @@ final class ApnsJwtGeneratorTest extends TestCase
         // Force the cached timestamp to be 2999 seconds ago (still within 3000s TTL)
         $ref = new \ReflectionObject($generator);
         $cachedAt = $ref->getProperty('cachedAt');
-        $cachedAt->setValue($generator, time() - 2999);
+        $cachedAt->setValue($generator, \Carbon\Carbon::now()->subSeconds(2999)->getTimestamp());
 
         $secondToken = $generator->generate();
 

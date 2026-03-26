@@ -45,7 +45,7 @@ final class StatsController extends AbstractController
         $this->denyAccessUnlessGranted(HouseholdVoter::VIEW, $habit);
 
         $tz = new \DateTimeZone($user->getTimezone());
-        $now = new \DateTimeImmutable('now', $tz);
+        $now = \Carbon\CarbonImmutable::now($tz)->toDateTimeImmutable();
         $since90dUtc = $now->modify('-90 days')->setTimezone(new \DateTimeZone('UTC'));
 
         /** @var list<HabitLog> $logs */
@@ -154,7 +154,7 @@ final class StatsController extends AbstractController
         }
 
         $tz = new \DateTimeZone($user->getTimezone());
-        $now = new \DateTimeImmutable('now', $tz);
+        $now = \Carbon\CarbonImmutable::now($tz)->toDateTimeImmutable();
         $since90dUtc = $now->modify('-90 days')->setTimezone(new \DateTimeZone('UTC'));
         $since30dUtc = $now->modify('-30 days')->setTimezone(new \DateTimeZone('UTC'));
 
