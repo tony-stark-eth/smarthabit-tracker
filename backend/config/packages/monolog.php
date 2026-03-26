@@ -52,9 +52,18 @@ return static function (ContainerConfigurator $container): void {
                 'main' => [
                     'type' => 'fingers_crossed',
                     'action_level' => 'error',
-                    'handler' => 'stderr',
+                    'handler' => 'grouped',
                     'excluded_http_codes' => [404, 405],
                     'channels' => ['!event'],
+                ],
+                'grouped' => [
+                    'type' => 'group',
+                    'members' => ['otel', 'stderr'],
+                ],
+                'otel' => [
+                    'type' => 'service',
+                    'id' => 'App\Shared\Monolog\OtelHandler',
+                    'level' => 'error',
                 ],
                 'stderr' => [
                     'type' => 'stream',
