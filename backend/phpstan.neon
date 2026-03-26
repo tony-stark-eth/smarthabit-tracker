@@ -87,7 +87,7 @@ parameters:
                 'dump': 'Remove debug code'
                 'dd': 'Remove debug code'
                 'print_r': 'Remove debug code'
-                'DateTime::__construct': 'Use DateTimeImmutable instead'
+                'DateTime::__construct': 'Use CarbonImmutable instead'
 
     # ── voku/phpstan-rules ─────────────────────────────────────────
     # Automatically active via extension-installer. Checks:

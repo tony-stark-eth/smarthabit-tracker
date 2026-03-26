@@ -25,8 +25,8 @@ final readonly class StatsService
         sort($dates);
         $dates = array_values(array_reverse($dates));
 
-        $today = new \DateTimeImmutable()->format('Y-m-d');
-        $yesterday = new \DateTimeImmutable('-1 day')->format('Y-m-d');
+        $today = \Carbon\CarbonImmutable::now()->format('Y-m-d');
+        $yesterday = \Carbon\CarbonImmutable::now()->subDays(1)->format('Y-m-d');
 
         // Streak must start from today or yesterday
         $first = $dates[0] ?? '';

@@ -36,7 +36,7 @@ final class HabitLog
         private ?string $note = null,
     ) {
         $this->id = Uuid::v7();
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = \Carbon\CarbonImmutable::now();
     }
 
     public function getId(): Uuid

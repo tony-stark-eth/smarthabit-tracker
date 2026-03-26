@@ -12,6 +12,7 @@
         "doctrine/orm": "^3.6",
         "lexik/jwt-authentication-bundle": "^3.1",
         "minishlink/web-push": "^10.0",
+        "nesbot/carbon": "*",
         "open-telemetry/exporter-otlp": "*",
         "open-telemetry/opentelemetry-auto-doctrine": "*",
         "open-telemetry/opentelemetry-auto-psr3": "*",

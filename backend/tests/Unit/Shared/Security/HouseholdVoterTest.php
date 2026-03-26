@@ -61,7 +61,7 @@ final class HouseholdVoterTest extends TestCase
         $habitLog = new HabitLog(
             habit: $habit,
             user: $user,
-            loggedAt: new \DateTimeImmutable(),
+            loggedAt: \Carbon\CarbonImmutable::now(),
         );
         $token = $this->createTokenWithUser($user);
 
@@ -80,7 +80,7 @@ final class HouseholdVoterTest extends TestCase
             user: $user,
             channel: NotificationChannel::WEB_PUSH,
             status: NotificationStatus::SENT,
-            sentAt: new \DateTimeImmutable(),
+            sentAt: \Carbon\CarbonImmutable::now(),
             message: 'Test notification',
             habit: $habit,
         );
@@ -129,7 +129,7 @@ final class HouseholdVoterTest extends TestCase
         $habitLog = new HabitLog(
             habit: $habit,
             user: $otherUser,
-            loggedAt: new \DateTimeImmutable(),
+            loggedAt: \Carbon\CarbonImmutable::now(),
         );
         $token = $this->createTokenWithUser($user);
 
@@ -148,7 +148,7 @@ final class HouseholdVoterTest extends TestCase
             user: $otherUser,
             channel: NotificationChannel::WEB_PUSH,
             status: NotificationStatus::SENT,
-            sentAt: new \DateTimeImmutable(),
+            sentAt: \Carbon\CarbonImmutable::now(),
             message: 'Test notification',
         );
         $token = $this->createTokenWithUser($user);

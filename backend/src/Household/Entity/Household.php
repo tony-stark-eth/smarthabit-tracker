@@ -31,8 +31,8 @@ final class Household
     ) {
         $this->id = Uuid::v7();
         $this->inviteCode = substr(bin2hex(random_bytes(4)), 0, 8);
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = \Carbon\CarbonImmutable::now();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function getId(): Uuid
@@ -63,6 +63,6 @@ final class Household
     public function setName(string $name): void
     {
         $this->name = $name;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 }

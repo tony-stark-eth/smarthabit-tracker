@@ -63,8 +63,8 @@ final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUs
         private Theme $theme = Theme::AUTO,
     ) {
         $this->id = Uuid::v7();
-        $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->createdAt = \Carbon\CarbonImmutable::now();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function getId(): Uuid
@@ -148,43 +148,43 @@ final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUs
     public function setHousehold(Household $household): void
     {
         $this->household = $household;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setEmail(string $email): void
     {
         $this->email = $email;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setPassword(string $password): void
     {
         $this->password = $password;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setDisplayName(string $displayName): void
     {
         $this->displayName = $displayName;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setTimezone(string $timezone): void
     {
         $this->timezone = $timezone;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setLocale(Locale $locale): void
     {
         $this->locale = $locale;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function setTheme(Theme $theme): void
     {
         $this->theme = $theme;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     /**
@@ -193,26 +193,26 @@ final class User implements HouseholdAwareUserInterface, PasswordAuthenticatedUs
     public function setPushSubscriptions(?array $pushSubscriptions): void
     {
         $this->pushSubscriptions = $pushSubscriptions;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function giveConsent(string $version): void
     {
-        $this->consentAt = new \DateTimeImmutable();
+        $this->consentAt = \Carbon\CarbonImmutable::now();
         $this->consentVersion = $version;
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function markEmailVerified(): void
     {
-        $this->emailVerifiedAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->emailVerifiedAt = \Carbon\CarbonImmutable::now();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     public function softDelete(): void
     {
-        $this->deletedAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->deletedAt = \Carbon\CarbonImmutable::now();
+        $this->updatedAt = \Carbon\CarbonImmutable::now();
     }
 
     /**
