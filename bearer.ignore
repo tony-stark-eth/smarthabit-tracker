@@ -1,0 +1,32 @@
+{
+  "1ed71e0ba6cbe9c7df166f338b050087_0": {
+    "comment": "False positive: i18n translation key containing 'password'",
+    "false_positive": true,
+    "ignored_at": "2026-03-24T13:31:57Z"
+  },
+  "1ed71e0ba6cbe9c7df166f338b050087_1": {
+    "comment": "False positive: i18n translation key containing 'password'",
+    "false_positive": true,
+    "ignored_at": "2026-03-24T13:31:58Z"
+  },
+  "3686dc023e93a536d2ee42237caaaf15_0": {
+    "comment": "False positive: env var reference, not hardcoded secret",
+    "false_positive": true,
+    "ignored_at": "2026-03-24T13:32:01Z"
+  },
+  "96f6023267cf006234840accb2078d74_0": {
+    "comment": "False positive: i18n translation key containing 'password'",
+    "false_positive": true,
+    "ignored_at": "2026-03-24T13:31:59Z"
+  },
+  "96f6023267cf006234840accb2078d74_1": {
+    "comment": "False positive: i18n translation key containing 'password'",
+    "false_positive": true,
+    "ignored_at": "2026-03-24T13:32:00Z"
+  },
+  "f6e387c9a27967074fd6bf7bca104389_0": {
+    "comment": "False positive: env var reference, not hardcoded secret",
+    "false_positive": true,
+    "ignored_at": "2026-03-24T13:27:14Z"
+  }
+}
